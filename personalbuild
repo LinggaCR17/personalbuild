@@ -537,7 +537,11 @@ biglittlecore
 	resetprop -v -n visual_bars false
 	resetprop -v -n debug.drm.mode.force 1600x720@120
 	resetprop -v -n debug.cpurend.vsync false
+	
 	resetprop -v -n ro.surface_flinger.use_content_detection_for_refresh_rate false
+	resetprop -v -n ro.surface_flinger.refresh_rate_switching 120
+	resetprop -v -n ro.surface_flinger.set_display_power_timer_ms 1000
+	resetprop -v -n ro.surface_flinger.set_touch_timer_ms 200
 	
 	resetprop -v -n vendor.thermal.manager.is_ht120 1
 	resetprop -v -n vendor.disable.usb.overheat.mitigation 1

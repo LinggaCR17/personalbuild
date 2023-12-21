@@ -562,6 +562,9 @@ biglittlecore
 	resetprop -v -n debug.disable.thermal.control 1
 }&
 
+settings put system min_refresh_rate 120
+settings put system peak_refresh_rate 120.00001
+
 personal() {
 	MODDIR="${0%/*}"
 	MODNAME="${MODDIR##*/}"

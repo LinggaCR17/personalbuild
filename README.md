@@ -14,3 +14,8 @@ https://github.com/LinggaCR17/personalbuild/blob/main/personalbuild
 
 ### new release ###
 https://github.com/LinggaCR17/personalbuild/releases/tag/1-1
+
+# ! ATTENTION:
+Use cerdits to honor me in addition to donating.
+
+I will no longer maintain if I am not listed.

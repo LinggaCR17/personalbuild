@@ -6,7 +6,5 @@
 
 # Personalbuild Now is OpenSource!
 exec personalbuild
-
 or
-
-sh /<your8mine>/yourFolder/personalbuild
+sh /your8mine/yourFolder/personalbuild

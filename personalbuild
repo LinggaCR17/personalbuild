@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-# Special to Ktwaks @tytydraco based source
+# Special to Ktweaks @tytydraco based source
 
 # Stealing ain't cool
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin

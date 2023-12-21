@@ -10,7 +10,7 @@ exec /your8mine/yourFolder/personalbuild
 sh /your8mine/yourFolder/personalbuild
 
 ### unencrypted ###
-https://github.com/LinggaCR17/Saikas-Tweaks-fear-project/blob/main/personalbuild
+https://github.com/LinggaCR17/personalbuild/blob/main/personalbuild
 
 ### new release ###
 https://github.com/LinggaCR17/personalbuild/releases/tag/1-1

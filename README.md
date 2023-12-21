@@ -11,3 +11,6 @@ sh /your8mine/yourFolder/personalbuild
 
 # unencrypted #
 https://github.com/LinggaCR17/Saikas-Tweaks-fear-project/blob/main/personalbuild
+
+### new release ###
+https://github.com/LinggaCR17/Saikas-Tweaks-the-fear-of-project/releases/tag/one

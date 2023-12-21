@@ -1,3 +1,5 @@
+# Don't use this because I have entered it in personalbuild
+
 # Personalbuild - A shitty Props make your device such a gaming
 debug.atrace.tags.enableflags=0
 debug.composition.type=dyn

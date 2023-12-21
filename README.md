@@ -5,3 +5,8 @@
 - By changing your Big, Litte Core to the next level (options).
 
 # Personalbuild Now is OpenSource!
+exec personalbuild
+
+or
+
+sh /<your8mine>/yourFolder/personalbuild

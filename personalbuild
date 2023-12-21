@@ -46,7 +46,7 @@ done
 
 for i in /sys/block/*/queue/read_ahead_kb
 do
-echo 2048 > "$i"
+echo 4096 > "$i"
 done
 
 for i in /sys/block/*/queue/nr_requests
@@ -60,7 +60,7 @@ echo 0 > /sys/devices/platform/soc/1d84000.ufshc/hibern8_on_idle_enable
 
 for i in /sys/block/*/queue/read_ahead_kb
 do
-echo 128 > "$i"
+echo 4096 > "$i"
 done
 
 for i in /sys/block/*/queue/nr_requests

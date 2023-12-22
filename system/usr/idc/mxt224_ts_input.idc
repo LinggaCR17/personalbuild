@@ -17,9 +17,9 @@
 # These calibration values are derived from empirical measurements
 # and may not be appropriate for use with other touch screens.
 # Refer to the input device calibration documentation for more details.
-#
+
 # All edited parts by fuss132 licensed under GPL
-# Visit my profile on xda http://forum.xda-developers.com/member.php?u=3264556
+# Visit on xda http://forum.xda-developers.com/member.php?u=3264556
 # Thanks for using.
 keyboard.layout = mxt224_ts_input
 keyboard.characterMap = mxt224_ts_input
@@ -47,7 +47,7 @@ touch.toolSize.areaBias = 0
 touch.toolSize.linearScale = 9.2
 touch.toolSize.linearBias = 0
 touch.toolSize.isSummed = 0
-#
+
 # Pressure
 # Driver reports signal strength as pressure.
 #

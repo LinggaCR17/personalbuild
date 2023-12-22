@@ -530,6 +530,7 @@ biglittlecore
 	resetprop -v -n hwui.private_hal_readback 1
 	resetprop -v -n hwui.render_dirty_regions false
 	resetprop -v -n log.tag.stats_log 0
+	resetprop -v -n logcat.live disable
 	resetprop -v -n logd.logpersistd.enable false
 	resetprop -v -n logd.statistics 0
 	resetprop -v -n persist.android.strictmode 0

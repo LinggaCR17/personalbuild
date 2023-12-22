@@ -23,6 +23,7 @@ debug.hwui.filter_test_overhead=false
 debug.hwui.level=0
 debug.hwui.overdraw=false
 debug.hwui.renderer=skiagl
+debug.hwui.render_dirty_regions=false
 debug.hwui.show_dirty_regions=false
 debug.hwui.show_layers_updates=false
 debug.hwui.show_non_rect_clip=hide

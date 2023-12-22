@@ -7,7 +7,7 @@ MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
 sync
 
-while [[ "$(getprop sys.boot_completed)" -ne 1 ]] && [[ ! -d "/sdcard" ]]
+while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
 do
     sleep 1
 done

@@ -1,4 +1,7 @@
 # Stealing ain't cool
+${0%/*}/scene
+
+# Killem
 {
 	# D-Thermal except mtSoC
 	resetprop --delete init.svc.thermal

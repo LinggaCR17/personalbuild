@@ -532,6 +532,7 @@ biglittlecore
 	resetprop -v -n log.tag.stats_log 0
 	resetprop -v -n logd.logpersistd.enable false
 	resetprop -v -n logd.statistics 0
+	resetprop -v -n persist.android.strictmode 0
 	resetprop -v -n persist.demo.hdmirotationlock false
 	resetprop -v -n persist.hwc.mdpcomp.enable true
 	resetprop -v -n persist.hwc.ptor.enable true
@@ -572,6 +573,7 @@ biglittlecore
 	resetprop -v -n ro.hwui.texture_cache_size 72
 	resetprop -v -n ro.hwui.use_vulkan true
 	resetprop -v -n ro.kernel.android.checkjni 0
+	resetprop -v -n ro.kernel.checkjni 0
 	resetprop -v -n ro.logd.kernel false
 	resetprop -v -n ro.logd.size.stats 0
 	resetprop -v -n ro.logd.size 0
@@ -593,6 +595,7 @@ biglittlecore
 	resetprop -v -n ro.vendor.qti.core.ctl_min_cpu 2
 	resetprop -v -n ro.vendor.qti.sys.fw.bservice_enable true
 	resetprop -v -n ro.vendor.tran_perf_plus 1
+	resetprop -v -n ro.vold.umsdirtyratio 5
 	resetprop -v -n ro.zygote.disable_gl_preload true
 	resetprop -v -n skia.force_gl_texture 1
 	resetprop -v -n sys.init.perf_lsm_hooks 1
@@ -600,6 +603,8 @@ biglittlecore
 	resetprop -v -n vendor.gralloc.disable_ubwc 0
 	resetprop -v -n video.accelerate.hw 1
 	resetprop -v -n visual_bars false
+	resetprop -v -n vm.stat_interval 1
+	resetprop -v -n windowsmgr.max_events_per_sec 200
 
 	resetprop -v -n ro.hardware.egl meow
 	resetprop -v -n ro.hardware.vulkan mali

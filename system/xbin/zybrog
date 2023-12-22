@@ -1,0 +1,67 @@
+#!/system/bin/sh
+
+# Universal system Thermal Killer by ZyCromerZ
+echo '- Preparing Zybrog'
+
+if [ "$(id -u)" -gt "0" ] && [ "$(whoami)" != "root" ]; then
+    echo $merahHitam" ! Please type 'su' first"$ResetWarna
+    echo ""
+    echo " Exit after: "
+    for timeExit in "3s 2s 1s 0s";
+    do
+        echo "$timeExit"
+        usleep 1000000
+    done
+    exit -1
+fi
+
+Magisk_path="$(cat "/data/zybrog")"
+StatusModule="$(cat "$Magisk_path/personalbuild/system/vendor/etc/thermalStatus.info")"
+
+modulePath="$Magisk_path/personalbuild"
+
+function SetThermalTo() {
+    for systemThermal in `ls $1 | grep $2`
+    do
+        systemThermal=${systemThermal/"-BlankFile"/""}
+        systemThermal=${systemThermal/"-OriFile.bck"/""}
+        if [ $3 == "0" ];then
+            cp -af "$1/$systemThermal-BlankFile" "$1/$systemThermal"
+        else
+            cp -af "$1/$systemThermal-OriFile.bck" "$1/$systemThermal"
+        fi
+    done
+}
+
+if [ "$StatusModule" == "0" ]; then
+    StatusThermal="  Disable touched success (using disable thermal conf)"
+else
+    StatusThermal="  Enabled untouched (using thermal default conf)"
+fi
+
+if [ ! -z "$1" ];then
+    if [ $1 == "0" ];then
+        SetThermalTo "$modulePath/system/bin" "-BlankFile" "0"
+        SetThermalTo "$modulePath/system/vendor/bin" "-BlankFile" "0"
+        SetThermalTo "$modulePath/system/vendor/etc" "-BlankFile" "0" 
+        echo "0" > "$MODPATH/system/vendor/etc/thermalStatus.info"
+        echo "  Disable touched success (using disable thermal conf)"
+    else
+        SetThermalTo "$modulePath/system/bin" "-OriFile.bck" "1"
+        SetThermalTo "$modulePath/system/vendor/bin" "-OriFile.bck" "1"
+        SetThermalTo "$modulePath/system/vendor/etc" "-OriFile.bck" "1" 
+        echo "1" > "$MODPATH/system/vendor/etc/thermalStatus.info"
+        echo "  Enabled untouched (using thermal default conf)"
+    fi
+else
+    echo " GetCurrent status: $StatusThermal"
+    echo "-- --- -- --- -- --- -- --- "
+    echo "--- -- --- -- --- -- --- -- "
+    echo "+- Guide Line -+"
+    echo " To Turn On Thermal : "
+    echo "  zybrog -> 1"
+    echo " To Turn Off Thermal : "
+    echo ". zybrog -> 0"
+    echo "-- --- -- --- -- --- -- --- "
+    echo "--- -- --- -- --- -- --- -- "
+fi

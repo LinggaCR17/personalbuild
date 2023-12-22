@@ -30,5 +30,4 @@ chmod 000 /sys/devices/system/cpu/cpu7/topology/physical_package_id
 
 echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/enable
 
-# Always return success, even if the last write fails
 exit 0

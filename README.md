@@ -19,3 +19,5 @@ https://github.com/LinggaCR17/personalbuild/releases
 Use cerdits to honor me in addition to donating.
 
 I will no longer maintain if I am not listed.
+
+"will drain battery life"

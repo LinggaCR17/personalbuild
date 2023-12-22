@@ -62,6 +62,7 @@ hwui.disable_vsync=true
 hwui.private_hal_readback=1
 hwui.render_dirty_regions=false
 log.tag.stats_log=0
+logcat.live=disable
 logd.logpersistd.enable=false
 logd.statistics=0
 persist.android.strictmode=0

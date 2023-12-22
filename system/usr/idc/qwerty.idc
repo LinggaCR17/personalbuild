@@ -34,7 +34,7 @@ MODULE_LICENSE("GPL");
 
 # Touch Size
 touch.touchSize.calibration = pressure
-#
+
 # Tool Size
 # Driver reports tool size as an area measurement.
 #

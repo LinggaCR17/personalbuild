@@ -1,12 +1,18 @@
 # Don't use this because I have entered it in personalbuild
 
 # Personalbuild - A shitty Props make your device such a gaming
+dalvik.vm.heapsize=512m
+dalvik.vm.zygotemaxfailedboots=5
 debug.atrace.tags.enableflags=0
 debug.composition.type=dyn
+debug.cpurend.vsync=false
+debug.drm.mode.force=1600x720@120
 debug.egl.buffcount=4
 debug.egl.force_msaa=1
 debug.egl.force_msaa=true
-debug.egl.hw=1
+debug.egl.hw=0
+debug.egl.swapinterval=0
+debug.enable.sglscale=1
 debug.enabletr=true
 debug.gr.swapinterval=0
 debug.gralloc.gfx_ubwc_disable=0
@@ -26,6 +32,7 @@ debug.hwui.use_buffer_age=false
 debug.hwui.use_gpu_pixel_buffers=false
 debug.hwui.use_partial_updates=false
 debug.mdpcomp.4k2kSplit=1
+debug.mdpcomp.idletime=600
 debug.mdpcomp.idletime=9000
 debug.mdpcomp.logs=0
 debug.overlayui.enable=1
@@ -34,7 +41,7 @@ debug.sf.disable_backpressure=1
 debug.sf.enable_advanced_sf_phase_offset=1
 debug.sf.enable_gl_backpressure=1
 debug.sf.enable_hwc_vds=1
-debug.sf.hw=1
+debug.sf.hw=0
 debug.sf.latch_unsignaled=1
 fku.perf.profile=1
 hw3d.force=1
@@ -44,7 +51,9 @@ hwui.render_dirty_regions=false
 log.tag.stats_log=0
 logd.logpersistd.enable=false
 logd.statistics=0
+persist.demo.hdmirotationlock=false
 persist.hwc.mdpcomp.enable=true
+persist.hwc.ptor.enable=true
 persist.sys.composition.type=dyn
 persist.sys.strictmode.disable=1
 persist.sys.strictmode.visual=0
@@ -67,8 +76,9 @@ ro.hwui.text_small_cache_height=1024
 ro.hwui.text_small_cache_width=1024
 ro.hwui.texture_cache_flushrate=0.4
 ro.hwui.texture_cache_size=72
-ro.logd.size=0
 ro.logd.size.stats=0
+ro.logd.size=0
+ro.opengles.version=196610
 ro.product.gpu.driver=1
 ro.sf.compbypass.enable=0
 ro.vendor.qti.config.zram=true
@@ -82,8 +92,6 @@ vendor.debug.sf.latch_unsignaled=1
 vendor.gralloc.disable_ubwc=0
 video.accelerate.hw=1
 visual_bars=false
-debug.drm.mode.force=1600x720@120
-debug.cpurend.vsync=false
 
 # BetterFrameRates except OnePlus™
 ro.surface_flinger.use_content_detection_for_refresh_rate false
@@ -108,3 +116,8 @@ persist.sys.thermal.disable=true
 persist.sys.fan.thermal_auto=0
 debug.disable.usb.overheat.mitigation=1
 debug.disable.thermal.control=1
+
+# ZramSwap Extended RAM Extension
+persist.service.zram=0
+ro.zram.default=0
+vm.swappiness=30

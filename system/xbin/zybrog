@@ -40,18 +40,20 @@ else
     StatusThermal="  Enabled untouched (using thermal default conf)"
 fi
 
+brogpath=/data/adb/modules/personalbuild
+
 if [ ! -z "$1" ];then
     if [ $1 == "0" ];then
-        SetThermalTo "$modulePath/system/bin" "-BlankFile" "0"
-        SetThermalTo "$modulePath/system/vendor/bin" "-BlankFile" "0"
-        SetThermalTo "$modulePath/system/vendor/etc" "-BlankFile" "0" 
-        echo "0" > "$MODPATH/system/vendor/etc/thermalStatus.info"
+        SetThermalTo "$modulePath/system/bin" "*-BlankFile" "0"
+        SetThermalTo "$modulePath/system/vendor/bin" "*-BlankFile" "0"
+        SetThermalTo "$modulePath/system/vendor/etc" "*-BlankFile" "0" 
+        echo "0" > "$brogpath/system/vendor/etc/thermalStatus.info"
         echo "  Disable touched success (using disable thermal conf)"
     else
-        SetThermalTo "$modulePath/system/bin" "-OriFile.bck" "1"
-        SetThermalTo "$modulePath/system/vendor/bin" "-OriFile.bck" "1"
-        SetThermalTo "$modulePath/system/vendor/etc" "-OriFile.bck" "1" 
-        echo "1" > "$MODPATH/system/vendor/etc/thermalStatus.info"
+        SetThermalTo "$modulePath/system/bin" "*-OriFile.bck" "1"
+        SetThermalTo "$modulePath/system/vendor/bin" "*-OriFile.bck" "1"
+        SetThermalTo "$modulePath/system/vendor/etc" "*-OriFile.bck" "1" 
+        echo "1" > "$brogpath/system/vendor/etc/thermalStatus.info"
         echo "  Enabled untouched (using thermal default conf)"
     fi
 else
@@ -65,7 +67,7 @@ else
     echo " To Turn On Thermal : "
     echo "  zybrog -> 1"
     echo " To Turn Off Thermal : "
-    echo ". zybrog -> 0"
+    echo "  zybrog -> 0"
     echo "-- --- -- --- -- --- -- --- "
     echo "--- -- --- -- --- -- --- -- "
 fi

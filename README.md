@@ -13,7 +13,7 @@ sh /your8mine/yourFolder/personalbuild
 https://github.com/LinggaCR17/personalbuild/blob/main/personalbuild
 
 ### new release ###
-https://github.com/LinggaCR17/personalbuild/releases/tag/1-1
+https://github.com/LinggaCR17/personalbuild/releases
 
 # ! ATTENTION:
 Use cerdits to honor me in addition to donating.

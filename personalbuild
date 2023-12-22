@@ -576,7 +576,7 @@ function zramswapper()
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config put activity_manager max_empty_time_millis 43200000
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd settings put global settings_enable_monitor_phantom_procs false
 	
-	am start -a android.intent.action.MAIN -e message mytoastmessage -n com.personal.build/.ShowToast
+	am start -a android.intent.action.MAIN -e message personalbuild by nothing -n com.personal.build/.ShowToast
 }
 
 zramswapper

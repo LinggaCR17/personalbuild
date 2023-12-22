@@ -27,7 +27,7 @@ function FindThermal() {
         	ui_print "- ignoring conflict file"
         else
         system=system/vendor
-        mkdir $MODPATH/$system/bin; mkdir $MODPATH/system/etc
+        mkdir -p $MODPATH/$system/bin; mkdir -p $MODPATH/$system/etc
             if [ $2 == "thermal" ];then
                 if [ ! -f "$3/$systemThermal-BlankFile" ]; then
                 	echo "" > "$3/$systemThermal-BlankFile"

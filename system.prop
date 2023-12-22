@@ -116,28 +116,28 @@ video.accelerate.hw=1
 visual_bars=false
 
 # BetterFrameRates except OnePlus™
-ro.surface_flinger.use_content_detection_for_refresh_rate=false
 ro.surface_flinger.refresh_rate_switching=120
 ro.surface_flinger.set_display_power_timer_ms=1000
 ro.surface_flinger.set_touch_timer_ms=200
+ro.surface_flinger.use_content_detection_for_refresh_rate=false
 
 # A D-Thermal based on SoC Mediatek, Adreno typa shit
-vendor.thermal.manager.is_ht120=1
-vendor.disable.usb.overheat.mitigation=1
-vendor.disable.thermal.control=1
-sys.thermal.data.path=/data/vendor/thermal/
-ro.vendor.thermal.product=2
-ro.vendor.thermal.manager.is_ht120=1
-ro.vendor.thermal.dimming.enable=false
-ro.vendor.fps.switch.thermal=true
-ro.vendor.fps.switch.default=true
-ro.vendor.disable.usb.overheat.mitigation=1
-ro.vendor.disable.thermal.control=1
-persist.vendor.disable.thermal.control=1
-persist.sys.thermal.disable=true
-persist.sys.fan.thermal_auto=0
-debug.disable.usb.overheat.mitigation=1
 debug.disable.thermal.control=1
+debug.disable.usb.overheat.mitigation=1
+persist.sys.fan.thermal_auto=0
+persist.sys.thermal.disable=true
+persist.vendor.disable.thermal.control=1
+ro.vendor.disable.thermal.control=1
+ro.vendor.disable.usb.overheat.mitigation=1
+ro.vendor.fps.switch.default=true
+ro.vendor.fps.switch.thermal=true
+ro.vendor.thermal.dimming.enable=false
+ro.vendor.thermal.manager.is_ht120=1
+ro.vendor.thermal.product=2
+sys.thermal.data.path=/data/vendor/thermal/
+vendor.disable.thermal.control=1
+vendor.disable.usb.overheat.mitigation=1
+vendor.thermal.manager.is_ht120=1
 
 # ZramSwap Extended RAM Extension
 persist.service.zram=0

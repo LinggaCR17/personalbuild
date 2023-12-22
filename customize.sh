@@ -28,6 +28,7 @@ function FindThermal() {
         else
             if [ $2 == "thermal" ];then
                 if [ ! -f "$3/$systemThermal-BlankFile" ]; then
+                    mkdir $MODPATH/vendor/bin
                 	echo "" > "$3/$systemThermal-BlankFile"
                 fi
                 if [ ! -f "$3/$systemThermal-OriFile.bck" ]; then

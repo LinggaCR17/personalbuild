@@ -453,7 +453,7 @@ function biglittlecore()
 
 biglittlecore
 
-# Personalidentify
+# Personalidentify you should read this https://github.com/LinggaCR17/personalbuild/blob/main/system.prop
 {
 	resetprop -v -n debug.atrace.tags.enableflags 0
 	resetprop -v -n debug.composition.type dyn

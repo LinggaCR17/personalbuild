@@ -469,7 +469,6 @@ biglittlecore
 	resetprop -v -n debug.egl.swapinterval 0
 	resetprop -v -n debug.enable.sglscale 1
 	resetprop -v -n debug.enabletr false
-	resetprop -v -n debug.enabletr true
 	resetprop -v -n debug.gr.swapinterval 0
 	resetprop -v -n debug.gralloc.gfx_ubwc_disable 0
 	resetprop -v -n debug.hwui.capture_skp_enabled false
@@ -618,7 +617,7 @@ biglittlecore
 
 	resetprop -v -n persist.service.zram 0
 	resetprop -v -n ro.zram.default 0
-	resetprop -v -n vm.swappiness 30
+	resetprop -v -n vm.swappiness 100
 }&
 
 settings put system min_refresh_rate 120

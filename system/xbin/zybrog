@@ -2,9 +2,10 @@
 
 # Universal system Thermal Killer by ZyCromerZ
 echo '- Preparing Zybrog'
+echo ""
 
 if [ "$(id -u)" -gt "0" ] && [ "$(whoami)" != "root" ]; then
-    echo $merahHitam" ! Please type 'su' first"$ResetWarna
+    echo $merahHitam" ! Please let me in by type 'su' at first"$ResetWarna
     echo ""
     echo " Exit after: "
     for timeExit in "3s 2s 1s 0s";
@@ -54,7 +55,9 @@ if [ ! -z "$1" ];then
         echo "  Enabled untouched (using thermal default conf)"
     fi
 else
+	echo ""
     echo " GetCurrent status: $StatusThermal"
+    echo ""
     echo "-- --- -- --- -- --- -- --- "
     echo "--- -- --- -- --- -- --- -- "
     echo "+- Guide Line -+"

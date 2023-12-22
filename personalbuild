@@ -187,7 +187,7 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq
 do
 	avail_govs="$(cat "$cpu/scaling_available_governors")"
 	
-	for governor in performance schedutil interactive ondemand powersave
+	for governor in performance schedutil interactive ondemand powersave conservative
 	do
 		if [[ "$avail_govs" == *"$governor"* ]]
 		then
@@ -280,7 +280,7 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq
 do
 	avail_govs="$(cat "$cpu/scaling_available_governors")"
 
-	for governor in performance schedutil interactive ondemand powersave
+	for governor in performance schedutil interactive ondemand powersave conservative
 	do
 		if [[ "$avail_govs" == *"$governor"* ]]
 		then

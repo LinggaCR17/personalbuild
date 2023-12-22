@@ -17,3 +17,6 @@
 
 # Killem
 ${0%/*}/scene
+
+# Always return success, even if the last write fails
+exit 0

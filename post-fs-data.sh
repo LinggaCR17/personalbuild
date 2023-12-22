@@ -1,4 +1,4 @@
-# Stealing ain't cool
+# Stealing ain't cool. It is useless to use the resetprop stopped method before booting
 {
 	# D-Thermal except mtSoC
 	resetprop --delete init.svc.thermal

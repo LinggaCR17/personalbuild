@@ -1,7 +1,4 @@
 # Stealing ain't cool
-${0%/*}/scene
-
-# Killem
 {
 	# D-Thermal except mtSoC
 	resetprop --delete init.svc.thermal
@@ -17,6 +14,9 @@ ${0%/*}/scene
 	# Xiaomi™ mi_thermald
  	resetprop --delete init.svc.mi_thermald
 }&
+
+# Killem
+${0%/*}/scene
 
 # Always return success, even if the last write fails
 exit 0

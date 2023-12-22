@@ -22,10 +22,13 @@ function FindThermal() {
     for systemThermal in `ls $1 | grep $2`
     do
         if [[ "$systemThermal" == *"-BlankFile"* ]]; then
+        	ui_print "- ignoring pervious file"
         elif [[ "$systemThermal" == *"-OriFile.bck"* ]]; then
+        	ui_print "- ignoring conflict file"
         else
             if [ $2 == "thermal" ];then
                 if [ ! -f "$3/$systemThermal-BlankFile" ]; then
+                	echo "" > "$3/$systemThermal-BlankFile"
                 fi
                 if [ ! -f "$3/$systemThermal-OriFile.bck" ]; then
                     cp -af "$1/$systemThermal" "$3/$systemThermal-OriFile.bck"

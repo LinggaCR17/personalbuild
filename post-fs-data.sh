@@ -9,10 +9,10 @@
 	resetprop --delete init.svc.vendor.thermal-hal-1-0
 	resetprop --delete init.svc.vendor.thermal-hal-2-0
 	resetprop --delete init.svc.vendor.thermal-engine
- 	resetprop --delete init.svc.vendor.thermal.symlinks
+	resetprop --delete init.svc.vendor.thermal.symlinks
   	
 	# Xiaomi™ mi_thermald
- 	resetprop --delete init.svc.mi_thermald
+	resetprop --delete init.svc.mi_thermald
 }&
 
 # Killem

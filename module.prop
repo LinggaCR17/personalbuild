@@ -1,6 +1,6 @@
 id=personalbuild
 name=personalbuild
 version=options
-versionCode=3
+versionCode=3,#4
 author=nothing
 description=personalbuild by changing your perf options Big, Little Core.

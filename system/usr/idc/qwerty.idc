@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
 # Emulator keyboard configuration file #1.
 #
 touch.deviceType = touchScreen
@@ -46,7 +46,7 @@ touch.toolSize.areaBias = 0
 touch.toolSize.linearScale = 9.2
 touch.toolSize.linearBias = 0
 touch.toolSize.isSummed = 0
-#
+
 # Pressure
 # Driver reports signal strength as pressure.
 #

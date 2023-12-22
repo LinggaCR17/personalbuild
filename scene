@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Built-in scene
+# Built-in scene perf QCOM™ mtSoC
 chmod 755 /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 chmod 755 /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
 chmod 755 /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_max_freq
@@ -28,6 +28,54 @@ chmod 755 /sys/devices/system/cpu/cpu5/topology/physical_package_id
 chmod 755 /sys/devices/system/cpu/cpu6/topology/physical_package_id
 chmod 755 /sys/devices/system/cpu/cpu7/topology/physical_package_id
 
+chmod 755 /sys/class/power_supply/*/*
+chmod 755 /sys/module/qpnp_smbcharger/*/*
+chmod 755 /sys/module/dwc3_msm/*/*
+chmod 755 /sys/module/phy_msm_usb/*/*
+chmod 755 /sys/class/power_supply/usb/*
+chmod 755 /sys/class/power_supply/battery/*
+chmod 755 /sys/class/power_supply/mtk_charger_type/*
+chmod 755 /sys/class/power_supply/mtk-slave-charger/*
+chmod 755 /sys/class/power_supply/mtk-master-charger/*
+chmod 755 /sys/class/power_supply/mtk-gauge/*
+
 echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/enable
+
+# Built-in scene fc QCOM™ mtSoC
+echo 1 > /sys/kernel/fast_charge/force_fast_charge
+echo 1 > /sys/class/power_supply/battery/system_temp_level
+echo 1 > /sys/kernel/fast_charge/failsafe
+echo 1 > /sys/class/power_supply/battery/allow_hvdcp3
+echo 1 > /sys/class/power_supply/usb/pd_allowed
+echo 1 > /sys/class/power_supply/battery/subsystem/usb/pd_allowed
+echo 0 > /sys/class/power_supply/battery/input_current_limited
+echo 1 > /sys/class/power_supply/battery/input_current_settled
+echo 0 > /sys/class/qcom-battery/restricted_charging
+echo 150 > /sys/class/power_supply/bms/temp_cool
+echo 460 > /sys/class/power_supply/bms/temp_hot
+echo 460 > /sys/class/power_supply/bms/temp_warm
+echo 2350000 > /sys/class/power_supply/usb/current_max
+echo 2350000 > /sys/class/power_supply/usb/hw_current_max
+echo 2350000 > /sys/class/power_supply/usb/pd_current_max
+echo 2350000 > /sys/class/power_supply/usb/ctm_current_max
+echo 2350000 > /sys/class/power_supply/usb/sdp_current_max
+echo 2350000 > /sys/class/power_supply/main/current_max
+echo 2350000 > /sys/class/power_supply/main/constant_charge_current_max
+echo 2350000 > /sys/class/power_supply/battery/current_max
+echo 2350000 > /sys/class/power_supply/battery/constant_charge_current_max
+echo 4600000 > /sys/class/qcom-battery/restricted_current
+echo 2350000 > /sys/class/power_supply/pc_port/current_max
+echo 2350000 > /sys/class/power_supply/constant_charge_current_max
+
+echo 500000 > /sys/class/power_supply/usb/current_max
+echo 5000000 > /sys/class/power_supply/usb/voltage_max
+echo 0 > /sys/class/power_supply/battery/current_now
+echo 5400000 > /sys/class/power_supply/battery/voltage_now
+echo 6400 > /sys/class/power_supply/mtk_charger_type/voltage_now
+echo 6400 > /sys/class/power_supply/mtk-slave-charger/voltage_now
+echo 1 > /sys/class/power_supply/mtk-slave-charger/voltage_max
+echo 6400 > /sys/class/power_supply/mtk-master-charger/voltage_now
+echo 1 > /sys/class/power_supply/mtk-master-charger/voltage_max
+echo 6400 > /sys/class/power_supply/mtk-gauge/bat_vol_get
 
 exit 0

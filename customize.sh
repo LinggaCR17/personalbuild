@@ -45,11 +45,11 @@ function FindThermal() {
     done
 }
 
-FindThermal "/system/bin" '"-OriFile.bck"' "$MODPATH/system/bin"
+FindThermal "/system/bin" '"*-OriFile.bck"' "$MODPATH/system/bin"
 FindThermal "/system/bin" 'thermal' "$MODPATH/system/bin"
-FindThermal "/vendor/bin" '"-OriFile.bck"' "$MODPATH/system/vendor/bin"
+FindThermal "/vendor/bin" '"*-OriFile.bck"' "$MODPATH/system/vendor/bin"
 FindThermal "/vendor/bin" 'thermal' "$MODPATH/system/vendor/bin"
-FindThermal "/vendor/etc" '"-OriFile.bck"' "$MODPATH/system/vendor/etc"
+FindThermal "/vendor/etc" '"*-OriFile.bck"' "$MODPATH/system/vendor/etc"
 FindThermal "/vendor/etc" 'thermal' "$MODPATH/system/vendor/etc"
 
 echo "0" > "$MODPATH/system/vendor/etc/thermalStatus.info"

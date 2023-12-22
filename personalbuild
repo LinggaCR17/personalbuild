@@ -187,7 +187,7 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq
 do
 	avail_govs="$(cat "$cpu/scaling_available_governors")"
 	
-	for governor in performance schedutil interactive ondemand
+	for governor in performance schedutil interactive ondemand powersave
 	do
 		if [[ "$avail_govs" == *"$governor"* ]]
 		then
@@ -218,7 +218,7 @@ for queue in /sys/block/*/queue
 do
 	avail_scheds="$(cat "$queue/scheduler")"
 	
-	for sched in cfq noop kyber bfq mq-deadline none
+	for sched in none cfq noop kyber bfq mq-deadline
 	do
 		if [[ "$avail_scheds" == *"$sched"* ]]
 		then
@@ -280,7 +280,7 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq
 do
 	avail_govs="$(cat "$cpu/scaling_available_governors")"
 
-	for governor in performance schedutil interactive ondemand
+	for governor in performance schedutil interactive ondemand powersave
 	do
 		if [[ "$avail_govs" == *"$governor"* ]]
 		then
@@ -310,7 +310,7 @@ done
 for queue in /sys/block/*/queue
 do
 	avail_scheds="$(cat "$queue/scheduler")"
-	for sched in cfq noop kyber bfq mq-deadline none
+	for sched in none cfq noop kyber bfq mq-deadline
 	do
 		if [[ "$avail_scheds" == *"$sched"* ]]
 		then

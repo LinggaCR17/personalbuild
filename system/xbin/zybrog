@@ -58,6 +58,7 @@ else
 	echo ""
     echo " GetCurrent status: $StatusThermal"
     echo ""
+    echo ""
     echo "-- --- -- --- -- --- -- --- "
     echo "--- -- --- -- --- -- --- -- "
     echo "+- Guide Line -+"

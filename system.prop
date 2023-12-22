@@ -10,7 +10,7 @@ debug.drm.mode.force=1600x720@120
 debug.egl.buffcount=4
 debug.egl.force_msaa=1
 debug.egl.force_msaa=true
-debug.egl.hw=0
+debug.egl.hw=1
 debug.egl.swapinterval=0
 debug.enable.sglscale=1
 debug.enabletr=true
@@ -42,7 +42,7 @@ debug.sf.disable_backpressure=1
 debug.sf.enable_advanced_sf_phase_offset=1
 debug.sf.enable_gl_backpressure=1
 debug.sf.enable_hwc_vds=1
-debug.sf.hw=0
+debug.sf.hw=1
 debug.sf.latch_unsignaled=1
 fku.perf.profile=1
 hw3d.force=1
@@ -93,12 +93,20 @@ vendor.debug.sf.latch_unsignaled=1
 vendor.gralloc.disable_ubwc=0
 video.accelerate.hw=1
 visual_bars=false
+persist.sys.force_highendgfx=true
+persist.sys.purgeable_assets=1
+debug.sf.no_hw_vsync=1
+persist.sys.dalvik.hyperthreading=true
+persist.sys.dalvik.multithread=true
+debug.enabletr=false
+ro.zygote.disable_gl_preload=true
+dalvik.vm.dexopt-flags=v=a,o=v,m=y,u=y
 
 # BetterFrameRates except OnePlus™
-ro.surface_flinger.use_content_detection_for_refresh_rate false
-ro.surface_flinger.refresh_rate_switching 120
-ro.surface_flinger.set_display_power_timer_ms 1000
-ro.surface_flinger.set_touch_timer_ms 200
+ro.surface_flinger.use_content_detection_for_refresh_rate=false
+ro.surface_flinger.refresh_rate_switching=120
+ro.surface_flinger.set_display_power_timer_ms=1000
+ro.surface_flinger.set_touch_timer_ms=200
 
 # A D-Thermal based on SoC Mediatek, Adreno typa shit
 vendor.thermal.manager.is_ht120=1

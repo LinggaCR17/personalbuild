@@ -5,7 +5,7 @@
 # Stealing ain't cool
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
-sync
+sync; echo 1 > /sys/kernel/fast_charge/force_fast_charge
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
 do

@@ -5,8 +5,11 @@
 	resetprop --delete init.svc.thermal_manager
 	resetprop --delete init.svc.thermalloadalgod
 	
- 	# Other SoC support
+ 	# Other Thermal if SoC support
 	resetprop --delete init.svc.vendor.thermal-hal-1-0
+	resetprop --delete init.svc.vendor.thermal-hal-2-0
+	resetprop --delete init.svc.vendor.thermal-engine
+	resetprop --delete init.svc.vendor.thermal.symlinks
 }&
 
 # Always return success, even if the last write fails

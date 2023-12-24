@@ -140,8 +140,8 @@ vm.stat_interval=1
 windowsmgr.max_events_per_sec=200
 
 # Mediatek mtSoC Mali processing
-ro.hardware.egl=meow
-ro.hardware.vulkan=mali
+ro.hardware.egl=
+ro.hardware.vulkan=
 ro.mtk_perf_fast_start_win=1
 ro.mtk_perf_response_time=1
 ro.mtk_perf_simple_start_win=1

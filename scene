@@ -70,14 +70,14 @@ echo 4600000 > /sys/class/qcom-battery/restricted_current
 echo 0 > /sys/class/power_supply/battery/current_now
 echo 1 > /sys/class/power_supply/mtk-master-charger/voltage_max
 echo 1 > /sys/class/power_supply/mtk-slave-charger/voltage_max
+echo 2100000 > /sys/class/power_supply/mtk-master-charger/constant_charge_current_max # Also this one too
+echo 43 > /sys/class/power_supply/battery/temperature # This one very dangerous
+echo 500000 > /sys/class/power_supply/usb/current_max
+echo 5000000 > /sys/class/power_supply/usb/voltage_max
+echo 5400000 > /sys/class/power_supply/battery/voltage_now
 echo 6400 > /sys/class/power_supply/mtk-gauge/bat_vol_get
 echo 6400 > /sys/class/power_supply/mtk-master-charger/voltage_now
 echo 6400 > /sys/class/power_supply/mtk-slave-charger/voltage_now
 echo 6400 > /sys/class/power_supply/mtk_charger_type/voltage_now
-echo 500000 > /sys/class/power_supply/usb/current_max
-echo 5000000 > /sys/class/power_supply/usb/voltage_max
-echo 5400000 > /sys/class/power_supply/battery/voltage_now
-echo 43 > /sys/class/power_supply/battery/temperature # This one very dangerous
-echo 2100000 > /sys/class/power_supply/mtk-master-charger/constant_charge_current_max
 
 exit 0

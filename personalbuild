@@ -5,7 +5,7 @@
 # Stealing ain't cool
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
-sync;
+sync
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
 do
@@ -45,6 +45,7 @@ do
 done
 ) &
 
+swapoff /dev/block/zram0
 write /sys/kernel/fast_charge/force_fast_charge 1
 
 for i in /sys/block/*/queue/read_ahead_kb
@@ -106,6 +107,7 @@ if [ "$(getprop init.svc.thermald)" = running ]; then
 stop thermald
 fi
 
+echo 1 > /sys/block/zram0/reset
 write /sys/kernel/debug/sched_features HRTICK 
 
 write /proc/sys/fs/dir-notify-enable 0
@@ -529,6 +531,7 @@ function biglittlecore()
 	fi
 }
 
+echo $((4096*8192*16384)) > /sys/block/zram0/disksize
 biglittlecore
 
 # Personalidentify you should read this https://github.com/LinggaCR17/personalbuild/blob/main/system.prop
@@ -725,6 +728,7 @@ function zramswapper()
 	fi
 }
 
+mkswap /dev/block/zram0
 zramswapper
 
 personal() {
@@ -744,7 +748,7 @@ personal() {
 	chmod 755 "$MODDIR/personalbuild"
 }&
 
-# Sysbat
-${0%/*}/bin/sysbat
+swapon /dev/block/zram0
+sysbat
 
 exit 0

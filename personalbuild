@@ -674,8 +674,8 @@ biglittlecore
 	resetprop -v -n vm.stat_interval 1
 	resetprop -v -n windowsmgr.max_events_per_sec 200
 	
-	resetprop -v -n ro.hardware.egl meow
-	resetprop -v -n ro.hardware.vulkan mali
+	resetprop -v -n ro.hardware.egl $(getprop ro.hardware.egl)
+	resetprop -v -n ro.hardware.vulkan $(getprop ro.hardware.vulkan)
 	resetprop -v -n ro.mtk_perf_fast_start_win 1
 	resetprop -v -n ro.mtk_perf_response_time 1
 	resetprop -v -n ro.mtk_perf_simple_start_win 1

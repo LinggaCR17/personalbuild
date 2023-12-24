@@ -7,7 +7,7 @@ MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
 sync
 
-while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
+while [[ "$(getprop sys.boot_completed)" -ne 1 ]] && [[ ! -d "$MAGISKTMP" ]]
 do
     sleep 1
 done
@@ -408,7 +408,7 @@ echo 3000 > /proc/sys/vm/dirty_writeback_centisecs
 echo 3022 > /proc/sys/vm/min_free_kbytes
 echo 50 > /proc/sys/vm/overcommit_ratio
 
-for comp in zstd lz4 lzo; do
+for comp in lzo lz4 zstd; do
 	echo "${comp}" > /sys/block/zram0/comp_algorithm
 done
 

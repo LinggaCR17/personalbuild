@@ -47,12 +47,12 @@ done
 
 for i in /sys/block/*/queue/read_ahead_kb
 do
-echo 4096 > "$i"
+echo 128 > "$i"
 done
 
 for i in /sys/block/*/queue/nr_requests
 do
-echo 512 > "$i"
+echo 64 > "$i"
 done
 
 echo 0 > /sys/devices/platform/soc/1d84000.ufshc/clkgate_enable
@@ -61,12 +61,12 @@ echo 0 > /sys/devices/platform/soc/1d84000.ufshc/hibern8_on_idle_enable
 
 for i in /sys/block/*/queue/read_ahead_kb
 do
-echo 4096 > "$i"
+echo 128 > "$i"
 done
 
 for i in /sys/block/*/queue/nr_requests
 do
-echo 256 > "$i"
+echo 64 > "$i"
 done
 
 echo 1 > /sys/devices/platform/soc/1d84000.ufshc/clkgate_enable
@@ -228,8 +228,8 @@ do
 	done
 	write "$queue/add_random" 0
 	write "$queue/iostats" 0
-	write "$queue/read_ahead_kb" 4096
-	write "$queue/nr_requests" 128
+	write "$queue/read_ahead_kb" 128
+	write "$queue/nr_requests" 64
 done
 
 UINT_MAX="4294967295"
@@ -320,7 +320,7 @@ do
 	done
 	write "$queue/add_random" 0
 	write "$queue/iostats" 0
-	write "$queue/read_ahead_kb" 4096
+	write "$queue/read_ahead_kb" 128
 	write "$queue/nr_requests" 64
 done
 

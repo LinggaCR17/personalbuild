@@ -2,4 +2,18 @@
 
 # Another battery calibration based on dumpsys
 
+# Initialize battery value before loop
+previous_battery_level=$(cat /sys/class/power_supply/battery/capacity)
+
+while true; do
+  sysbat=$(cat /sys/class/power_supply/battery/capacity)
+
+  if [ $sysbat -gt $previous_battery_level ]; then
+    dumpsys batterystats --reset-all
+    previous_battery_level=$sysbat
+  fi
+
+  sleep 1
+done
+
 exit 0

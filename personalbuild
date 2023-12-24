@@ -45,7 +45,7 @@ do
 done
 ) &
 
-swapoff /dev/block/zram0 >/dev/null 2>&1
+swapoff /dev/block/zram0
 write /sys/kernel/fast_charge/force_fast_charge 1
 
 for i in /sys/block/*/queue/read_ahead_kb
@@ -420,7 +420,7 @@ write /dev/cpuset/foreground/boost/cpus 4-7
 write /dev/cpuset/foreground/cpus 0-3,4-7
 write /dev/cpuset/top-app/cpus 0-7
 
-for amog in /sys/bus/cpu/devices/*/cpufreq/
+for amog in /sys/bus/cpu/devices/*/cpufreq
 do
 echo 1800000 > "${amog}"/scaling_max_freq
 echo 1800000 > "${amog}"/scaling_min_freq
@@ -432,7 +432,7 @@ echo 1800000 > "${amog}"/scaling_cur_freq
 echo <supported> "${amog}"/scaling_setspeed
 done
 
-functions fourzerosixnine()
+function fourzerosixnine()
 {
 	echo 0 > /proc/sys/vm/laptop_mode
 	echo 0 > /proc/sys/vm/oom_kill_allocating_task
@@ -776,7 +776,7 @@ function zramswapper()
 	fi
 }
 
-mkswap /dev/block/zram0 >/dev/null 2>&1
+mkswap /dev/block/zram0
 zramswapper
 
 personal() {
@@ -796,7 +796,7 @@ personal() {
 	chmod 755 "$MODDIR/personalbuild"
 }&
 
-swapon /dev/block/zram0 >/dev/null 2>&1
+swapon /dev/block/zram0
 sysbat
 
 exit 0

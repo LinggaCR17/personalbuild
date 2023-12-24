@@ -5,7 +5,7 @@
 # Stealing ain't cool
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
-sync; echo 1 > /sys/kernel/fast_charge/force_fast_charge
+sync;
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
 do
@@ -44,6 +44,8 @@ do
     fi
 done
 ) &
+
+write /sys/kernel/fast_charge/force_fast_charge 1
 
 for i in /sys/block/*/queue/read_ahead_kb
 do
@@ -214,7 +216,24 @@ do
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
+find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r governor
+do
+	write "$governor/up_rate_limit_us" 0
+	write "$governor/down_rate_limit_us" 0
+	write "$governor/rate_limit_us" 0
+	write "$governor/hispeed_load" 85
+	write "$governor/hispeed_freq" "$UINT_MAX"
+done
+
 find /sys/devices/system/cpu/ -name interactive -type d | while IFS= read -r governor
+do
+	write "$governor/timer_rate" 0
+	write "$governor/min_sample_time" 0
+	write "$governor/go_hispeed_load" 85
+	write "$governor/hispeed_freq" "$UINT_MAX"
+done
+
+find /sys/devices/system/cpu/ -name ondemand -type d | while IFS= read -r governor
 do
 	write "$governor/timer_rate" 0
 	write "$governor/min_sample_time" 0
@@ -307,7 +326,24 @@ do
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
+find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r governor
+do
+	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
+	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
+	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
+	write "$governor/hispeed_load" 90
+	write "$governor/hispeed_freq" "$UINT_MAX"
+done
+
 find /sys/devices/system/cpu/ -name interactive -type d | while IFS= read -r governor
+do
+	write "$governor/timer_rate" "$((SCHED_PERIOD / 1000))"
+	write "$governor/min_sample_time" "$((SCHED_PERIOD / 1000))"
+	write "$governor/go_hispeed_load" 90
+	write "$governor/hispeed_freq" "$UINT_MAX"
+done
+
+find /sys/devices/system/cpu/ -name ondemand -type d | while IFS= read -r governor
 do
 	write "$governor/timer_rate" "$((SCHED_PERIOD / 1000))"
 	write "$governor/min_sample_time" "$((SCHED_PERIOD / 1000))"
@@ -360,18 +396,18 @@ done
 }&
 
 {
-	echo 10 > /proc/sys/vm/dirty_background_ratio
-	echo 3000 > /proc/sys/vm/dirty_expire_centisecs
-	echo 30 > /proc/sys/vm/dirty_ratio
-	echo 3000 > /proc/sys/vm/dirty_writeback_centisecs
-	echo 13500 > /proc/sys/vm/extra_free_kbytes
 	echo 0 > /proc/sys/vm/laptop_mode
-	echo 3022 > /proc/sys/vm/min_free_kbytes
 	echo 0 > /proc/sys/vm/oom_kill_allocating_task
-	echo 50 > /proc/sys/vm/overcommit_ratio
 	echo 0 > /proc/sys/vm/page-cluster
+	echo 10 > /proc/sys/vm/dirty_background_ratio
 	echo 100 > /proc/sys/vm/swappiness
 	echo 100 > /proc/sys/vm/vfs_cache_pressure
+	echo 13500 > /proc/sys/vm/extra_free_kbytes
+	echo 30 > /proc/sys/vm/dirty_ratio
+	echo 3000 > /proc/sys/vm/dirty_expire_centisecs
+	echo 3000 > /proc/sys/vm/dirty_writeback_centisecs
+	echo 3022 > /proc/sys/vm/min_free_kbytes
+	echo 50 > /proc/sys/vm/overcommit_ratio
 	
 	for comp in zstd lz4 lzo; do
 		echo "${comp}" > /sys/block/zram0/comp_algorithm

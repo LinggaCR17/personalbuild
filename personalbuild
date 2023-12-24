@@ -218,7 +218,7 @@ for queue in /sys/block/*/queue
 do
 	avail_scheds="$(cat "$queue/scheduler")"
 	
-	for sched in none cfq noop kyber bfq mq-deadline
+	for sched in none cfq noop kyber bfq mq-deadline deadline
 	do
 		if [[ "$avail_scheds" == *"$sched"* ]]
 		then
@@ -310,7 +310,7 @@ done
 for queue in /sys/block/*/queue
 do
 	avail_scheds="$(cat "$queue/scheduler")"
-	for sched in none cfq noop kyber bfq mq-deadline
+	for sched in none cfq noop kyber bfq mq-deadline deadline
 	do
 		if [[ "$avail_scheds" == *"$sched"* ]]
 		then
@@ -606,6 +606,7 @@ biglittlecore
 	resetprop -v -n visual_bars false
 	resetprop -v -n vm.stat_interval 1
 	resetprop -v -n windowsmgr.max_events_per_sec 200
+	resetprop -v -n dalvik.vm.heapstartsize 16m
 
 	resetprop -v -n ro.hardware.egl meow
 	resetprop -v -n ro.hardware.vulkan mali

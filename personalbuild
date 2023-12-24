@@ -109,6 +109,7 @@ do
 echo U:720x1600p-0 > "${virt}"/modes
 echo 128 > "${virt}"/bits_per_pixel
 	for para in /sys/module/ged/parameters
+	do
 	echo 1 > "${para}"/ap_self_frc_detection_rate
 	echo 1 > "${para}"/boost_amp
 	echo 1 > "${para}"/boost_extra

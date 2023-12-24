@@ -106,8 +106,29 @@ fi
 
 for virt in /sys/class/graphics/fb0
 do
-	echo U:720x1600p-0 > "${virt}"/modes
-	echo 128 > "${virt}"/bits_per_pixel
+echo U:720x1600p-0 > "${virt}"/modes
+echo 128 > "${virt}"/bits_per_pixel
+	for para in /sys/module/ged/parameters
+	echo 1 > "${para}"/ap_self_frc_detection_rate
+	echo 1 > "${para}"/boost_amp
+	echo 1 > "${para}"/boost_extra
+	echo 1 > "${para}"/boost_gpu_enable
+	echo 1 > "${para}"/cpu_boost_policy
+	echo 1 > "${para}"/enable_cpu_boost
+	echo 1 > "${para}"/enable_game_self_frc_detect
+	echo 1 > "${para}"/enable_gpu_boost
+	echo 1 > "${para}"/ged_boost_enable
+	echo 1 > "${para}"/ged_force_mdp_enable
+	echo 1 > "${para}"/ged_smart_boost
+	echo 1 > "${para}"/gpu_dvfs_enable
+	echo 1 > "${para}"/gx_boost_on
+	echo 1 > "${para}"/gx_dfps
+	echo 1 > "${para}"/gx_force_cpu_boost
+	echo 1 > "${para}"/gx_frc_mode
+	echo 1 > "${para}"/gx_game_mode
+	echo 1 > "${para}"/is_GED_KPI_enabled
+	echo 550000 > "${para}"/gpu_cust_upbound_freq
+	done
 done
 
 echo 1 > /sys/block/zram0/reset

@@ -104,6 +104,12 @@ if [ "$(getprop init.svc.thermald)" = running ]; then
 stop thermald
 fi
 
+for virt /sys/class/graphics/fb0
+do
+	echo U:720x1600p-0 > "${virt}"/modes
+	echo 128 > "${virt}"/bits_per_pixel
+done
+
 echo 1 > /sys/block/zram0/reset
 write /sys/kernel/debug/sched_features HRTICK 
 

@@ -90,11 +90,15 @@ done
 
 if [ "$(getprop init.svc.logd)" = running ]; then
 stop logd
-fi 
+fi
 
 if [ "$(getprop init.svc.statsd)" = running ]; then
 stop statsd
-fi 
+fi
+
+if [ "$(getprop init.svc.perfd)" = running ]; then
+stop perfd
+fi
 
 write /sys/kernel/debug/sched_features HRTICK 
 
@@ -324,53 +328,77 @@ do
 	write "$queue/nr_requests" 64
 done
 
-write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
-write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor performance
-write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor performance
-write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor performance
-write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor performance
-write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor performance
-write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
-write /sys/devices/system/cpu/cpufreq/performance/boost 1
-write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
-write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
-write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
-write /sys/kernel/gpu/gpu_governor performance
-write /sys/module/adreno_idler/parameters/adreno_idler_active 0
-write /sys/module/lazyplug/parameters/nr_possible_cores 8
-write /sys/module/msm_performance/parameters/touchboost 1
-write /dev/cpuset/foreground/boost/cpus 4-7
-write /dev/cpuset/foreground/cpus 0-3,4-7
-write /dev/cpuset/top-app/cpus 0-7
+{
+	for bjir in performance schedutil schedplus interactive ondemand userspace conservative powersave; do
+		write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "${bjir}"
+		write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor "${bjir}"
+		write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "${bjir}"
+		write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor "${bjir}"
+	done
+	
+	for njir in performance schedutil schedplus interactive ondemand userspace conservative powersave; do
+		write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor "${njir}"
+		write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor "${njir}"
+	done
+	
+	write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
+	write /sys/devices/system/cpu/cpufreq/performance/boost 1
+	write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
+	write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
+	write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
+	write /sys/kernel/gpu/gpu_governor performance
+	write /sys/module/adreno_idler/parameters/adreno_idler_active 0
+	write /sys/module/lazyplug/parameters/nr_possible_cores 8
+	write /sys/module/msm_performance/parameters/touchboost 1
+	write /dev/cpuset/foreground/boost/cpus 4-7
+	write /dev/cpuset/foreground/cpus 0-3,4-7
+	write /dev/cpuset/top-app/cpus 0-7
+}&
 
-write /proc/sys/vm/dirty_background_ratio 10
-write /proc/sys/vm/dirty_expire_centisecs 3000
-write /proc/sys/vm/dirty_ratio 30
-write /proc/sys/vm/dirty_writeback_centisecs 3000
-write /proc/sys/vm/extra_free_kbytes 13500
-write /proc/sys/vm/laptop_mode 0
-write /proc/sys/vm/min_free_kbytes 3022
-write /proc/sys/vm/oom_kill_allocating_task 0
-write /proc/sys/vm/overcommit_ratio 50
-write /proc/sys/vm/page-cluster 0
-write /proc/sys/vm/swappiness 100
-write /proc/sys/vm/vfs_cache_pressure 100
-write /sys/block/zram0/comp_algorithm zstd
-write /sys/block/zram0/disksize 4294967296
-write /sys/block/zram0/initstate 1
-write /sys/block/zram0/max_comp_streams 4
+{
+	echo 10 > /proc/sys/vm/dirty_background_ratio
+	echo 3000 > /proc/sys/vm/dirty_expire_centisecs
+	echo 30 > /proc/sys/vm/dirty_ratio
+	echo 3000 > /proc/sys/vm/dirty_writeback_centisecs
+	echo 13500 > /proc/sys/vm/extra_free_kbytes
+	echo 0 > /proc/sys/vm/laptop_mode
+	echo 3022 > /proc/sys/vm/min_free_kbytes
+	echo 0 > /proc/sys/vm/oom_kill_allocating_task
+	echo 50 > /proc/sys/vm/overcommit_ratio
+	echo 0 > /proc/sys/vm/page-cluster
+	echo 100 > /proc/sys/vm/swappiness
+	echo 100 > /proc/sys/vm/vfs_cache_pressure
+	
+	for comp in zstd lz4 lzo; do
+		echo "${comp}" > /sys/block/zram0/comp_algorithm
+	done
+	
+	echo 4294967296 > /sys/block/zram0/disksize
+	echo 1 > /sys/block/zram0/initstate
+	echo 4 > /sys/block/zram0/max_comp_streams
+}&
 
 function biglittlecore()
 {
-	echo "1 768000:90" > /sys/devices/system/cpu/cpu4/cpufreq/performance/target_loads
-	echo "1 960000:85 1094400:90 1344000:80" > /sys/devices/system/cpu/cpu0/cpufreq/performance/target_loads
-	echo "1 960000:85 1094400:90" > /sys/devices/system/cpu/cpufreq/performance/target_loads
-	echo "19000 1094400:39000" > /sys/devices/system/cpu/cpu0/cpufreq/performance/above_hispeed_delay
-	echo "19000 1094400:39000" > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
-	echo "19000 1401600:39000" > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
-	echo "85 1401600:80" > /sys/devices/system/cpu/cpufreq/performance/target_loads
-	echo "performance" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-	echo "performance" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+	echo 1 768000:90 > /sys/devices/system/cpu/cpu4/cpufreq/performance/target_loads
+	echo 1 960000:85 1094400:90 1344000:80 > /sys/devices/system/cpu/cpu0/cpufreq/performance/target_loads
+	echo 1 960000:85 1094400:90 > /sys/devices/system/cpu/cpufreq/performance/target_loads
+	echo 19000 1094400:39000 > /sys/devices/system/cpu/cpu0/cpufreq/performance/above_hispeed_delay
+	echo 19000 1094400:39000 > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
+	echo 19000 1401600:39000 > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
+	echo 85 1401600:80 > /sys/devices/system/cpu/cpufreq/performance/target_loads
+	
+	for perf in performance schedutil schedplus interactive ondemand userspace conservative powersave; do
+		echo "${perf}" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+		echo "${perf}" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+		echo "${perf}" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+		echo "${perf}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+		echo "${perf}" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+		echo "${perf}" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+		echo "${perf}" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
+		echo "${perf}" > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
+	done
+	
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/io_is_busy
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/rate_limit_us
 	echo 0 > /sys/devices/system/cpu/cpu0/sched_prefer_idle

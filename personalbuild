@@ -45,7 +45,7 @@ do
 done
 ) &
 
-swapoff /dev/block/zram0 >/dev/null 2>&1
+swapoff /dev/block/zram0
 write /sys/kernel/fast_charge/force_fast_charge 1
 
 for i in /sys/block/*/queue/read_ahead_kb
@@ -776,7 +776,7 @@ function zramswapper()
 	fi
 }
 
-mkswap /dev/block/zram0 >/dev/null 2>&1
+mkswap /dev/block/zram0
 zramswapper
 
 personal() {
@@ -796,7 +796,7 @@ personal() {
 	chmod 755 "$MODDIR/personalbuild"
 }&
 
-swapon /dev/block/zram0 >/dev/null 2>&1
+swapon /dev/block/zram0
 sysbat
 
 exit 0

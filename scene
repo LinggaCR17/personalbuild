@@ -77,5 +77,6 @@ echo 6400 > /sys/class/power_supply/mtk_charger_type/voltage_now
 echo 500000 > /sys/class/power_supply/usb/current_max
 echo 5000000 > /sys/class/power_supply/usb/voltage_max
 echo 5400000 > /sys/class/power_supply/battery/voltage_now
+echo 43 > /sys/class/power_supply/battery/temperature # This one very dangerous
 
 exit 0

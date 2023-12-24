@@ -104,7 +104,7 @@ if [ "$(getprop init.svc.thermald)" = running ]; then
 stop thermald
 fi
 
-for virt /sys/class/graphics/fb0
+for virt in /sys/class/graphics/fb0
 do
 	echo U:720x1600p-0 > "${virt}"/modes
 	echo 128 > "${virt}"/bits_per_pixel

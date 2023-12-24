@@ -1,1 +1,3 @@
 #!/system/bin/sh
+
+# Another battery calibration based on dumpsys

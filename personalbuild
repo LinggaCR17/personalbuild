@@ -420,6 +420,18 @@ write /dev/cpuset/foreground/boost/cpus 4-7
 write /dev/cpuset/foreground/cpus 0-3,4-7
 write /dev/cpuset/top-app/cpus 0-7
 
+for amog in /sys/bus/cpu/devices/*/cpufreq/
+do
+echo 1800000 > "${amog}"/scaling_max_freq
+echo 1800000 > "${amog}"/scaling_min_freq
+echo 1800000 > "${amog}"/cpuinfo_max_freq
+echo 1800000 > "${amog}"/cpuinfo_min_freq
+echo 1800000 > "${amog}"/cpuinfo_cur_freq
+echo 1800000 > "${amog}"/cpuinfo_min_freq
+echo 1800000 > "${amog}"/scaling_cur_freq
+echo <supported> "${amog}"/scaling_setspeed
+done
+
 functions fourzerosixnine()
 {
 	echo 0 > /proc/sys/vm/laptop_mode

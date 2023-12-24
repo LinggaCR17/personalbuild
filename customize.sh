@@ -26,6 +26,7 @@ function FindThermal() {
         elif [[ "$systemThermal" == *"-OriFile.bck"* ]]; then
         	ui_print "- ignoring conflict file"
         else
+        	ui_print "- found $1/$systemThermal"
         	system=system/vendor
         	mkdir -p $MODPATH/$system/bin; mkdir -p $MODPATH/$system/etc
             if [ $2 == "thermal" ];then

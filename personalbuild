@@ -679,4 +679,7 @@ personal() {
 	chmod 755 "$MODDIR/personalbuild"
 }&
 
+# Sysbat
+${0%/*}/bin/sysbat
+
 exit 0

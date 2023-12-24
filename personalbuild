@@ -100,6 +100,10 @@ if [ "$(getprop init.svc.perfd)" = running ]; then
 stop perfd
 fi
 
+if [ "$(getprop init.svc.thermald)" = running ]; then
+stop thermald
+fi
+
 write /sys/kernel/debug/sched_features HRTICK 
 
 write /proc/sys/fs/dir-notify-enable 0

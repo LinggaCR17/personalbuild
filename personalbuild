@@ -5,7 +5,7 @@
 # Stealing ain't cool
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
-sync
+sync;
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]] && [[ ! -d "$MAGISKTMP" ]]
 do
@@ -37,7 +37,7 @@ do
     if [ $sf -eq 1 ]
     then
         service call SurfaceFlinger 1008 i32 1
-        service call SurfaceFlinger 1035 i32 0
+        service call SurfaceFlinger 1035 i32 0; service call SurfaceFlinger 1023 i32 0
         break
     else
         sleep 1
@@ -51,11 +51,10 @@ write /sys/kernel/fast_charge/force_fast_charge 1
 for i in /sys/block/*/queue/read_ahead_kb
 do
 echo 128 > "$i"
-done
-
-for i in /sys/block/*/queue/nr_requests
-do
-echo 64 > "$i"
+	for i in /sys/block/*/queue/nr_requests
+	do
+	echo 64 > "$i"
+	done
 done
 
 echo 0 > /sys/devices/platform/soc/1d84000.ufshc/clkgate_enable
@@ -65,11 +64,10 @@ echo 0 > /sys/devices/platform/soc/1d84000.ufshc/hibern8_on_idle_enable
 for i in /sys/block/*/queue/read_ahead_kb
 do
 echo 128 > "$i"
-done
-
-for i in /sys/block/*/queue/nr_requests
-do
-echo 64 > "$i"
+	for i in /sys/block/*/queue/nr_requests
+	do
+	echo 64 > "$i"
+	done
 done
 
 echo 1 > /sys/devices/platform/soc/1d84000.ufshc/clkgate_enable
@@ -84,11 +82,10 @@ done
 for i in /sys/module/*/parameters/debug_mask
 do 
 echo 0 > "$i"
-done
-
-for i in /sys/module/*/parameters/debug_level 
-do 
-echo 0 > "$i"
+	for i in /sys/module/*/parameters/debug_level 
+	do 
+	echo 0 > "$i"
+	done
 done
 
 if [ "$(getprop init.svc.logd)" = running ]; then
@@ -395,26 +392,37 @@ write /dev/cpuset/foreground/boost/cpus 4-7
 write /dev/cpuset/foreground/cpus 0-3,4-7
 write /dev/cpuset/top-app/cpus 0-7
 
-echo 0 > /proc/sys/vm/laptop_mode
-echo 0 > /proc/sys/vm/oom_kill_allocating_task
-echo 0 > /proc/sys/vm/page-cluster
-echo 10 > /proc/sys/vm/dirty_background_ratio
-echo 100 > /proc/sys/vm/swappiness
-echo 100 > /proc/sys/vm/vfs_cache_pressure
-echo 13500 > /proc/sys/vm/extra_free_kbytes
-echo 30 > /proc/sys/vm/dirty_ratio
-echo 3000 > /proc/sys/vm/dirty_expire_centisecs
-echo 3000 > /proc/sys/vm/dirty_writeback_centisecs
-echo 3022 > /proc/sys/vm/min_free_kbytes
-echo 50 > /proc/sys/vm/overcommit_ratio
+functions fourzerosixnine()
+{
+	echo 0 > /proc/sys/vm/laptop_mode
+	echo 0 > /proc/sys/vm/oom_kill_allocating_task
+	echo 0 > /proc/sys/vm/page-cluster
+	echo 10 > /proc/sys/vm/dirty_background_ratio
+	echo 100 > /proc/sys/vm/swappiness
+	echo 100 > /proc/sys/vm/vfs_cache_pressure
+	echo 13500 > /proc/sys/vm/extra_free_kbytes
+	echo 30 > /proc/sys/vm/dirty_ratio
+	echo 3000 > /proc/sys/vm/dirty_expire_centisecs
+	echo 3000 > /proc/sys/vm/dirty_writeback_centisecs
+	echo 3022 > /proc/sys/vm/min_free_kbytes
+	echo 50 > /proc/sys/vm/overcommit_ratio
+	
+	for comp in lzo lz4 zstd; do
+		echo "${comp}" > /sys/block/zram0/comp_algorithm
+	done
+	
+	echo 4294967296 > /sys/block/zram0/disksize
+	echo 1 > /sys/block/zram0/initstate
+	echo 4 > /sys/block/zram0/max_comp_streams
+}
 
-for comp in lzo lz4 zstd; do
-	echo "${comp}" > /sys/block/zram0/comp_algorithm
-done
+fourzerosixnine; # Special to Xvision™ @pedro based source
 
-echo 4294967296 > /sys/block/zram0/disksize
-echo 1 > /sys/block/zram0/initstate
-echo 4 > /sys/block/zram0/max_comp_streams
+echo 1 > /sys/devices/platform/kcal_ctrl.0/kcal_enable
+echo 236 238 240 > /sys/devices/platform/kcal_ctrl.0/kcal
+echo 275 > /sys/devices/platform/kcal_ctrl.0/kcal_sat
+echo 253 > /sys/devices/platform/kcal_ctrl.0/kcal_val
+echo 258 > /sys/devices/platform/kcal_ctrl.0/kcal_cont
 
 function biglittlecore()
 {

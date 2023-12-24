@@ -138,6 +138,7 @@ video.accelerate.hw=1
 visual_bars=false
 vm.stat_interval=1
 windowsmgr.max_events_per_sec=200
+dalvik.vm.heapstartsize=16m
 
 # Mediatek mtSoC Mali processing
 ro.hardware.egl=meow

@@ -3,6 +3,7 @@
 # Personalbuild - A shitty Props make your device such a gaming
 dalvik.vm.dexopt-flags=v=a,o=v,m=y,u=y
 dalvik.vm.heapsize=512m
+dalvik.vm.heapstartsize=16m
 dalvik.vm.zygotemaxfailedboots=5
 debug.atrace.tags.enableflags=0
 debug.composition.type=dyn
@@ -138,7 +139,6 @@ video.accelerate.hw=1
 visual_bars=false
 vm.stat_interval=1
 windowsmgr.max_events_per_sec=200
-dalvik.vm.heapstartsize=16m
 
 # Mediatek mtSoC Mali processing
 ro.hardware.egl=meow

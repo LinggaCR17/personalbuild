@@ -754,6 +754,8 @@ biglittlecore
 	resetprop -v -n persist.service.zram 0
 	resetprop -v -n ro.zram.default 0
 	resetprop -v -n vm.swappiness 100
+
+	resetprop -v -n ro.HOME_APP_ADJ 1
 }&
 
 settings put system min_refresh_rate 120

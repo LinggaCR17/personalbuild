@@ -1,0 +1,12 @@
+{
+  "version":7,
+  "product":"default",
+  "ram": 6,
+  "up_time": 20210304,
+  "smart_clean":[
+    "com.*.*"
+  ],
+  "auto_start":[
+    "com.*.*"
+  ]
+}

@@ -624,6 +624,7 @@ biglittlecore
 	resetprop -v -n debug.mdpcomp.logs 0
 	resetprop -v -n debug.overlayui.enable 1
 	resetprop -v -n debug.performance.tuning 1
+	resetprop -v -n debug.renderengine.backend skiaglthreaded
 	resetprop -v -n debug.sf.disable_backpressure 1
 	resetprop -v -n debug.sf.enable_advanced_sf_phase_offset 1
 	resetprop -v -n debug.sf.enable_gl_backpressure 1

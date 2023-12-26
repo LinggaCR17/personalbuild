@@ -175,3 +175,6 @@ vendor.thermal.manager.is_ht120=1
 persist.service.zram=0
 ro.zram.default=0
 vm.swappiness=100
+
+# Misc Deprecated
+ro.HOME_APP_ADJ=1

@@ -605,15 +605,20 @@ biglittlecore
 	resetprop -v -n debug.hwui.disable_draw_defer true
 	resetprop -v -n debug.hwui.disable_draw_reorder true
 	resetprop -v -n debug.hwui.filter_test_overhead false
+	resetprop -v -n debug.hwui.force_dark $(getprop debug.hwui.force_dark)
+	resetprop -v -n debug.hwui.fps_divisor 1
 	resetprop -v -n debug.hwui.level 0
 	resetprop -v -n debug.hwui.overdraw false
+	resetprop -v -n debug.hwui.print_config $(getprop debug.hwui.print_config)
+	resetprop -v -n debug.hwui.profile.maxframes 120
+	resetprop -v -n debug.hwui.profile false
 	resetprop -v -n debug.hwui.render_dirty_regions false
 	resetprop -v -n debug.hwui.renderer skiagl
 	resetprop -v -n debug.hwui.show_dirty_regions false
 	resetprop -v -n debug.hwui.show_layers_updates false
 	resetprop -v -n debug.hwui.show_non_rect_clip hide
 	resetprop -v -n debug.hwui.skip_empty_damage true
-	resetprop -v -n debug.hwui.skp_filename /sdcard/0
+	resetprop -v -n debug.hwui.skp_filename /sdcard/
 	resetprop -v -n debug.hwui.use_buffer_age false
 	resetprop -v -n debug.hwui.use_gpu_pixel_buffers false
 	resetprop -v -n debug.hwui.use_partial_updates false
@@ -716,6 +721,7 @@ biglittlecore
 	resetprop -v -n ro.vold.umsdirtyratio 5
 	resetprop -v -n ro.zygote.disable_gl_preload true
 	resetprop -v -n skia.force_gl_texture 1
+	resetprop -v -n sys.display_panel_lpm true
 	resetprop -v -n sys.init.perf_lsm_hooks 1
 	resetprop -v -n vendor.debug.sf.latch_unsignaled 1
 	resetprop -v -n vendor.gralloc.disable_ubwc 0
@@ -723,9 +729,9 @@ biglittlecore
 	resetprop -v -n visual_bars false
 	resetprop -v -n vm.stat_interval 1
 	resetprop -v -n windowsmgr.max_events_per_sec 200
-	
+
 	resetprop -v -n ro.hardware.egl $(getprop ro.hardware.egl)
-	resetprop -v -n ro.hardware.vulkan $(getprop ro.hardware.vulkan)
+	resetprop -v -n ro.hardware.vulkan true
 	resetprop -v -n ro.mtk_perf_fast_start_win 1
 	resetprop -v -n ro.mtk_perf_response_time 1
 	resetprop -v -n ro.mtk_perf_simple_start_win 1
@@ -753,6 +759,7 @@ biglittlecore
 	resetprop -v -n vendor.thermal.manager.is_ht120 1
 
 	resetprop -v -n persist.service.zram 0
+	resetprop -v -n persist.sys.zram_enabled 1
 	resetprop -v -n ro.zram.default 0
 	resetprop -v -n vm.swappiness 100
 

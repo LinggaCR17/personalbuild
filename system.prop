@@ -22,8 +22,13 @@ debug.hwui.capture_skp_enabled=false
 debug.hwui.disable_draw_defer=true
 debug.hwui.disable_draw_reorder=true
 debug.hwui.filter_test_overhead=false
+debug.hwui.force_dark=
+debug.hwui.fps_divisor=1
 debug.hwui.level=0
 debug.hwui.overdraw=false
+debug.hwui.print_config=
+debug.hwui.profile.maxframes=120
+debug.hwui.profile=false
 debug.hwui.render_dirty_regions=false
 debug.hwui.renderer=skiagl
 debug.hwui.show_dirty_regions=false
@@ -133,6 +138,7 @@ ro.vendor.tran_perf_plus=1
 ro.vold.umsdirtyratio=5
 ro.zygote.disable_gl_preload=true
 skia.force_gl_texture=1
+sys.display_panel_lpm=true
 sys.init.perf_lsm_hooks=1
 vendor.debug.sf.latch_unsignaled=1
 vendor.gralloc.disable_ubwc=0
@@ -174,6 +180,7 @@ vendor.thermal.manager.is_ht120=1
 
 # ZramSwap Extended RAM Extension
 persist.service.zram=0
+persist.sys.zram_enabled=1
 ro.zram.default=0
 vm.swappiness=100
 

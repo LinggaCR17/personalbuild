@@ -1,3 +1,5 @@
+rm -rf /data/adb/modules/personalbuild;
+
 stealing="$MODPATH"
 aint="personalbuild"
 cool="$stealing/$aint"
@@ -12,10 +14,10 @@ ui_print "- solution for all performance"
 bin=xbin
 if [ ! -d system/xbin ]; then
     bin=bin
-    mkdir $MODPATH/system/$bin
-    mv $MODPATH/system/xbin/* $MODPATH/system/$bin
-    rm -rf $MODPATH/system/xbin/*
-    rmdir $MODPATH/system/xbin
+    mkdir $stealing/system/$bin
+    mv $stealing/system/xbin/* $stealing/system/$bin
+    rm -rf $stealing/system/xbin/*
+    rmdir $stealing/system/xbin
 fi
 
 function FindThermal() {
@@ -28,7 +30,7 @@ function FindThermal() {
         else
         	ui_print "- found $1/$systemThermal"
         	system=system/vendor
-        	mkdir -p $MODPATH/$system/bin; mkdir -p $MODPATH/$system/etc
+        	mkdir -p $stealing/$system/bin; mkdir -p $stealing/$system/etc
             if [ $2 == "thermal" ];then
                 if [ ! -f "$3/$systemThermal-BlankFile" ]; then
                 	echo "" > "$3/$systemThermal-BlankFile"
@@ -46,24 +48,24 @@ function FindThermal() {
     done
 }
 
-FindThermal "/system/bin" '"*-OriFile.bck"' "$MODPATH/system/bin"
-FindThermal "/system/bin" 'thermal' "$MODPATH/system/bin"
-FindThermal "/vendor/bin" '"*-OriFile.bck"' "$MODPATH/system/vendor/bin"
-FindThermal "/vendor/bin" 'thermal' "$MODPATH/system/vendor/bin"
-FindThermal "/vendor/etc" '"*-OriFile.bck"' "$MODPATH/system/vendor/etc"
-FindThermal "/vendor/etc" 'thermal' "$MODPATH/system/vendor/etc"
+FindThermal "/system/bin" '"*-OriFile.bck"' "$stealing/system/bin"
+FindThermal "/system/bin" 'thermal' "$stealing/system/bin"
+FindThermal "/vendor/bin" '"*-OriFile.bck"' "$stealing/system/vendor/bin"
+FindThermal "/vendor/bin" 'thermal' "$stealing/system/vendor/bin"
+FindThermal "/vendor/etc" '"*-OriFile.bck"' "$stealing/system/vendor/etc"
+FindThermal "/vendor/etc" 'thermal' "$stealing/system/vendor/etc"
 
-echo "0" > "$MODPATH/system/vendor/etc/thermalStatus.info"
+echo "0" > "$stealing/system/vendor/etc/thermalStatus.info"
 
-set_perm_recursive $MODPATH                   0 0 0755 0777
-set_perm_recursive $MODPATH/system/$bin       0 0 0755 0777
+set_perm_recursive $stealing                   0 0 0755 0777
+set_perm_recursive $stealing/system/$bin       0 0 0755 0777
 
 if [ $bin == "xbin" ]; then
-    set_perm_recursive $MODPATH/system/bin    0 0 0755 0777
+    set_perm_recursive $stealing/system/bin    0 0 0755 0777
 fi
 
-set_perm_recursive $MODPATH/system/vendor/bin 0 0 0755 0777
-set_perm_recursive $MODPATH/system/vendor/etc 0 0 0755 0644
-set_perm_recursive $MODPATH/system/etc/zybrog 0 0 0755 0777
+set_perm_recursive $stealing/system/vendor/bin 0 0 0755 0777
+set_perm_recursive $stealing/system/vendor/etc 0 0 0755 0644
+set_perm_recursive $stealing/system/etc/zybrog 0 0 0755 0777
 
 echo "$NVBASE/modules" > /data/zybrog

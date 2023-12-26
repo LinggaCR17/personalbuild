@@ -1,3 +1,6 @@
+# Make sure boot completed
+sed -i "/description=/c description=personalbuild by changing your perf options Big, Little Core." /data/adb/modules/personalbuild/module.prop;
+
 # Stealing ain't cool. It is useless to use the resetprop stopped method before booting
 {
 	# D-Thermal except mtSoC

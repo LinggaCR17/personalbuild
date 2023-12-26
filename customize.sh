@@ -11,6 +11,8 @@ set_perm_recursive "$stealing/scene" root root 0777 0755
 ui_print "- $(getprop ro.boot.boot_devices)"
 ui_print "- solution for all performance"
 
+sed -i "/description=/c description=Reboot required. personalbuild by changing your perf options Big, Little Core." /data/adb/modules_update/personalbuild/module.prop;
+
 bin=xbin
 if [ ! -d system/xbin ]; then
     bin=bin

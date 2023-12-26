@@ -41,6 +41,7 @@ debug.mdpcomp.idletime=9000
 debug.mdpcomp.logs=0
 debug.overlayui.enable=1
 debug.performance.tuning=1
+debug.renderengine.backend=skiaglthreaded
 debug.sf.disable_backpressure=1
 debug.sf.enable_advanced_sf_phase_offset=1
 debug.sf.enable_gl_backpressure=1

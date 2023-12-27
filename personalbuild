@@ -411,7 +411,7 @@ for amognal in /sys/bus/cpu/devices/*/cpufreq; do
 	echo "$UINT_MAX" > "$amognal"/cpuinfo_cur_freq
 	echo "$UINT_MAX" > "$amognal"/cpuinfo_min_freq
 	echo "$UINT_MAX" > "$amognal"/scaling_cur_freq
-	echo <supported> > "$amognal"/scaling_setspeed
+	echo "<supported>" > "$amognal"/scaling_setspeed
 done
 
 function fkmconfig()

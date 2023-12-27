@@ -438,7 +438,7 @@ function fkmconfig()
 	echo 4 > /sys/block/zram0/max_comp_streams
 }
 
-fkmconfig;
+fkmconfig
 
 # Using Xvision™(KCAL) @pedro based source
 
@@ -568,7 +568,7 @@ function biglittlecore()
 	fi
 }
 
-biglittlecore;
+biglittlecore
 
 # Personalidentify you should read this 'https://github.com/LinggaCR17/personalbuild/blob/main/system.prop' before editing any script stuff
 {
@@ -773,7 +773,7 @@ function zramswapper()
 	fi
 }
 
-zramswapper;
+zramswapper
 
 personal()
 {
@@ -784,7 +784,7 @@ personal()
 }
 
 {
-	personal;
+	personal
 	
 	cp -af "$MODDIR/module.prop" "$TMPFILE"
 	sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=Nothing no end /g' "$TMPFILE"
@@ -794,6 +794,6 @@ personal()
 }&
 
 swapon /dev/block/zram0 >/dev/null 2>&1
-sysbat;
+sysbat
 
 exit 0

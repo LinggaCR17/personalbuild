@@ -1,26 +1,23 @@
-# A Module make a perf
+# Personalbuild - Simple Performance, Magisk
 
-![1000053274](https://github.com/LinggaCR17/personalbuild/assets/43074091/197361ac-5e22-4c35-816a-80737a0258fb)
+- Simple perf Personalbuild open to all sources
+- Make Performance better, zRAM, Schedule tweaks, etc
+- By changing your Big, Litte Core. Next level (options)
 
-~ Saika's Tweaks The Kuudere Fear of Project
-- Personalbuild Changing Source Open
-- Make performance better without VIP
-- By changing your Big, Litte Core to the next level (options).
+# Personalbuild is OpenSource!
 
-# Personalbuild Now is OpenSource!
-exec /your8mine/yourFolder/personalbuild
++ exec /your8mine/yourFolder/personalbuild
++ sh /your8mine/yourFolder/personalbuild
 
-sh /your8mine/yourFolder/personalbuild
-
-### unencrypted ###
+### unencrypted, available ###
 https://github.com/LinggaCR17/personalbuild/blob/main/personalbuild
 
-### new release ###
+### new release, page ###
 https://github.com/LinggaCR17/personalbuild/releases
 
-# ! ATTENTION:
-Use cerdits to honor me in addition to donating.
+# ReadThis:
+Use cerdits(@linggacr17) to honor me in addition to donating.
 
 I will no longer maintain if I am not listed.
 
-"will drain battery life"
+###### I do my best to provide the best and most universal tweaks.

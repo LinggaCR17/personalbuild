@@ -1,9 +1,8 @@
-# Don't use this because I have entered it in personalbuild
+# Don't use this (Directly) because I have entered it in personalbuild script
 
-# Personalbuild - A shitty Props make your device such a gaming
+# Personalbuild - A Props make your device feel better with debugging properties
 dalvik.vm.dexopt-flags=v=a,o=v,m=y,u=y
 dalvik.vm.heapsize=512m
-dalvik.vm.heapstartsize=
 dalvik.vm.zygotemaxfailedboots=5
 debug.atrace.tags.enableflags=0
 debug.composition.type=dyn
@@ -22,11 +21,9 @@ debug.hwui.capture_skp_enabled=false
 debug.hwui.disable_draw_defer=true
 debug.hwui.disable_draw_reorder=true
 debug.hwui.filter_test_overhead=false
-debug.hwui.force_dark=
 debug.hwui.fps_divisor=1
 debug.hwui.level=0
 debug.hwui.overdraw=false
-debug.hwui.print_config=
 debug.hwui.profile.maxframes=120
 debug.hwui.profile=false
 debug.hwui.render_dirty_regions=false
@@ -147,20 +144,19 @@ visual_bars=false
 vm.stat_interval=1
 windowsmgr.max_events_per_sec=200
 
-# Mediatek mtSoC Mali processing
-ro.hardware.egl=
+# Mediatek mtSoC Mali default properties
 ro.hardware.vulkan=true
 ro.mtk_perf_fast_start_win=1
 ro.mtk_perf_response_time=1
 ro.mtk_perf_simple_start_win=1
 
-# BetterFrameRates except OnePlus™
+# FrameRates except OnePlus™ / Redmi, Realme
 ro.surface_flinger.refresh_rate_switching=120
 ro.surface_flinger.set_display_power_timer_ms=1000
 ro.surface_flinger.set_touch_timer_ms=200
 ro.surface_flinger.use_content_detection_for_refresh_rate=false
 
-# A D-Thermal based on SoC Mediatek, Adreno typa shit
+# A D-Thermal based on mtSoC. Mediatek, Adreno
 debug.disable.thermal.control=1
 debug.disable.usb.overheat.mitigation=1
 persist.sys.fan.thermal_auto=1
@@ -178,11 +174,11 @@ vendor.disable.thermal.control=1
 vendor.disable.usb.overheat.mitigation=1
 vendor.thermal.manager.is_ht120=1
 
-# ZramSwap Extended RAM Extension
+# ZramSwap Extended, RAM Extension except '/vendor/etc/'
 persist.service.zram=0
 persist.sys.zram_enabled=1
 ro.zram.default=0
 vm.swappiness=100
 
-# Misc Deprecated
+# Misc Deprecated properties
 ro.HOME_APP_ADJ=1

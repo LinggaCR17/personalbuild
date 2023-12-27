@@ -1,186 +1,168 @@
-#!/system/bin/sh
+# Using Ktweaks @tytydraco based source
 
-# Special to Ktweaks @tytydraco based source
-
-# Stealing ain't cool
+# Stealing ain't cool. Magisk mirror path...
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
-sync;
+sync; sleep 1 # Avoid first boot complete
 
-while [[ "$(getprop sys.boot_completed)" -ne 1 ]] && [[ ! -d "$MAGISKTMP" ]]
-do
-    sleep 1
-done
-
-if [[ "$(id -u)" -ne 0 ]]
-then
+if [[ "$(id -u)" -ne 0 ]]; then
 	echo "No root permissions. Exiting."
 	exit 1
 fi
 
-write() {
-	[[ ! -f "$1" ]] && return 1
-	
-	chmod +w "$1" 2> /dev/null
-
-	if ! echo "$2" > "$1" 2> /dev/null
-	then
-		echo "Failed: $1 → $2"
-		return 1
+while [[ "$(getprop sys.boot_completed)" -ne 1 ]]; do
+	if [[ ! -d "$MAGISKTMP" ]]; then
+		sleep 1 # isolation, isolated process
+		swapoff /dev/block/zram0 >/dev/null 2>&1; echo 1 > /sys/block/zram0/reset
 	fi
-}
+done
 
 (while :
 do
     sf=$(service list | grep -c "SurfaceFlinger")
     
-    if [ $sf -eq 1 ]
-    then
-        service call SurfaceFlinger 1008 i32 1
-        service call SurfaceFlinger 1035 i32 0; service call SurfaceFlinger 1023 i32 0
-        break
-    else
-        sleep 1
-    fi
+	if [ $sf -eq 1 ]; then
+		service call SurfaceFlinger 1008 i32 1
+		service call SurfaceFlinger 1035 i32 0; service call SurfaceFlinger 1023 i32 0; break; else
+		sleep 1
+	fi
 done
 ) &
 
-swapoff /dev/block/zram0 >/dev/null 2>&1
-write /sys/kernel/fast_charge/force_fast_charge 1
+aint()
+{
+	local NAME=$1
+	local CONTAINS=$2
+	local NEWVAL=$3
+	
+	if [[ "$(resetprop $NAME)" = *"$CONTAINS"* ]]; then
+		resetprop -v -n $NAME $NEWVAL
+	fi
+}
 
-for i in /sys/block/*/queue/read_ahead_kb
-do
-echo 128 > "$i"
-	for i in /sys/block/*/queue/nr_requests
-	do
-	echo 64 > "$i"
+write()
+{
+	if [[ ! -f "$1" ]]; then
+		return 1; chmod +w "$1" 2> /dev/null
+	fi
+	
+	if ! echo "$2" > "$1" 2> /dev/null; then
+		echo "Failed: $1 → $2"; return 1
+	fi
+}
+
+for i in /sys/block/*/queue/read_ahead_kb; do
+	echo 128 > "$i"
+	for i in /sys/block/*/queue/nr_requests; do
+		echo 64 > "$i"
 	done
 done
 
-echo 0 > /sys/devices/platform/soc/1d84000.ufshc/clkgate_enable
-echo 0 > /sys/devices/platform/soc/1d84000.ufshc/clkscale_enable
-echo 0 > /sys/devices/platform/soc/1d84000.ufshc/hibern8_on_idle_enable
-
-for i in /sys/block/*/queue/read_ahead_kb
-do
-echo 128 > "$i"
-	for i in /sys/block/*/queue/nr_requests
-	do
-	echo 64 > "$i"
-	done
+for i in /sys/devices/platform/soc/1d84000.ufshc; do
+	echo 1 > "$i"/clkgate_enable
+	echo 1 > "$i"/clkscale_enable
+	echo 1 > "$i"/hibern8_on_idle_enable
 done
 
-echo 1 > /sys/devices/platform/soc/1d84000.ufshc/clkgate_enable
-echo 1 > /sys/devices/platform/soc/1d84000.ufshc/clkscale_enable
-echo 1 > /sys/devices/platform/soc/1d84000.ufshc/hibern8_on_idle_enable
-
-for i in /sys/block/*/queue/iostats
-do
-echo 0 > "$i"
+for i in /sys/block/*/queue/iostats; do
+	echo 0 > "$i"
 done 
 
-for i in /sys/module/*/parameters/debug_mask
-do 
-echo 0 > "$i"
-	for i in /sys/module/*/parameters/debug_level 
-	do 
+for i in /sys/module/*/parameters/debug_mask; do 
 	echo 0 > "$i"
+	for i in /sys/module/*/parameters/debug_level; do 
+		echo 0 > "$i"
 	done
 done
 
 if [ "$(getprop init.svc.logd)" = running ]; then
-stop logd
-fi
-
-if [ "$(getprop init.svc.statsd)" = running ]; then
-stop statsd
+	stop logd
+	if [ "$(getprop init.svc.statsd)" = running ]; then
+		stop statsd
+	fi
 fi
 
 if [ "$(getprop init.svc.perfd)" = running ]; then
-stop perfd
+	stop perfd
+	if [ "$(getprop init.svc.thermald)" = running ]; then
+		stop thermald
+	fi
 fi
 
-if [ "$(getprop init.svc.thermald)" = running ]; then
-stop thermald
-fi
-
-for virt in /sys/class/graphics/fb0
-do
-echo U:720x1600p-0 > "${virt}"/modes
-echo 128 > "${virt}"/bits_per_pixel
-	for para in /sys/module/ged/parameters
-	do
-	echo 1 > "${para}"/ap_self_frc_detection_rate
-	echo 1 > "${para}"/boost_amp
-	echo 1 > "${para}"/boost_extra
-	echo 1 > "${para}"/boost_gpu_enable
-	echo 1 > "${para}"/cpu_boost_policy
-	echo 1 > "${para}"/enable_cpu_boost
-	echo 1 > "${para}"/enable_game_self_frc_detect
-	echo 1 > "${para}"/enable_gpu_boost
-	echo 1 > "${para}"/ged_boost_enable
-	echo 1 > "${para}"/ged_force_mdp_enable
-	echo 1 > "${para}"/ged_smart_boost
-	echo 1 > "${para}"/gpu_dvfs_enable
-	echo 1 > "${para}"/gx_boost_on
-	echo 1 > "${para}"/gx_dfps
-	echo 1 > "${para}"/gx_force_cpu_boost
-	echo 1 > "${para}"/gx_frc_mode
-	echo 1 > "${para}"/gx_game_mode
-	echo 1 > "${para}"/is_GED_KPI_enabled
-	echo 550000 > "${para}"/gpu_cust_upbound_freq
+for virt in /sys/class/graphics/fb0; do
+	echo U:720x1600p-0 > "$virt"/modes
+	echo 128 > "$virt"/bits_per_pixel
+	for para in /sys/module/ged/parameters; do
+		echo 1 > "$para"/ap_self_frc_detection_rate
+		echo 1 > "$para"/boost_amp
+		echo 1 > "$para"/boost_extra
+		echo 1 > "$para"/boost_gpu_enable
+		echo 1 > "$para"/cpu_boost_policy
+		echo 1 > "$para"/enable_cpu_boost
+		echo 1 > "$para"/enable_game_self_frc_detect
+		echo 1 > "$para"/enable_gpu_boost
+		echo 1 > "$para"/ged_boost_enable
+		echo 1 > "$para"/ged_force_mdp_enable
+		echo 1 > "$para"/ged_smart_boost
+		echo 1 > "$para"/gpu_dvfs_enable
+		echo 1 > "$para"/gx_boost_on
+		echo 1 > "$para"/gx_dfps
+		echo 1 > "$para"/gx_force_cpu_boost
+		echo 1 > "$para"/gx_frc_mode
+		echo 1 > "$para"/gx_game_mode
+		echo 1 > "$para"/is_GED_KPI_enabled
+		echo 550000 > "$para"/gpu_cust_upbound_freq
 	done
 done
 
-echo 1 > /sys/block/zram0/reset
-write /sys/kernel/debug/sched_features HRTICK 
-
-write /proc/sys/fs/dir-notify-enable 0
-write /proc/sys/vm/stat_interval 10
-write /sys/module/printk/parameters/console_suspend Y
-write /proc/sys/kernel/printk_devkmsg off
-write /proc/sys/kernel/printk 0 0 0 0
-write /sys/module/printk/parameters/cpu N
-write /sys/kernel/printk_mode/printk_mode 0write /sys/module/printk/parameters/ignore_loglevel Y
-write /sys/module/printk/parameters/pid N
-write /sys/module/printk/parameters/time N
-write /sys/kernel/debug/debug_enabled N
-write /proc/sys/kernel/sched_schedstats 0
-write /proc/sys/vm/oom_dump_tasks 0
-write /proc/sys/vm/block_dump 0
-write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
-write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
-write /sys/kernel/tracing/tracing_on 0
-write /sys/kernel/debug/tracing/tracing_on 0
-write /proc/sys/kernel/compat-log 0
-write /sys/module/logger/parameters/log_enabled 0
-write /proc/sys/debug/exception-trace 0
-write /sys/module/debug/parameters/enable_event_log 0
-write /sys/module/logger/parameters/enabled 0
-write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_drv 0
-write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
-write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
-write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_pwr 0
-write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_mem 0
-write /sys/module/mali/parameters/mali_debug_level 0
-write /sys/module/ext4/parameters/mballoc_debug 0
-write /sys/module/rpm_smd/parameters/debug_mask 0
-write /sys/module/msm_show_resume_irq/parameters/debug_mask 0
-write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
-write /sys/module/ip6_tunnel/parameters/log_ecn_error N
-write /sys/module/mmc_core/parameters/use_spi_crc 0
-
-write /dev/stune/top-app/schedtune.boost 10
-write /dev/stune/top-app/schedtune.prefer_idle 1
-write /dev/stune/foreground/schedtune.prefer_idle 1
-write dev/cpuset/background/cpus 0-3
-write dev/cpuset/foreground/cpus 0-7
-
-UINT_MAX="4294967295"
+UINT_MAX="4294967295" # phase one
 SCHED_PERIOD="$((1 * 1000 * 1000))"
 SCHED_TASKS="10"
 
-grep -q android /proc/cmdline && ANDROID=true
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.boost 10
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /proc/sys/debug/exception-trace 0
+write /proc/sys/fs/dir-notify-enable 0
+write /proc/sys/kernel/compat-log 0
+write /proc/sys/kernel/printk 0 0 0 0
+write /proc/sys/kernel/printk_devkmsg off
+write /proc/sys/kernel/sched_schedstats 0
+write /proc/sys/vm/block_dump 0
+write /proc/sys/vm/oom_dump_tasks 0
+write /proc/sys/vm/stat_interval 10
+write /sys/kernel/debug/debug_enabled N
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_drv 0
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_mem 0
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_pwr 0
+write /sys/kernel/debug/sched_features HRTICK
+write /sys/kernel/debug/tracing/tracing_on 0
+write /sys/kernel/fast_charge/force_fast_charge 1
+write /sys/kernel/printk_mode/printk_mode 0write /sys/module/printk/parameters/ignore_loglevel Y
+write /sys/kernel/tracing/tracing_on 0
+write /sys/module/debug/parameters/enable_event_log 0
+write /sys/module/ext4/parameters/mballoc_debug 0
+write /sys/module/ip6_tunnel/parameters/log_ecn_error N
+write /sys/module/logger/parameters/enabled 0
+write /sys/module/logger/parameters/log_enabled 0
+write /sys/module/mali/parameters/mali_debug_level 0
+write /sys/module/mmc_core/parameters/use_spi_crc 0
+write /sys/module/msm_show_resume_irq/parameters/debug_mask 0
+write /sys/module/printk/parameters/console_suspend Y
+write /sys/module/printk/parameters/cpu N
+write /sys/module/printk/parameters/pid N
+write /sys/module/printk/parameters/time N
+write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
+write /sys/module/rpm_smd/parameters/debug_mask 0
+write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
+write dev/cpuset/background/cpus 0-3
+write dev/cpuset/foreground/cpus 0-7
+
+if grep -q android /proc/cmdline; then
+	ANDROID=true
+fi
 
 write /proc/sys/kernel/perf_cpu_time_max_percent 3
 write /proc/sys/kernel/sched_autogroup_enabled 1
@@ -191,7 +173,9 @@ write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))
 write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
 write /proc/sys/kernel/sched_migration_cost_ns 5000000
 
-[[ "$ANDROID" == true ]] && write /proc/sys/kernel/sched_min_task_util_for_colocation 0
+if [[ "$ANDROID" == true ]]; then
+	write /proc/sys/kernel/sched_min_task_util_for_colocation 0
+fi
 
 write /proc/sys/kernel/sched_nr_migrate 4
 write /proc/sys/kernel/sched_schedstats 0
@@ -208,34 +192,29 @@ write /proc/sys/net/ipv4/tcp_ecn 1
 write /proc/sys/net/ipv4/tcp_fastopen 3
 write /proc/sys/net/ipv4/tcp_syncookies 0
 
-if [[ -f "/sys/kernel/debug/sched_features" ]]
-then
+if [[ -f "/sys/kernel/debug/sched_features" ]]; then
 	write /sys/kernel/debug/sched_features NEXT_BUDDY
 	write /sys/kernel/debug/sched_features NO_TTWU_QUEUE
 fi
 
-[[ "$ANDROID" == true ]] && if [[ -d "/dev/stune/" ]]
-then
-	write /dev/stune/top-app/schedtune.prefer_idle 1
-	write /dev/stune/top-app/schedtune.boost 1
+if [[ "$ANDROID" == true ]]; then
+	if [[ -d "/dev/stune/" ]]; then
+		write /dev/stune/top-app/schedtune.prefer_idle 1
+		write /dev/stune/top-app/schedtune.boost 1
+	fi
 fi
 
-for cpu in /sys/devices/system/cpu/cpu*/cpufreq
-do
+for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
 	avail_govs="$(cat "$cpu/scaling_available_governors")"
 	
-	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance
-	do
-		if [[ "$avail_govs" == *"$governor"* ]]
-		then
-			write "$cpu/scaling_governor" "$governor"
-			break
+	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+		if [[ "$avail_govs" == *"$governor"* ]]; then
+			write "$cpu/scaling_governor" "$governor"; break
 		fi
 	done
 done
 
-find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r governor
-do
+find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" 0
 	write "$governor/down_rate_limit_us" 0
 	write "$governor/rate_limit_us" 0
@@ -243,8 +222,7 @@ do
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r governor
-do
+find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" 0
 	write "$governor/down_rate_limit_us" 0
 	write "$governor/rate_limit_us" 0
@@ -252,100 +230,85 @@ do
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name interactive -type d | while IFS= read -r governor
-do
+find /sys/devices/system/cpu/ -name interactive -type d | while IFS= read -r governor; do
 	write "$governor/timer_rate" 0
 	write "$governor/min_sample_time" 0
 	write "$governor/go_hispeed_load" 85
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name ondemand -type d | while IFS= read -r governor
-do
+find /sys/devices/system/cpu/ -name ondemand -type d | while IFS= read -r governor; do
 	write "$governor/timer_rate" 0
 	write "$governor/min_sample_time" 0
 	write "$governor/go_hispeed_load" 85
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-for queue in /sys/block/*/queue
-do
+for queue in /sys/block/*/queue; do
 	avail_scheds="$(cat "$queue/scheduler")"
 	
-	for sched in kyber mq-deadline deadline cfq bfq noop none
-	do
-		if [[ "$avail_scheds" == *"$sched"* ]]
-		then
-			write "$queue/scheduler" "$sched"
-			break
+	for sched in kyber mq-deadline deadline cfq bfq noop none; do
+		if [[ "$avail_scheds" == *"$sched"* ]]; then
+			write "$queue/scheduler" "$sched"; break
 		fi
 	done
+	
 	write "$queue/add_random" 0
 	write "$queue/iostats" 0
 	write "$queue/read_ahead_kb" 128
 	write "$queue/nr_requests" 64
 done
 
-UINT_MAX="4294967295"
+UINT_MAX="4294967295" # phase two
 SCHED_PERIOD="$((4 * 1000 * 1000))"
 SCHED_TASKS="8"
 
-grep -q android /proc/cmdline && ANDROID=true
-
 write /proc/sys/kernel/perf_cpu_time_max_percent 5
+write /proc/sys/kernel/printk_devkmsg off
 write /proc/sys/kernel/sched_autogroup_enabled 1
 write /proc/sys/kernel/sched_child_runs_first 1
-write /proc/sys/kernel/sched_tunable_scaling 0
 write /proc/sys/kernel/sched_latency_ns "$SCHED_PERIOD"
-write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
-write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
 write /proc/sys/kernel/sched_migration_cost_ns 5000000
-
-[[ "$ANDROID" == true ]] && write /proc/sys/kernel/sched_min_task_util_for_colocation 0
-
+write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
 write /proc/sys/kernel/sched_nr_migrate 32
 write /proc/sys/kernel/sched_schedstats 0
-write /proc/sys/kernel/printk_devkmsg off
+write /proc/sys/kernel/sched_tunable_scaling 0
+write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
+write /proc/sys/net/ipv4/tcp_ecn 1
+write /proc/sys/net/ipv4/tcp_fastopen 3
+write /proc/sys/net/ipv4/tcp_syncookies 0
 write /proc/sys/vm/dirty_background_ratio 10
-write /proc/sys/vm/dirty_ratio 30
 write /proc/sys/vm/dirty_expire_centisecs 3000
+write /proc/sys/vm/dirty_ratio 30
 write /proc/sys/vm/dirty_writeback_centisecs 3000
 write /proc/sys/vm/page-cluster 0
 write /proc/sys/vm/stat_interval 10
 write /proc/sys/vm/swappiness 100
 write /proc/sys/vm/vfs_cache_pressure 100
-write /proc/sys/net/ipv4/tcp_ecn 1
-write /proc/sys/net/ipv4/tcp_fastopen 3
-write /proc/sys/net/ipv4/tcp_syncookies 0
 
-if [[ -f "/sys/kernel/debug/sched_features" ]]
-then
+if [[ -f "/sys/kernel/debug/sched_features" ]]; then
 	write /sys/kernel/debug/sched_features NEXT_BUDDY
 	write /sys/kernel/debug/sched_features TTWU_QUEUE
 fi
 
-[[ "$ANDROID" == true ]] && if [[ -d "/dev/stune/" ]]
-then
-	write /dev/stune/top-app/schedtune.prefer_idle 0
-	write /dev/stune/top-app/schedtune.boost 1
+if [[ "$ANDROID" == true ]]; then
+	if [[ -d "/dev/stune/" ]]; then
+		write /dev/stune/top-app/schedtune.prefer_idle 0
+		write /dev/stune/top-app/schedtune.boost 1
+	fi
 fi
 
-for cpu in /sys/devices/system/cpu/cpu*/cpufreq
-do
+for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
 	avail_govs="$(cat "$cpu/scaling_available_governors")"
 
-	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance
-	do
-		if [[ "$avail_govs" == *"$governor"* ]]
-		then
-			write "$cpu/scaling_governor" "$governor"
-			break
+	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+		if [[ "$avail_govs" == *"$governor"* ]]; then
+			write "$cpu/scaling_governor" "$governor"; break
 		fi
 	done
 done
 
-find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r governor
-do
+find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
 	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
@@ -353,8 +316,7 @@ do
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r governor
-do
+find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
 	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
@@ -362,33 +324,29 @@ do
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name interactive -type d | while IFS= read -r governor
-do
+find /sys/devices/system/cpu/ -name interactive -type d | while IFS= read -r governor; do
 	write "$governor/timer_rate" "$((SCHED_PERIOD / 1000))"
 	write "$governor/min_sample_time" "$((SCHED_PERIOD / 1000))"
 	write "$governor/go_hispeed_load" 90
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name ondemand -type d | while IFS= read -r governor
-do
+find /sys/devices/system/cpu/ -name ondemand -type d | while IFS= read -r governor; do
 	write "$governor/timer_rate" "$((SCHED_PERIOD / 1000))"
 	write "$governor/min_sample_time" "$((SCHED_PERIOD / 1000))"
 	write "$governor/go_hispeed_load" 90
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-for queue in /sys/block/*/queue
-do
+for queue in /sys/block/*/queue; do
 	avail_scheds="$(cat "$queue/scheduler")"
-	for sched in kyber mq-deadline deadline cfq bfq noop none
-	do
-		if [[ "$avail_scheds" == *"$sched"* ]]
-		then
-			write "$queue/scheduler" "$sched"
-			break
+	
+	for sched in kyber mq-deadline deadline cfq bfq noop none; do
+		if [[ "$avail_scheds" == *"$sched"* ]]; then
+			write "$queue/scheduler" "$sched"; break
 		fi
 	done
+	
 	write "$queue/add_random" 0
 	write "$queue/iostats" 0
 	write "$queue/read_ahead_kb" 128
@@ -396,15 +354,16 @@ do
 done
 
 for bjir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
-	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "${bjir}"
-	write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor "${bjir}"
-	write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "${bjir}"
-	write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor "${bjir}"
-done
-
-for njir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
-	write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor "${njir}"
-	write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor "${njir}"
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "$bjir"
+	write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor "$bjir"
+	write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "$bjir"
+	write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor "$bjir"
+	for njir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+		write /sys/devices/system/cpu/cpufreq/policy1/scaling_governor "$njir"
+		write /sys/devices/system/cpu/cpufreq/policy2/scaling_governor "$njir"
+		write /sys/devices/system/cpu/cpufreq/policy3/scaling_governor "$njir"
+		write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor "$njir"
+	done
 done
 
 write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
@@ -420,19 +379,18 @@ write /dev/cpuset/foreground/boost/cpus 4-7
 write /dev/cpuset/foreground/cpus 0-3,4-7
 write /dev/cpuset/top-app/cpus 0-7
 
-for amog in /sys/bus/cpu/devices/*/cpufreq
-do
-echo 1800000 > "${amog}"/scaling_max_freq
-echo 1800000 > "${amog}"/scaling_min_freq
-echo 1800000 > "${amog}"/cpuinfo_max_freq
-echo 1800000 > "${amog}"/cpuinfo_min_freq
-echo 1800000 > "${amog}"/cpuinfo_cur_freq
-echo 1800000 > "${amog}"/cpuinfo_min_freq
-echo 1800000 > "${amog}"/scaling_cur_freq
-echo <supported> "${amog}"/scaling_setspeed
+for amog in /sys/bus/cpu/devices/*/cpufreq; do
+	echo "$UINT_MAX" > "$amog"/scaling_max_freq
+	echo "$UINT_MAX" > "$amog"/scaling_min_freq
+	echo "$UINT_MAX" > "$amog"/cpuinfo_max_freq
+	echo "$UINT_MAX" > "$amog"/cpuinfo_min_freq
+	echo "$UINT_MAX" > "$amog"/cpuinfo_cur_freq
+	echo "$UINT_MAX" > "$amog"/cpuinfo_min_freq
+	echo "$UINT_MAX" > "$amog"/scaling_cur_freq
+	echo <supported> "$amog"/scaling_setspeed
 done
 
-function fourzerosixnine()
+function fkmconfig()
 {
 	echo 0 > /proc/sys/vm/laptop_mode
 	echo 0 > /proc/sys/vm/oom_kill_allocating_task
@@ -448,7 +406,7 @@ function fourzerosixnine()
 	echo 50 > /proc/sys/vm/overcommit_ratio
 	
 	for comp in lzo lz4 zstd; do
-		echo "${comp}" > /sys/block/zram0/comp_algorithm
+		echo "$comp" > /sys/block/zram0/comp_algorithm
 	done
 	
 	echo 4294967296 > /sys/block/zram0/disksize
@@ -456,13 +414,17 @@ function fourzerosixnine()
 	echo 4 > /sys/block/zram0/max_comp_streams
 }
 
-fourzerosixnine; # Special to Xvision™ @pedro based source
+fkmconfig;
 
-echo 1 > /sys/devices/platform/kcal_ctrl.0/kcal_enable
-echo 236 238 240 > /sys/devices/platform/kcal_ctrl.0/kcal
-echo 275 > /sys/devices/platform/kcal_ctrl.0/kcal_sat
-echo 253 > /sys/devices/platform/kcal_ctrl.0/kcal_val
-echo 258 > /sys/devices/platform/kcal_ctrl.0/kcal_cont
+# Using Xvision™(KCAL) @pedro based source
+
+for kcal in /sys/devices/platform/kcal_ctrl.0; do
+	echo 1 > "$kcal"/kcal_enable
+	echo 275 > "$kcal"/kcal_sat
+	echo 253 > "$kcal"/kcal_val
+	echo 258 > "$kcal"/kcal_cont
+	echo 236 238 240 > "$kcal"/kcal
+done
 
 function biglittlecore()
 {
@@ -475,14 +437,14 @@ function biglittlecore()
 	echo 85 1401600:80 > /sys/devices/system/cpu/cpufreq/performance/target_loads
 	
 	for perf in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
-		echo "${perf}" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-		echo "${perf}" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
-		echo "${perf}" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
-		echo "${perf}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
-		echo "${perf}" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
-		echo "${perf}" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
-		echo "${perf}" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
-		echo "${perf}" > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
+		echo "$perf" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+		echo "$perf" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+		echo "$perf" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+		echo "$perf" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+		echo "$perf" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+		echo "$perf" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+		echo "$perf" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
+		echo "$perf" > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
 	done
 	
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/io_is_busy
@@ -518,9 +480,11 @@ function biglittlecore()
 	echo 1 > /sys/devices/system/cpu/cpu4/online
 	echo 1 > /sys/devices/system/cpu/cpufreq/performance/use_migration_notif
 	echo 1 > /sys/devices/system/cpu/cpufreq/performance/use_sched_load
-	echo 1094400 > /sys/devices/system/cpu/cpu0/cpufreq/performance/hispeed_freq
-	echo 1094400 > /sys/devices/system/cpu/cpufreq/performance/hispeed_freq
-	echo 1401600 > /sys/devices/system/cpu/cpufreq/performance/hispeed_freq
+	
+	echo "$UINT_MAX" > /sys/devices/system/cpu/cpu0/cpufreq/performance/hispeed_freq
+	echo "$UINT_MAX" > /sys/devices/system/cpu/cpufreq/performance/hispeed_freq
+	echo "$UINT_MAX" > /sys/devices/system/cpu/cpufreq/performance/hispeed_freq
+	
 	echo 19 > /proc/sys/kernel/sched_upmigrate_min_nice
 	echo 20 > /proc/sys/kernel/sched_small_task
 	echo 20000 > /sys/devices/system/cpu/cpu0/cpufreq/performance/timer_rate
@@ -565,211 +529,207 @@ function biglittlecore()
 	echo 85 > /sys/devices/system/cpu/cpufreq/performance/hispeed_load
 	echo 90 > /sys/devices/system/cpu/cpu4/cpufreq/performance/go_hispeed_load
 	
+	sleep 1
 	if true; then
 		su 2000 -c "cmd notification post -S bigtext -t 'options by nothing' 'Tag' '
 function biglittlecore()
 {
-	executive, done
+	executed, done
 }'"; else
 		su -lp 2000 -c "cmd notification post -S bigtext -t 'options by nothing' 'Tag' '
 function biglittlecore()
 {
-	executive, done
+	executed, done
 }'"
 	fi
 }
 
-echo $((4096*8192*16384)) > /sys/block/zram0/disksize
 biglittlecore
 
-# Personalidentify you should read this https://github.com/LinggaCR17/personalbuild/blob/main/system.prop
+# Personalidentify you should read this 'https://github.com/LinggaCR17/personalbuild/blob/main/system.prop' before editing any script stuff
 {
-	resetprop -v -n dalvik.vm.dexopt-flags v=a,o=v,m=y,u=y
-	resetprop -v -n dalvik.vm.heapsize 512m
-	resetprop -v -n dalvik.vm.heapstartsize $(getprop dalvik.vm.heapstartsize)
-	resetprop -v -n dalvik.vm.zygotemaxfailedboots 5
-	resetprop -v -n debug.atrace.tags.enableflags 0
-	resetprop -v -n debug.composition.type dyn
-	resetprop -v -n debug.cpurend.vsync false
-	resetprop -v -n debug.drm.mode.force 1600x720@120
-	resetprop -v -n debug.egl.buffcount 4
-	resetprop -v -n debug.egl.force_msaa 1
-	resetprop -v -n debug.egl.hw 1
-	resetprop -v -n debug.egl.profiler 1
-	resetprop -v -n debug.egl.swapinterval 0
-	resetprop -v -n debug.enable.sglscale 1
-	resetprop -v -n debug.enabletr false
-	resetprop -v -n debug.gr.swapinterval 0
-	resetprop -v -n debug.gralloc.gfx_ubwc_disable 0
-	resetprop -v -n debug.hwui.capture_skp_enabled false
-	resetprop -v -n debug.hwui.disable_draw_defer true
-	resetprop -v -n debug.hwui.disable_draw_reorder true
-	resetprop -v -n debug.hwui.filter_test_overhead false
-	resetprop -v -n debug.hwui.force_dark $(getprop debug.hwui.force_dark)
-	resetprop -v -n debug.hwui.fps_divisor 1
-	resetprop -v -n debug.hwui.level 0
-	resetprop -v -n debug.hwui.overdraw false
-	resetprop -v -n debug.hwui.print_config $(getprop debug.hwui.print_config)
-	resetprop -v -n debug.hwui.profile.maxframes 120
-	resetprop -v -n debug.hwui.profile false
-	resetprop -v -n debug.hwui.render_dirty_regions false
-	resetprop -v -n debug.hwui.renderer skiagl
-	resetprop -v -n debug.hwui.show_dirty_regions false
-	resetprop -v -n debug.hwui.show_layers_updates false
-	resetprop -v -n debug.hwui.show_non_rect_clip hide
-	resetprop -v -n debug.hwui.skip_empty_damage true
-	resetprop -v -n debug.hwui.skp_filename /sdcard/
-	resetprop -v -n debug.hwui.use_buffer_age false
-	resetprop -v -n debug.hwui.use_gpu_pixel_buffers false
-	resetprop -v -n debug.hwui.use_partial_updates false
-	resetprop -v -n debug.kill_allocating_task 0
-	resetprop -v -n debug.mdpcomp.4k2kSplit 1
-	resetprop -v -n debug.mdpcomp.idletime 600
-	resetprop -v -n debug.mdpcomp.idletime 9000
-	resetprop -v -n debug.mdpcomp.logs 0
-	resetprop -v -n debug.overlayui.enable 1
-	resetprop -v -n debug.performance.tuning 1
-	resetprop -v -n debug.renderengine.backend skiaglthreaded
-	resetprop -v -n debug.sf.disable_backpressure 1
-	resetprop -v -n debug.sf.enable_advanced_sf_phase_offset 1
-	resetprop -v -n debug.sf.enable_gl_backpressure 1
-	resetprop -v -n debug.sf.enable_hwc_vds 1
-	resetprop -v -n debug.sf.high_fps.early.app.duration 10000000
-	resetprop -v -n debug.sf.high_fps.early.sf.duration 13800000
-	resetprop -v -n debug.sf.high_fps.earlyGl.app.duration 10000000
-	resetprop -v -n debug.sf.high_fps.earlyGl.sf.duration 13800000
-	resetprop -v -n debug.sf.high_fps.hwc.min.duration 8500000
-	resetprop -v -n debug.sf.high_fps.late.app.duration 10000000
-	resetprop -v -n debug.sf.high_fps.late.sf.duration 13800000
-	resetprop -v -n debug.sf.hw 1
-	resetprop -v -n debug.sf.latch_unsignaled 1
-	resetprop -v -n debug.sf.no_hw_vsync 1
-	resetprop -v -n fku.perf.profile 1
-	resetprop -v -n force_hw_ui true
-	resetprop -v -n hw2d.force 1
-	resetprop -v -n hw3d.force 1
-	resetprop -v -n hwui.disable_vsync true
-	resetprop -v -n hwui.private_hal_readback 1
-	resetprop -v -n hwui.render_dirty_regions false
-	resetprop -v -n log.tag.stats_log 0
-	resetprop -v -n logcat.live disable
-	resetprop -v -n logd.logpersistd.enable false
-	resetprop -v -n logd.statistics 0
-	resetprop -v -n persist.android.strictmode 0
-	resetprop -v -n persist.demo.hdmirotationlock false
-	resetprop -v -n persist.hwc.mdpcomp.enable true
-	resetprop -v -n persist.hwc.ptor.enable true
-	resetprop -v -n persist.sys.composition.type dyn
-	resetprop -v -n persist.sys.dalvik.hyperthreading true
-	resetprop -v -n persist.sys.dalvik.multithread true
-	resetprop -v -n persist.sys.force_highendgfx true
-	resetprop -v -n persist.sys.purgeable_assets 1
-	resetprop -v -n persist.sys.strictmode.disable 1
-	resetprop -v -n persist.sys.strictmode.visual 0
-	resetprop -v -n persist.sys.ui.hw 1
-	resetprop -v -n persist.sys.use_dithering 1
-	resetprop -v -n persist.traced.enable 0
-	resetprop -v -n persist.vendor.accelerate.charge true
-	resetprop -v -n persist.vendor.color.matrix 2
-	resetprop -v -n persist.vendor.disable_idle_fps.threshold 1390
-	resetprop -v -n persist.vendor.disable_idle_fps true
-	resetprop -v -n persist.vendor.product.perf 1
-	resetprop -v -n persist.vendor.qti.inputopts.enable true
-	resetprop -v -n persist.vendor.qti.inputopts.movetouchslop 0.6
-	resetprop -v -n persist.vendor.verbose_logging_enabled false
-	resetprop -v -n profiler.force_disable_err_rpt 1
-	resetprop -v -n profiler.force_disable_ulog 1
-	resetprop -v -n ro.config.disable.hw_accel true
-	resetprop -v -n ro.config.enable.hw_accel true
-	resetprop -v -n ro.config.low_ram true
-	resetprop -v -n ro.fb.mode 1
-	resetprop -v -n ro.hwui.drop_shadow_cache_size 6
-	resetprop -v -n ro.hwui.gradient_cache_size 1
-	resetprop -v -n ro.hwui.layer_cache_size 48
-	resetprop -v -n ro.hwui.path_cache_size 32
-	resetprop -v -n ro.hwui.r_buffer_cache_size 8
-	resetprop -v -n ro.hwui.text_large_cache_height 1024
-	resetprop -v -n ro.hwui.text_large_cache_width 2048
-	resetprop -v -n ro.hwui.text_small_cache_height 1024
-	resetprop -v -n ro.hwui.text_small_cache_width 1024
-	resetprop -v -n ro.hwui.texture_cache_flushrate 0.4
-	resetprop -v -n ro.hwui.texture_cache_size 72
-	resetprop -v -n ro.hwui.use_vulkan true
-	resetprop -v -n ro.kernel.android.checkjni 0
-	resetprop -v -n ro.kernel.checkjni 0
-	resetprop -v -n ro.logd.kernel false
-	resetprop -v -n ro.logd.size.stats 0
-	resetprop -v -n ro.logd.size 0
-	resetprop -v -n ro.max.fling_velocity 20000
-	resetprop -v -n ro.min.fling_velocity 18000
-	resetprop -v -n ro.min_pointer_dur 1
-	resetprop -v -n ro.min_pointer_dur 8
-	resetprop -v -n ro.opengles.version 196610
-	resetprop -v -n ro.product.gpu.driver 1
-	resetprop -v -n ro.sf.compbypass.enable 0
-	resetprop -v -n ro.surface_flinger.protected_contents true
-	resetprop -v -n ro.vendor.display.default_fps 120
-	resetprop -v -n ro.vendor.display.idle_default_fps 120
-	resetprop -v -n ro.vendor.display.touch.idle.enable true
-	resetprop -v -n ro.vendor.fps.switch.default true
-	resetprop -v -n ro.vendor.fps.switch.thermal true
-	resetprop -v -n ro.vendor.qti.config.zram true
-	resetprop -v -n ro.vendor.qti.core.ctl_max_cpu 4
-	resetprop -v -n ro.vendor.qti.core.ctl_min_cpu 2
-	resetprop -v -n ro.vendor.qti.sys.fw.bservice_enable true
-	resetprop -v -n ro.vendor.tran_perf_plus 1
-	resetprop -v -n ro.vold.umsdirtyratio 5
-	resetprop -v -n ro.zygote.disable_gl_preload true
-	resetprop -v -n skia.force_gl_texture 1
-	resetprop -v -n sys.display_panel_lpm true
-	resetprop -v -n sys.init.perf_lsm_hooks 1
-	resetprop -v -n vendor.debug.sf.latch_unsignaled 1
-	resetprop -v -n vendor.gralloc.disable_ubwc 0
-	resetprop -v -n video.accelerate.hw 1
-	resetprop -v -n visual_bars false
-	resetprop -v -n vm.stat_interval 1
-	resetprop -v -n windowsmgr.max_events_per_sec 200
+	aint dalvik.vm.dexopt-flags v=a,o=v,m=y,u=y
+	aint dalvik.vm.heapsize 512m
+	aint dalvik.vm.zygotemaxfailedboots 5
+	aint debug.atrace.tags.enableflags 0
+	aint debug.composition.type dyn
+	aint debug.cpurend.vsync false
+	aint debug.drm.mode.force 1600x720@120
+	aint debug.egl.buffcount 4
+	aint debug.egl.force_msaa 1
+	aint debug.egl.hw 1
+	aint debug.egl.profiler 1
+	aint debug.egl.swapinterval 0
+	aint debug.enable.sglscale 1
+	aint debug.enabletr false
+	aint debug.gr.swapinterval 0
+	aint debug.gralloc.gfx_ubwc_disable 0
+	aint debug.hwui.capture_skp_enabled false
+	aint debug.hwui.disable_draw_defer true
+	aint debug.hwui.disable_draw_reorder true
+	aint debug.hwui.filter_test_overhead false
+	aint debug.hwui.fps_divisor 1
+	aint debug.hwui.level 0
+	aint debug.hwui.overdraw false
+	aint debug.hwui.profile.maxframes 120
+	aint debug.hwui.profile false
+	aint debug.hwui.render_dirty_regions false
+	aint debug.hwui.renderer skiagl
+	aint debug.hwui.show_dirty_regions false
+	aint debug.hwui.show_layers_updates false
+	aint debug.hwui.show_non_rect_clip hide
+	aint debug.hwui.skip_empty_damage true
+	aint debug.hwui.skp_filename /sdcard/
+	aint debug.hwui.use_buffer_age false
+	aint debug.hwui.use_gpu_pixel_buffers false
+	aint debug.hwui.use_partial_updates false
+	aint debug.kill_allocating_task 0
+	aint debug.mdpcomp.4k2kSplit 1
+	aint debug.mdpcomp.idletime 600
+	aint debug.mdpcomp.idletime 9000
+	aint debug.mdpcomp.logs 0
+	aint debug.overlayui.enable 1
+	aint debug.performance.tuning 1
+	aint debug.renderengine.backend skiaglthreaded
+	aint debug.sf.disable_backpressure 1
+	aint debug.sf.enable_advanced_sf_phase_offset 1
+	aint debug.sf.enable_gl_backpressure 1
+	aint debug.sf.enable_hwc_vds 1
+	aint debug.sf.high_fps.early.app.duration 10000000
+	aint debug.sf.high_fps.early.sf.duration 13800000
+	aint debug.sf.high_fps.earlyGl.app.duration 10000000
+	aint debug.sf.high_fps.earlyGl.sf.duration 13800000
+	aint debug.sf.high_fps.hwc.min.duration 8500000
+	aint debug.sf.high_fps.late.app.duration 10000000
+	aint debug.sf.high_fps.late.sf.duration 13800000
+	aint debug.sf.hw 1
+	aint debug.sf.latch_unsignaled 1
+	aint debug.sf.no_hw_vsync 1
+	aint fku.perf.profile 1
+	aint force_hw_ui true
+	aint hw2d.force 1
+	aint hw3d.force 1
+	aint hwui.disable_vsync true
+	aint hwui.private_hal_readback 1
+	aint hwui.render_dirty_regions false
+	aint log.tag.stats_log 0
+	aint logcat.live disable
+	aint logd.logpersistd.enable false
+	aint logd.statistics 0
+	aint persist.android.strictmode 0
+	aint persist.demo.hdmirotationlock false
+	aint persist.hwc.mdpcomp.enable true
+	aint persist.hwc.ptor.enable true
+	aint persist.sys.composition.type dyn
+	aint persist.sys.dalvik.hyperthreading true
+	aint persist.sys.dalvik.multithread true
+	aint persist.sys.force_highendgfx true
+	aint persist.sys.purgeable_assets 1
+	aint persist.sys.strictmode.disable 1
+	aint persist.sys.strictmode.visual 0
+	aint persist.sys.ui.hw 1
+	aint persist.sys.use_dithering 1
+	aint persist.traced.enable 0
+	aint persist.vendor.accelerate.charge true
+	aint persist.vendor.color.matrix 2
+	aint persist.vendor.disable_idle_fps.threshold 1390
+	aint persist.vendor.disable_idle_fps true
+	aint persist.vendor.product.perf 1
+	aint persist.vendor.qti.inputopts.enable true
+	aint persist.vendor.qti.inputopts.movetouchslop 0.6
+	aint persist.vendor.verbose_logging_enabled false
+	aint profiler.force_disable_err_rpt 1
+	aint profiler.force_disable_ulog 1
+	aint ro.config.disable.hw_accel true
+	aint ro.config.enable.hw_accel true
+	aint ro.config.low_ram true
+	aint ro.fb.mode 1
+	aint ro.hwui.drop_shadow_cache_size 6
+	aint ro.hwui.gradient_cache_size 1
+	aint ro.hwui.layer_cache_size 48
+	aint ro.hwui.path_cache_size 32
+	aint ro.hwui.r_buffer_cache_size 8
+	aint ro.hwui.text_large_cache_height 1024
+	aint ro.hwui.text_large_cache_width 2048
+	aint ro.hwui.text_small_cache_height 1024
+	aint ro.hwui.text_small_cache_width 1024
+	aint ro.hwui.texture_cache_flushrate 0.4
+	aint ro.hwui.texture_cache_size 72
+	aint ro.hwui.use_vulkan true
+	aint ro.kernel.android.checkjni 0
+	aint ro.kernel.checkjni 0
+	aint ro.logd.kernel false
+	aint ro.logd.size.stats 0
+	aint ro.logd.size 0
+	aint ro.max.fling_velocity 20000
+	aint ro.min.fling_velocity 18000
+	aint ro.min_pointer_dur 1
+	aint ro.min_pointer_dur 8
+	aint ro.opengles.version 196610
+	aint ro.product.gpu.driver 1
+	aint ro.sf.compbypass.enable 0
+	aint ro.surface_flinger.protected_contents true
+	aint ro.vendor.display.default_fps 120
+	aint ro.vendor.display.idle_default_fps 120
+	aint ro.vendor.display.touch.idle.enable true
+	aint ro.vendor.fps.switch.default true
+	aint ro.vendor.fps.switch.thermal true
+	aint ro.vendor.qti.config.zram true
+	aint ro.vendor.qti.core.ctl_max_cpu 4
+	aint ro.vendor.qti.core.ctl_min_cpu 2
+	aint ro.vendor.qti.sys.fw.bservice_enable true
+	aint ro.vendor.tran_perf_plus 1
+	aint ro.vold.umsdirtyratio 5
+	aint ro.zygote.disable_gl_preload true
+	aint skia.force_gl_texture 1
+	aint sys.display_panel_lpm true
+	aint sys.init.perf_lsm_hooks 1
+	aint vendor.debug.sf.latch_unsignaled 1
+	aint vendor.gralloc.disable_ubwc 0
+	aint video.accelerate.hw 1
+	aint visual_bars false
+	aint vm.stat_interval 1
+	aint windowsmgr.max_events_per_sec 200
 
-	resetprop -v -n ro.hardware.egl $(getprop ro.hardware.egl)
-	resetprop -v -n ro.hardware.vulkan true
-	resetprop -v -n ro.mtk_perf_fast_start_win 1
-	resetprop -v -n ro.mtk_perf_response_time 1
-	resetprop -v -n ro.mtk_perf_simple_start_win 1
+	aint ro.hardware.vulkan true
+	aint ro.mtk_perf_fast_start_win 1
+	aint ro.mtk_perf_response_time 1
+	aint ro.mtk_perf_simple_start_win 1
 
-	resetprop -v -n ro.surface_flinger.refresh_rate_switching 120
-	resetprop -v -n ro.surface_flinger.set_display_power_timer_ms 1000
-	resetprop -v -n ro.surface_flinger.set_touch_timer_ms 200
-	resetprop -v -n ro.surface_flinger.use_content_detection_for_refresh_rate false
+	aint ro.surface_flinger.refresh_rate_switching 120
+	aint ro.surface_flinger.set_display_power_timer_ms 1000
+	aint ro.surface_flinger.set_touch_timer_ms 200
+	aint ro.surface_flinger.use_content_detection_for_refresh_rate false
 
-	resetprop -v -n debug.disable.thermal.control 1
-	resetprop -v -n debug.disable.usb.overheat.mitigation 1
-	resetprop -v -n persist.sys.fan.thermal_auto 1
-	resetprop -v -n persist.sys.thermal.disable true
-	resetprop -v -n persist.vendor.disable.thermal.control 1
-	resetprop -v -n ro.vendor.disable.thermal.control 1
-	resetprop -v -n ro.vendor.disable.usb.overheat.mitigation 1
-	resetprop -v -n ro.vendor.fps.switch.default true
-	resetprop -v -n ro.vendor.fps.switch.thermal true
-	resetprop -v -n ro.vendor.thermal.dimming.enable false
-	resetprop -v -n ro.vendor.thermal.manager.is_ht120 1
-	resetprop -v -n ro.vendor.thermal.product 2
-	resetprop -v -n sys.thermal.data.path /data/vendor/thermal/
-	resetprop -v -n vendor.disable.thermal.control 1
-	resetprop -v -n vendor.disable.usb.overheat.mitigation 1
-	resetprop -v -n vendor.thermal.manager.is_ht120 1
+	aint debug.disable.thermal.control 1
+	aint debug.disable.usb.overheat.mitigation 1
+	aint persist.sys.fan.thermal_auto 1
+	aint persist.sys.thermal.disable true
+	aint persist.vendor.disable.thermal.control 1
+	aint ro.vendor.disable.thermal.control 1
+	aint ro.vendor.disable.usb.overheat.mitigation 1
+	aint ro.vendor.fps.switch.default true
+	aint ro.vendor.fps.switch.thermal true
+	aint ro.vendor.thermal.dimming.enable false
+	aint ro.vendor.thermal.manager.is_ht120 1
+	aint ro.vendor.thermal.product 2
+	aint sys.thermal.data.path /data/vendor/thermal/
+	aint vendor.disable.thermal.control 1
+	aint vendor.disable.usb.overheat.mitigation 1
+	aint vendor.thermal.manager.is_ht120 1
 
-	resetprop -v -n persist.service.zram 0
-	resetprop -v -n persist.sys.zram_enabled 1
-	resetprop -v -n ro.zram.default 0
-	resetprop -v -n vm.swappiness 100
+	aint persist.service.zram 0
+	aint persist.sys.zram_enabled 1
+	aint ro.zram.default 0
+	aint vm.swappiness 100
 
-	resetprop -v -n ro.HOME_APP_ADJ 1
+	aint ro.HOME_APP_ADJ 1
 }&
 
 settings put system min_refresh_rate 120
 settings put system peak_refresh_rate 120.00001
 
-# Special to crokrammgmtfix @crok based source
+# Using crokrammgmtfix @crok based source
 
 function zramswapper()
 {
@@ -780,25 +740,27 @@ function zramswapper()
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config put activity_manager max_empty_time_millis 43200000
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd settings put global settings_enable_monitor_phantom_procs false
 	
+	mkswap /dev/block/zram0 >/dev/null 2>&1
+	
+	sleep 1
 	if true; then
 		am start -a android.intent.action.MAIN -e message 'personalbuild by nothing' -n com.personal.build/.ShowToast; else
 		su -c am start -a android.intent.action.MAIN -e message 'personalbuild by nothing' -n com.personal.build/.ShowToast
 	fi
 }
 
-mkswap /dev/block/zram0 >/dev/null 2>&1
 zramswapper
 
-personal() {
+personal()
+{
 	MODDIR="${0%/*}"
 	MODNAME="${MODDIR##*/}"
-	MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 	PROPFILE="$MAGISKTMP/.magisk/modules/$MODNAME/module.prop"
 	TMPFILE="/data/adb/modules/$MODNAME/module.prop"
 }
 
 {
-	personal
+	personal;
 	cp -af "$MODDIR/module.prop" "$TMPFILE"
 	sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=Nothing no end /g' "$TMPFILE"
 	flock "$MODDIR/module.prop"

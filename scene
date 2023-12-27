@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Built-in scene perf QCOM™ mtSoC
+# Built-in scene perf QCOM™ mtSoC Mediatek
 chmod 755 /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 chmod 755 /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
 chmod 755 /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_max_freq
@@ -41,7 +41,7 @@ chmod 755 /sys/module/qpnp_smbcharger/*/*
 
 echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/enable
 
-# Built-in scene fc QCOM™ mtSoC
+# Built-in scene fc QCOM™ mtSoC Mediatek
 echo 0 > /sys/class/power_supply/battery/input_current_limited
 echo 0 > /sys/class/qcom-battery/restricted_charging
 echo 1 > /sys/class/power_supply/battery/allow_hvdcp3
@@ -70,14 +70,14 @@ echo 4600000 > /sys/class/qcom-battery/restricted_current
 echo 0 > /sys/class/power_supply/battery/current_now
 echo 1 > /sys/class/power_supply/mtk-master-charger/voltage_max
 echo 1 > /sys/class/power_supply/mtk-slave-charger/voltage_max
-echo 2100000 > /sys/class/power_supply/mtk-master-charger/constant_charge_current_max # Also this one too
-echo 43 > /sys/class/power_supply/battery/temperature # This one very dangerous
-echo 500000 > /sys/class/power_supply/usb/current_max
-echo 5000000 > /sys/class/power_supply/usb/voltage_max
-echo 5400000 > /sys/class/power_supply/battery/voltage_now
-echo 6400 > /sys/class/power_supply/mtk-gauge/bat_vol_get
-echo 6400 > /sys/class/power_supply/mtk-master-charger/voltage_now
-echo 6400 > /sys/class/power_supply/mtk-slave-charger/voltage_now
-echo 6400 > /sys/class/power_supply/mtk_charger_type/voltage_now
+echo 3100000 > /sys/class/power_supply/mtk-master-charger/constant_charge_current_max # Also this cause Hardware brick, make sure you're in the right SoC
+echo 44 > /sys/class/power_supply/battery/temperature # Dangerous Overhead for Mediatek devices
+echo 600000 > /sys/class/power_supply/usb/current_max
+echo 6000000 > /sys/class/power_supply/usb/voltage_max
+echo 6400000 > /sys/class/power_supply/battery/voltage_now
+echo 7400 > /sys/class/power_supply/mtk-gauge/bat_vol_get
+echo 7400 > /sys/class/power_supply/mtk-master-charger/voltage_now
+echo 7400 > /sys/class/power_supply/mtk-slave-charger/voltage_now
+echo 7400 > /sys/class/power_supply/mtk_charger_type/voltage_now
 
 exit 0

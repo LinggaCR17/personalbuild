@@ -4,15 +4,17 @@
 echo '- Preparing Zybrog'
 echo ""
 
-if [ "$(id -u)" -gt "0" ] && [ "$(whoami)" != "root" ]; then
+if [ "$(id -u)" -gt "0" ]; then
+	if [ "$(whoami)" != "root" ]; then
     echo $merahHitam" ! Please let me in by type 'su' at first"$ResetWarna
     echo ""
     echo " Exit after: "
-    for timeExit in "3s 2s 1s 0s";
-    do
+    
+    for timeExit in "3s 2s 1s 0s"; do
         echo "$timeExit"
         usleep 1000000
     done
+    
     exit -1
 fi
 
@@ -21,22 +23,20 @@ StatusModule="$(cat "$Magisk_path/personalbuild/system/vendor/etc/thermalStatus.
 
 modulePath="$Magisk_path/personalbuild"
 
-function SetThermalTo() {
-    for systemThermal in `ls $1 | grep $2`
-    do
+function SetThermalTo()
+{
+	for systemThermal in `ls $1 | grep $2`; do
         systemThermal=${systemThermal/"-BlankFile"/""}
         systemThermal=${systemThermal/"-OriFile.bck"/""}
         if [ $3 == "0" ];then
-            cp -af "$1/$systemThermal-BlankFile" "$1/$systemThermal"
-        else
+            cp -af "$1/$systemThermal-BlankFile" "$1/$systemThermal"; else
             cp -af "$1/$systemThermal-OriFile.bck" "$1/$systemThermal"
         fi
     done
 }
 
 if [ "$StatusModule" == "0" ]; then
-    StatusThermal="  Disable touched success (using disable thermal conf)"
-else
+    StatusThermal="  Disable touched success (using disable thermal conf)"; else
     StatusThermal="  Enabled untouched (using thermal default conf)"
 fi
 
@@ -48,8 +48,7 @@ if [ ! -z "$1" ];then
         SetThermalTo "$modulePath/system/vendor/bin" "*-BlankFile" "0"
         SetThermalTo "$modulePath/system/vendor/etc" "*-BlankFile" "0" 
         echo "0" > "$brogpath/system/vendor/etc/thermalStatus.info"
-        echo "  Disable touched success (using disable thermal conf)"
-    else
+        echo "  Disable touched success (using disable thermal conf)"; else
         SetThermalTo "$modulePath/system/bin" "*-OriFile.bck" "1"
         SetThermalTo "$modulePath/system/vendor/bin" "*-OriFile.bck" "1"
         SetThermalTo "$modulePath/system/vendor/etc" "*-OriFile.bck" "1" 

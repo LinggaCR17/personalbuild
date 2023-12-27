@@ -33,5 +33,5 @@ if [ -f /data/adb/magisk/util_functions.sh ] || require_new_magisk; then
 	fi
 fi
 
-install_module
+install_module;
 exit 0

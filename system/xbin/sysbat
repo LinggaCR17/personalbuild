@@ -30,6 +30,8 @@ $sysbat% - Battery stats and history reset.'"
     	# Reset notification_sent when battery level is less than 100%
     	notification_sent=false
   	fi
+   fi
+  fi
 
   sleep 1
 done

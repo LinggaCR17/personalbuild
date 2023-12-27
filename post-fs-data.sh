@@ -21,17 +21,20 @@ sed -i "/description=/c description=personalbuild by changing your perf options 
 # Overall scene
 ${0%/*}/scene
 
-for i in /sys/block/*/queue/read_ahead_kb; do
-	echo 128 > "$i"
-	for i in /sys/block/*/queue/nr_requests; do
-		echo 64 > "$i"
+for personal in /sys/block/*/queue/read_ahead_kb; do
+	echo 128 > "$personal"
+	for build in /sys/block/*/queue/nr_requests; do
+		echo 64 > "$build"
 	done
 done
 
-for i in /sys/devices/platform/soc/1d84000.ufshc; do
-	echo 0 > $i/clkgate_enable
-	echo 0 > $i/clkscale_enable
-	echo 0 > $i/hibern8_on_idle_enable
+for personal in /sys/devices/platform/soc/1d84000.ufshc; do
+	echo 0 > "$personal"/clkgate_enable
+	echo 0 > "$personal"/clkscale_enable
+	echo 0 > "$personal"/hibern8_on_idle_enable
+	for build in /sys/devices/platform/charger; do
+		echo 7400 > "$build"/ADC_Charger_Voltage
+	done
 done
 
 # Always return success, even if the last write fails

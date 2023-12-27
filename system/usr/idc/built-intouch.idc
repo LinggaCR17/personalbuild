@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Marlin
-# https://android.googlesource.com/device/google/marlin/+/refs/heads/android10-c2f2-release/synaptics_dsxv26.idc
+# 'https://android.googlesource.com/device/google/marlin/+/refs/heads/android10-c2f2-release/synaptics_dsxv26.idc'
 device.internal = 1
 touch.deviceType = touchScreen
 touch.orientationAware = 1
@@ -26,7 +26,7 @@ touch.pressure.scale = 0.0125
 touch.orientation.calibration = none
 
 # Taimen
-# https://android.googlesource.com/device/google/taimen/+/refs/heads/master/touchscreen.idc
+# 'https://android.googlesource.com/device/google/taimen/+/refs/heads/master/touchscreen.idc'
 device.internal = 1
 touch.deviceType = touchScreen
 touch.orientationAware = 1
@@ -63,7 +63,7 @@ touch.orientation.calibration = none
 touch.distance.calibration = none
 touch.distance.scale = 0
 
-# @Titidebin
+# Using @Titidebin build-intouch source
 device.internal = 1
 touch.deviceType = touchScreen
 touch.orientationAware = 1
@@ -84,7 +84,7 @@ touch.orientation.calibration = none
 touch.distance.calibration = none
 touch.distance.scale = 0.001
 
-# @WeAreRavenS
+# Using @WeAreRavenS build-intouch source
 device.internal = 1
 touch.deviceType = touchScreen
 touch.orientationAware = 1

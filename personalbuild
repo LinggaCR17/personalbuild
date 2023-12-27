@@ -3,17 +3,17 @@
 # Stealing ain't cool. Magisk mirror path...
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
-sync; sleep 1 # Avoid first boot complete
+sync; sleep 0 # Avoid crashed at first boot complete
 
 if [[ "$(id -u)" -ne 0 ]]; then
-	echo "No root permissions. Exiting."
+	echo " ! No root permissions. Exiting."
 	exit 1
 fi
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]; do
 	if [[ ! -d "$MAGISKTMP" ]]; then
-		sleep 1 # isolation, isolated process
 		swapoff /dev/block/zram0 >/dev/null 2>&1; echo 1 > /sys/block/zram0/reset
+		sleep 1 # isolation, isolated process
 	fi
 done
 
@@ -47,31 +47,37 @@ write()
 	fi
 	
 	if ! echo "$2" > "$1" 2> /dev/null; then
-		echo "Failed: $1 → $2"; return 1
+		echo " ! Isn't executed, read-only $1 → $2"; return 1
 	fi
 }
 
-for i in /sys/block/*/queue/read_ahead_kb; do
-	echo 128 > "$i"
-	for i in /sys/block/*/queue/nr_requests; do
-		echo 64 > "$i"
+for personal in /sys/block/*/queue/read_ahead_kb; do
+	echo 128 > "$personal"
+	for build in /sys/block/*/queue/nr_requests; do
+		echo 64 > "$build"
 	done
 done
 
-for i in /sys/devices/platform/soc/1d84000.ufshc; do
-	echo 1 > "$i"/clkgate_enable
-	echo 1 > "$i"/clkscale_enable
-	echo 1 > "$i"/hibern8_on_idle_enable
+for personal in /sys/devices/platform/soc/1d84000.ufshc; do
+	echo 1 > "$personal"/clkgate_enable
+	echo 1 > "$personal"/clkscale_enable
+	echo 1 > "$personal"/hibern8_on_idle_enable
+	for build in /sys/devices/platform/charger; do
+		echo 7400 > "$build"/ADC_Charger_Voltage
+	done
 done
 
-for i in /sys/block/*/queue/iostats; do
-	echo 0 > "$i"
+for personal in /sys/block/*/queue/iostats; do
+	echo 0 > "$personal"
+	for build in /sys/block/*-*/queue/iostats; do
+		echo 0 > "$build"
+	done 
 done 
 
-for i in /sys/module/*/parameters/debug_mask; do 
-	echo 0 > "$i"
-	for i in /sys/module/*/parameters/debug_level; do 
-		echo 0 > "$i"
+for personal in /sys/module/*/parameters/debug_mask; do 
+	echo 0 > "$personal"
+	for build in /sys/module/*/parameters/debug_level; do 
+		echo 0 > "$build"
 	done
 done
 
@@ -89,29 +95,29 @@ if [ "$(getprop init.svc.perfd)" = running ]; then
 	fi
 fi
 
-for virt in /sys/class/graphics/fb0; do
-	echo U:720x1600p-0 > "$virt"/modes
-	echo 128 > "$virt"/bits_per_pixel
-	for para in /sys/module/ged/parameters; do
-		echo 1 > "$para"/ap_self_frc_detection_rate
-		echo 1 > "$para"/boost_amp
-		echo 1 > "$para"/boost_extra
-		echo 1 > "$para"/boost_gpu_enable
-		echo 1 > "$para"/cpu_boost_policy
-		echo 1 > "$para"/enable_cpu_boost
-		echo 1 > "$para"/enable_game_self_frc_detect
-		echo 1 > "$para"/enable_gpu_boost
-		echo 1 > "$para"/ged_boost_enable
-		echo 1 > "$para"/ged_force_mdp_enable
-		echo 1 > "$para"/ged_smart_boost
-		echo 1 > "$para"/gpu_dvfs_enable
-		echo 1 > "$para"/gx_boost_on
-		echo 1 > "$para"/gx_dfps
-		echo 1 > "$para"/gx_force_cpu_boost
-		echo 1 > "$para"/gx_frc_mode
-		echo 1 > "$para"/gx_game_mode
-		echo 1 > "$para"/is_GED_KPI_enabled
-		echo 550000 > "$para"/gpu_cust_upbound_freq
+for virtonal in /sys/class/graphics/fb0; do
+	echo U:720x1600p-0 > "$virtonal"/modes
+	echo 128 > "$virtonal"/bits_per_pixel
+	for paraild in /sys/module/ged/parameters; do
+		echo 1 > "$paraild"/ap_self_frc_detection_rate
+		echo 1 > "$paraild"/boost_amp
+		echo 1 > "$paraild"/boost_extra
+		echo 1 > "$paraild"/boost_gpu_enable
+		echo 1 > "$paraild"/cpu_boost_policy
+		echo 1 > "$paraild"/enable_cpu_boost
+		echo 1 > "$paraild"/enable_game_self_frc_detect
+		echo 1 > "$paraild"/enable_gpu_boost
+		echo 1 > "$paraild"/ged_boost_enable
+		echo 1 > "$paraild"/ged_force_mdp_enable
+		echo 1 > "$paraild"/ged_smart_boost
+		echo 1 > "$paraild"/gpu_dvfs_enable
+		echo 1 > "$paraild"/gx_boost_on
+		echo 1 > "$paraild"/gx_dfps
+		echo 1 > "$paraild"/gx_force_cpu_boost
+		echo 1 > "$paraild"/gx_frc_mode
+		echo 1 > "$paraild"/gx_game_mode
+		echo 1 > "$paraild"/is_GED_KPI_enabled
+		echo 560000 > "$paraild"/gpu_cust_upbound_freq
 	done
 done
 
@@ -119,6 +125,7 @@ UINT_MAX="4294967295" # phase one
 SCHED_PERIOD="$((1 * 1000 * 1000))"
 SCHED_TASKS="10"
 
+write /dev/graphics/fb0 1
 write /dev/stune/foreground/schedtune.prefer_idle 1
 write /dev/stune/top-app/schedtune.boost 10
 write /dev/stune/top-app/schedtune.prefer_idle 1
@@ -140,7 +147,8 @@ write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_pwr 0
 write /sys/kernel/debug/sched_features HRTICK
 write /sys/kernel/debug/tracing/tracing_on 0
 write /sys/kernel/fast_charge/force_fast_charge 1
-write /sys/kernel/printk_mode/printk_mode 0write /sys/module/printk/parameters/ignore_loglevel Y
+write /sys/kernel/printk_mode/printk_mode 0
+write /sys/module/printk/parameters/ignore_loglevel Y
 write /sys/kernel/tracing/tracing_on 0
 write /sys/module/debug/parameters/enable_event_log 0
 write /sys/module/ext4/parameters/mballoc_debug 0
@@ -212,6 +220,14 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
 			write "$cpu/scaling_governor" "$governor"; break
 		fi
 	done
+done
+
+find /sys/devices/system/cpu/ -name performance -type d | while IFS= read -r governor; do
+	write "$governor/up_rate_limit_us" 0
+	write "$governor/down_rate_limit_us" 0
+	write "$governor/rate_limit_us" 0
+	write "$governor/hispeed_load" 85
+	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
 find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r governor; do
@@ -308,6 +324,14 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
 	done
 done
 
+find /sys/devices/system/cpu/ -name performance -type d | while IFS= read -r governor; do
+	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
+	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
+	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
+	write "$governor/hispeed_load" 90
+	write "$governor/hispeed_freq" "$UINT_MAX"
+done
+
 find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
@@ -379,15 +403,15 @@ write /dev/cpuset/foreground/boost/cpus 4-7
 write /dev/cpuset/foreground/cpus 0-3,4-7
 write /dev/cpuset/top-app/cpus 0-7
 
-for amog in /sys/bus/cpu/devices/*/cpufreq; do
-	echo "$UINT_MAX" > "$amog"/scaling_max_freq
-	echo "$UINT_MAX" > "$amog"/scaling_min_freq
-	echo "$UINT_MAX" > "$amog"/cpuinfo_max_freq
-	echo "$UINT_MAX" > "$amog"/cpuinfo_min_freq
-	echo "$UINT_MAX" > "$amog"/cpuinfo_cur_freq
-	echo "$UINT_MAX" > "$amog"/cpuinfo_min_freq
-	echo "$UINT_MAX" > "$amog"/scaling_cur_freq
-	echo <supported> "$amog"/scaling_setspeed
+for amognal in /sys/bus/cpu/devices/*/cpufreq; do
+	echo "$UINT_MAX" > "$amognal"/scaling_max_freq
+	echo "$UINT_MAX" > "$amognal"/scaling_min_freq
+	echo "$UINT_MAX" > "$amognal"/cpuinfo_max_freq
+	echo "$UINT_MAX" > "$amognal"/cpuinfo_min_freq
+	echo "$UINT_MAX" > "$amognal"/cpuinfo_cur_freq
+	echo "$UINT_MAX" > "$amognal"/cpuinfo_min_freq
+	echo "$UINT_MAX" > "$amognal"/scaling_cur_freq
+	echo <supported> > "$amognal"/scaling_setspeed
 done
 
 function fkmconfig()
@@ -405,8 +429,8 @@ function fkmconfig()
 	echo 3022 > /proc/sys/vm/min_free_kbytes
 	echo 50 > /proc/sys/vm/overcommit_ratio
 	
-	for comp in lzo lz4 zstd; do
-		echo "$comp" > /sys/block/zram0/comp_algorithm
+	for compild in lzo lz4 zstd; do
+		echo "$compild" > /sys/block/zram0/comp_algorithm
 	done
 	
 	echo 4294967296 > /sys/block/zram0/disksize
@@ -436,15 +460,15 @@ function biglittlecore()
 	echo 19000 1401600:39000 > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
 	echo 85 1401600:80 > /sys/devices/system/cpu/cpufreq/performance/target_loads
 	
-	for perf in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
-		echo "$perf" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-		echo "$perf" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
-		echo "$perf" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
-		echo "$perf" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
-		echo "$perf" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
-		echo "$perf" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
-		echo "$perf" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
-		echo "$perf" > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
+	for perfonal in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+		echo "$perfonal" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+		echo "$perfonal" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+		echo "$perfonal" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+		echo "$perfonal" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+		echo "$perfonal" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+		echo "$perfonal" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+		echo "$perfonal" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
+		echo "$perfonal" > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
 	done
 	
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/io_is_busy
@@ -544,7 +568,7 @@ function biglittlecore()
 	fi
 }
 
-biglittlecore
+biglittlecore;
 
 # Personalidentify you should read this 'https://github.com/LinggaCR17/personalbuild/blob/main/system.prop' before editing any script stuff
 {
@@ -636,7 +660,7 @@ biglittlecore
 	aint persist.vendor.disable_idle_fps true
 	aint persist.vendor.product.perf 1
 	aint persist.vendor.qti.inputopts.enable true
-	aint persist.vendor.qti.inputopts.movetouchslop 0.6
+	aint persist.vendor.qti.inputopts.movetouchslop 0.1
 	aint persist.vendor.verbose_logging_enabled false
 	aint profiler.force_disable_err_rpt 1
 	aint profiler.force_disable_ulog 1
@@ -749,7 +773,7 @@ function zramswapper()
 	fi
 }
 
-zramswapper
+zramswapper;
 
 personal()
 {
@@ -761,6 +785,7 @@ personal()
 
 {
 	personal;
+	
 	cp -af "$MODDIR/module.prop" "$TMPFILE"
 	sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=Nothing no end /g' "$TMPFILE"
 	flock "$MODDIR/module.prop"
@@ -769,6 +794,6 @@ personal()
 }&
 
 swapon /dev/block/zram0 >/dev/null 2>&1
-sysbat
+sysbat;
 
 exit 0

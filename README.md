@@ -21,3 +21,6 @@ Use cerdits(@linggacr17) to honor me in addition to donating.
 I will no longer maintain if I am not listed.
 
 ###### I do my best to provide the best and most universal tweaks.
+
+- Category: D (mid implementation experimental tools).
+- Category: C (mid rare implementation experimental tools).

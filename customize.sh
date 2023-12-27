@@ -22,15 +22,16 @@ if [ ! -d system/xbin ]; then
     rmdir $stealing/system/xbin
 fi
 
-function FindThermal() {
+function FindThermal()
+{
     for systemThermal in `ls $1 | grep $2`
     do
         if [[ "$systemThermal" == *"-BlankFile"* ]]; then
-        	ui_print "- ignoring pervious file"
+        	ui_print "- ignoring pervious file → $1/$systemThermal"
         elif [[ "$systemThermal" == *"-OriFile.bck"* ]]; then
-        	ui_print "- ignoring conflict file"
+        	ui_print "- ignoring conflict file → $1/$systemThermal"
         else
-        	ui_print "- found $1/$systemThermal"
+        	ui_print "- found → $1/$systemThermal"
         	system=system/vendor
         	mkdir -p $stealing/$system/bin; mkdir -p $stealing/$system/etc
             if [ $2 == "thermal" ];then

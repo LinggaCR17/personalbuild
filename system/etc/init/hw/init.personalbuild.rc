@@ -23,15 +23,20 @@ on early-init
 	write /proc/sys/vm/watermark_boost_factor 0
 	write /sys/kernel/tracing/instances/bootreceiver/buffer_size_kb 1
 	write /sys/kernel/tracing/instances/bootreceiver/trace_options disable_on_free
-	write /sys/kernel/tracing/instances/bootreceiver/events/error_report/error_report_end/enable 1
+	write /sys/kernel/tracing/instances/bootreceiver/events/error_report/error_report_end/enable 0
 
 on boot && property:ro.config.low_ram=true
 	write /proc/sys/vm/dirty_expire_centisecs 200
 	write /proc/sys/vm/dirty_background_ratio 10
 	resetprop -v -n ro.config.low_ram true
 
-on boot && property:suspend.disable_sync_on_suspend=true
-	write /sys/power/sync_on_suspend 0
+on boot && property:suspend.disable_sync_on_suspend=false
+	write /sys/power/sync_on_suspend 1
+	resetprop -v -n suspend.disable_sync_on_suspend false
+
+on property:perf.drop_caches=3
+	write /proc/sys/vm/drop_caches 3
+    resetprop -v -n perf.drop_caches 3
 
 on boot
 	write /proc/sys/net/core/xfrm_acq_expires 3600
@@ -45,10 +50,6 @@ on boot
 	write /dev/sys/block/by-name/userdata/queue/discard_max_bytes 134217728
 	write /dev/sys/block/by-name/rootdisk/queue/discard_max_bytes 134217728
 
-on property:perf.drop_caches=3
-	write /proc/sys/vm/drop_caches 3
-    resetprop -v -n perf.drop_caches 0
-
 on load_bpf_programs && property:sys.init.perf_lsm_hooks=1
 	write /proc/sys/kernel/perf_event_paranoid -1
 on property:security.perf_harden=0 && property:sys.init.perf_lsm_hooks=""
@@ -60,11 +61,12 @@ on property:security.perf_harden=0
 	write /proc/sys/kernel/perf_event_max_sample_rate ${debug.perf_event_max_sample_rate:-100000}
 	write /proc/sys/kernel/perf_cpu_time_max_percent ${debug.perf_cpu_time_max_percent:-25}
 	write /proc/sys/kernel/perf_event_mlock_kb ${debug.perf_event_mlock_kb:-516}
-
+	resetprop -v -n security.perf_harden 0
 on property:security.perf_harden=1
 	write /proc/sys/kernel/perf_event_max_sample_rate 100000
 	write /proc/sys/kernel/perf_cpu_time_max_percent 25
 	write /proc/sys/kernel/perf_event_mlock_kb 516
+	resetprop -v -n security.perf_harden 1
 
 on property:security.lower_kptr_restrict=1
 	write /proc/sys/kernel/kptr_restrict 0

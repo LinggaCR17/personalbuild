@@ -80,4 +80,22 @@ echo 7400 > /sys/class/power_supply/mtk-master-charger/voltage_now
 echo 7400 > /sys/class/power_supply/mtk-slave-charger/voltage_now
 echo 7400 > /sys/class/power_supply/mtk_charger_type/voltage_now
 
+build()
+{
+	MODDIR="${0%/*}"
+	MODNAME="${MODDIR##*/}"
+	PROPFILE="$MAGISKTMP/.magisk/modules/$MODNAME/module.prop"
+	TMPFILE="/data/adb/modules/$MODNAME/module.prop"
+}
+
+{
+	build;
+	
+	cp -af "$MODDIR/module.prop" "$TMPFILE"
+	sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=/g' "$TMPFILE"
+	flock "$MODDIR/module.prop"
+	mount --bind "$TMPFILE" "$PROPFILE"
+	chmod 755 "$MODDIR/scene"
+}&
+
 exit 0

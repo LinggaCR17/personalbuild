@@ -766,7 +766,7 @@ function zramswapper()
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config put activity_manager max_empty_time_millis 43200000
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd settings put global settings_enable_monitor_phantom_procs false
 	
-	mkswap /dev/block/zram0 >/dev/null 2>&1
+	echo $((4096*8192*16384)) > /sys/block/zram0/disksize; mkswap /dev/block/zram0 >/dev/null 2>&1
 	
 	sleep 1
 	if true; then

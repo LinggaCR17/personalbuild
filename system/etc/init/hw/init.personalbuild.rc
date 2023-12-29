@@ -4,30 +4,109 @@
 #
 
 on early-init
-	write /proc/sys/kernel/sysrq 0
-	write /dev/cpuctl/nnapi-hal/cpu.uclamp.min 1
 	write /dev/cpuctl/nnapi-hal/cpu.uclamp.latency_sensitive 1
+	write /dev/cpuctl/nnapi-hal/cpu.uclamp.min 1
+	write /dev/cpuset/foreground/boost/cpus 4-7
+	write /dev/cpuset/foreground/cpus 0-3,4-7
+	write /dev/cpuset/top-app/cpus 0-7
+	write /dev/graphics/fb0 1
+	write /dev/stune/foreground/schedtune.prefer_idle 1
 	write /dev/stune/nnapi-hal/schedtune.boost 1
 	write /dev/stune/nnapi-hal/schedtune.prefer_idle 1
-	write /proc/sys/kernel/panic_on_oops 0
-	write /proc/sys/kernel/hung_task_timeout_secs 0
+	write /dev/stune/top-app/schedtune.boost 1
+	write /dev/stune/top-app/schedtune.boost 10
+	write /dev/stune/top-app/schedtune.prefer_idle 0
+	write /dev/stune/top-app/schedtune.prefer_idle 1
 	write /proc/cpu/alignment 4
-	write /proc/sys/kernel/sched_tunable_scaling 0
-	write /proc/sys/kernel/sched_latency_ns 10000000
-	write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
-	write /proc/sys/kernel/sched_child_runs_first 0
-	write /proc/sys/kernel/randomize_va_space 2
-	write /proc/sys/vm/mmap_min_addr 32768
-	write /proc/sys/net/unix/max_dgram_qlen 24000
 	write /proc/sys/abi/swp 1
+	write /proc/sys/debug/exception-trace 0
+	write /proc/sys/fs/dir-notify-enable 0
+	write /proc/sys/kernel/compat-log 0
+	write /proc/sys/kernel/hung_task_timeout_secs 0
+	write /proc/sys/kernel/panic_on_oops 0
+	write /proc/sys/kernel/perf_cpu_time_max_percent 3
+	write /proc/sys/kernel/perf_cpu_time_max_percent 5
+	write /proc/sys/kernel/printk 0 0 0 0
+	write /proc/sys/kernel/printk_devkmsg off
+	write /proc/sys/kernel/randomize_va_space 2
+	write /proc/sys/kernel/sched_autogroup_enabled 1
+	write /proc/sys/kernel/sched_child_runs_first 0
+	write /proc/sys/kernel/sched_child_runs_first 1
+	write /proc/sys/kernel/sched_latency_ns 10000000
+	write /proc/sys/kernel/sched_migration_cost_ns 5000000
+	write /proc/sys/kernel/sched_min_task_util_for_colocation 0
+	write /proc/sys/kernel/sched_nr_migrate 32
+	write /proc/sys/kernel/sched_nr_migrate 4
+	write /proc/sys/kernel/sched_schedstats 0
+	write /proc/sys/kernel/sched_tunable_scaling 0
+	write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
+	write /proc/sys/kernel/sysrq 0
+	write /proc/sys/net/ipv4/tcp_ecn 1
+	write /proc/sys/net/ipv4/tcp_fastopen 3
+	write /proc/sys/net/ipv4/tcp_syncookies 0
+	write /proc/sys/net/unix/max_dgram_qlen 24000
+	write /proc/sys/vm/block_dump 0
+	write /proc/sys/vm/dirty_background_ratio 10
+	write /proc/sys/vm/dirty_background_ratio 3
+	write /proc/sys/vm/dirty_expire_centisecs 3000
+	write /proc/sys/vm/dirty_ratio 30
+	write /proc/sys/vm/dirty_writeback_centisecs 3000
+	write /proc/sys/vm/mmap_min_addr 32768
+	write /proc/sys/vm/oom_dump_tasks 0
+	write /proc/sys/vm/page-cluster 0
+	write /proc/sys/vm/stat_interval 10
+	write /proc/sys/vm/swappiness 100
+	write /proc/sys/vm/vfs_cache_pressure 100
+	write /proc/sys/vm/vfs_cache_pressure 200
 	write /proc/sys/vm/watermark_boost_factor 0
+	write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
+	write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
+	write /sys/devices/system/cpu/cpufreq/performance/boost 1
+	write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
+	write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
+	write /sys/kernel/debug/debug_enabled N
+	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
+	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
+	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_drv 0
+	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_mem 0
+	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_pwr 0
+	write /sys/kernel/debug/sched_features HRTICK
+	write /sys/kernel/debug/sched_features NEXT_BUDDY
+	write /sys/kernel/debug/sched_features NO_TTWU_QUEUE
+	write /sys/kernel/debug/sched_features TTWU_QUEUE
+	write /sys/kernel/debug/tracing/tracing_on 0
+	write /sys/kernel/fast_charge/force_fast_charge 1
+	write /sys/kernel/gpu/gpu_governor performance
+	write /sys/kernel/printk_mode/printk_mode 0
 	write /sys/kernel/tracing/instances/bootreceiver/buffer_size_kb 1
-	write /sys/kernel/tracing/instances/bootreceiver/trace_options disable_on_free
 	write /sys/kernel/tracing/instances/bootreceiver/events/error_report/error_report_end/enable 0
+	write /sys/kernel/tracing/instances/bootreceiver/trace_options disable_on_free
+	write /sys/kernel/tracing/tracing_on 0
+	write /sys/module/adreno_idler/parameters/adreno_idler_active 0
+	write /sys/module/debug/parameters/enable_event_log 0
+	write /sys/module/ext4/parameters/mballoc_debug 0
+	write /sys/module/ip6_tunnel/parameters/log_ecn_error N
+	write /sys/module/lazyplug/parameters/nr_possible_cores 8
+	write /sys/module/logger/parameters/enabled 0
+	write /sys/module/logger/parameters/log_enabled 0
+	write /sys/module/mali/parameters/mali_debug_level 0
+	write /sys/module/mmc_core/parameters/use_spi_crc 0
+	write /sys/module/msm_performance/parameters/touchboost 1
+	write /sys/module/msm_show_resume_irq/parameters/debug_mask 0
+	write /sys/module/printk/parameters/console_suspend Y
+	write /sys/module/printk/parameters/cpu N
+	write /sys/module/printk/parameters/ignore_loglevel Y
+	write /sys/module/printk/parameters/pid N
+	write /sys/module/printk/parameters/time N
+	write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
+	write /sys/module/rpm_smd/parameters/debug_mask 0
+	write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
+	write dev/cpuset/background/cpus 0-3
+	write dev/cpuset/foreground/cpus 0-7
 
 on boot && property:ro.config.low_ram=true
-	write /proc/sys/vm/dirty_expire_centisecs 200
 	write /proc/sys/vm/dirty_background_ratio 10
+	write /proc/sys/vm/dirty_expire_centisecs 200
 	resetprop -v -n ro.config.low_ram true
 
 on boot && property:suspend.disable_sync_on_suspend=false
@@ -39,16 +118,16 @@ on property:perf.drop_caches=3
     resetprop -v -n perf.drop_caches 3
 
 on boot
-	write /proc/sys/net/core/xfrm_acq_expires 3600
-	write /proc/sys/vm/overcommit_memory 1
-	write /proc/sys/vm/min_free_order_shift 4
+	write /dev/sys/block/by-name/rootdisk/queue/discard_max_bytes 134217728
+	write /dev/sys/block/by-name/userdata/queue/discard_max_bytes 134217728
 	write /dev/sys/fs/by-name/userdata/cp_interval 200
 	write /dev/sys/fs/by-name/userdata/gc_urgent_sleep_time 50
-	write /dev/sys/fs/by-name/userdata/iostat_period_ms 1000
 	write /dev/sys/fs/by-name/userdata/iostat_enable 0
+	write /dev/sys/fs/by-name/userdata/iostat_period_ms 1000
 	write /dev/sys/fs/by-name/userdata/seq_file_ra_mul 128
-	write /dev/sys/block/by-name/userdata/queue/discard_max_bytes 134217728
-	write /dev/sys/block/by-name/rootdisk/queue/discard_max_bytes 134217728
+	write /proc/sys/net/core/xfrm_acq_expires 3600
+	write /proc/sys/vm/min_free_order_shift 4
+	write /proc/sys/vm/overcommit_memory 1
 
 on load_bpf_programs && property:sys.init.perf_lsm_hooks=1
 	write /proc/sys/kernel/perf_event_paranoid -1
@@ -58,13 +137,13 @@ on property:security.perf_harden=1 && property:sys.init.perf_lsm_hooks=""
 	write /proc/sys/kernel/perf_event_paranoid 3
 
 on property:security.perf_harden=0
-	write /proc/sys/kernel/perf_event_max_sample_rate ${debug.perf_event_max_sample_rate:-100000}
 	write /proc/sys/kernel/perf_cpu_time_max_percent ${debug.perf_cpu_time_max_percent:-25}
+	write /proc/sys/kernel/perf_event_max_sample_rate ${debug.perf_event_max_sample_rate:-100000}
 	write /proc/sys/kernel/perf_event_mlock_kb ${debug.perf_event_mlock_kb:-516}
 	resetprop -v -n security.perf_harden 0
 on property:security.perf_harden=1
-	write /proc/sys/kernel/perf_event_max_sample_rate 100000
 	write /proc/sys/kernel/perf_cpu_time_max_percent 25
+	write /proc/sys/kernel/perf_event_max_sample_rate 100000
 	write /proc/sys/kernel/perf_event_mlock_kb 516
 	resetprop -v -n security.perf_harden 1
 

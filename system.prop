@@ -31,6 +31,7 @@ debug.hwui.renderer=skiagl
 debug.hwui.show_dirty_regions=false
 debug.hwui.show_layers_updates=false
 debug.hwui.show_non_rect_clip=hide
+debug.hwui.skia_atrace_enabled=false
 debug.hwui.skip_empty_damage=true
 debug.hwui.skp_filename=/sdcard/
 debug.hwui.use_buffer_age=false
@@ -133,7 +134,7 @@ ro.vendor.qti.core.ctl_min_cpu=2
 ro.vendor.qti.sys.fw.bservice_enable=true
 ro.vendor.tran_perf_plus=1
 ro.vold.umsdirtyratio=5
-ro.zygote.disable_gl_preload=true
+ro.zygote.disable_gl_preload=1
 skia.force_gl_texture=1
 sys.display_panel_lpm=true
 sys.init.perf_lsm_hooks=1
@@ -189,6 +190,12 @@ ro.adreno.series=500
 ro.adreno.edition=Vulkan
 ro.adreno.version=4.5
 ro.adreno.vulkan=1.1.128
+
+# ANGLE feature
+ro.gfx.angle.supported=true
+debug.angle.rules=/data/local/tmp/a4a_rules.json
+skia_enable_gpu=true
+skia_use_vulkan=true
 
 # Misc Deprecated properties
 ro.HOME_APP_ADJ=1

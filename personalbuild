@@ -749,6 +749,15 @@ biglittlecore;
 	aint ro.zram.default 0
 	aint vm.swappiness 100
 
+	aint ro.adreno.android Android R/S/T/U
+	aint ro.adreno.sdk 28
+	aint ro.adreno.arch arm64
+	aint ro.adreno.soc msm8998
+	aint ro.adreno.series 500
+	aint ro.adreno.edition Vulkan
+	aint ro.adreno.version 4.5
+	aint ro.adreno.vulkan 1.1.128
+
 	aint ro.HOME_APP_ADJ 1
 }&
 

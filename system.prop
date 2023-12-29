@@ -180,5 +180,15 @@ persist.sys.zram_enabled=1
 ro.zram.default=0
 vm.swappiness=100
 
+# Adreno Team Graphics Drivers prop file
+ro.adreno.android=Android R/S/T/U
+ro.adreno.sdk=28
+ro.adreno.arch=arm64
+ro.adreno.soc=msm8998
+ro.adreno.series=500
+ro.adreno.edition=Vulkan
+ro.adreno.version=4.5
+ro.adreno.vulkan=1.1.128
+
 # Misc Deprecated properties
 ro.HOME_APP_ADJ=1

@@ -1,4 +1,5 @@
 rm -rf /data/adb/modules/personalbuild;
+
 ABI="$(getprop ro.product.cpu.abi)"
 
 if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == "value=1" ]]; then
@@ -86,7 +87,7 @@ function FindThermal()
         	ui_print "- found → $1/$systemThermal"
         	system=system/vendor
         	mkdir -p $stealing/$system/bin; mkdir -p $stealing/$system/etc
-            if [ $2 == "thermal" ];then
+            if [ $2 == "thermal" ]; then
                 if [ ! -f "$3/$systemThermal-BlankFile" ]; then
                 	echo "" > "$3/$systemThermal-BlankFile"
                 fi
@@ -95,7 +96,7 @@ function FindThermal()
                 fi
                 cp -af "$3/$systemThermal-BlankFile" "$3/$systemThermal"
             else
-                if [ ! -f "$3/$systemThermal" ] ; then
+                if [ ! -f "$3/$systemThermal" ]; then
                     cp -af "$1/$systemThermal" "$3/$systemThermal"
                 fi
             fi

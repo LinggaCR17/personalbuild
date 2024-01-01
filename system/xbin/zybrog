@@ -1,6 +1,7 @@
 #!/system/bin/sh
 
 # Using Universal system Thermal Killer @ZyCromerZ based source
+
 echo '- Preparing Zybrog'
 echo ""
 
@@ -29,7 +30,7 @@ function SetThermalTo()
 	for systemThermal in `ls $1 | grep $2`; do
         systemThermal=${systemThermal/"-BlankFile"/""}
         systemThermal=${systemThermal/"-OriFile.bck"/""}
-        if [ $3 == "0" ];then
+        if [ $3 == "0" ]; then
             cp -af "$1/$systemThermal-BlankFile" "$1/$systemThermal"; else
             cp -af "$1/$systemThermal-OriFile.bck" "$1/$systemThermal"
         fi
@@ -43,8 +44,8 @@ fi
 
 brogpath=/data/adb/modules/personalbuild
 
-if [ ! -z "$1" ];then
-    if [ $1 == "0" ];then
+if [ ! -z "$1" ]; then
+    if [ $1 == "0" ]; then
         SetThermalTo "$modulePath/system/bin" "*-BlankFile" "0"
         SetThermalTo "$modulePath/system/vendor/bin" "*-BlankFile" "0"
         SetThermalTo "$modulePath/system/vendor/etc" "*-BlankFile" "0" 

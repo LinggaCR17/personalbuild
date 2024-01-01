@@ -17,6 +17,8 @@ https://github.com/LinggaCR17/personalbuild/blob/main/personalbuild
 ### new release, page ###
 https://github.com/LinggaCR17/personalbuild/releases
 
+![1000001934](https://github.com/LinggaCR17/personalbuild/assets/43074091/b85bea6f-ab97-4542-ab8e-d9d39c5c51d9)
+
 # ReadThis:
 Use cerdits(@linggacr17) to honor me in addition to donating.
 
@@ -27,3 +29,7 @@ I will no longer maintain if I am not listed.
 - A Implementation of Magisk Module, KernelSU
 - Category: D (mid implementation experimental tools).
 - Category: C (mid rare implementation experimental tools).
+
+###### Big thanks to
+* Feravolt (FDE.AI) implementation
+* HuskyDG (Kitsune Mask) Magisk Delta

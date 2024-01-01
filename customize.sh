@@ -1,4 +1,56 @@
 rm -rf /data/adb/modules/personalbuild;
+ABI="$(getprop ro.product.cpu.abi)"
+
+if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == "value=1" ]]; then
+	ui_print "- Injected into Zygisk"
+	if [ "$ABI" == "armeabi-v7a" ]; then
+		  ABI32=armeabi-v7a
+		  ui_print "- Using $ABI32"
+		  mkdir -p $MODPATH/system/lib
+		  mv $MODPATH/libs/$ABI32/*.so $MODPATH/system/lib
+		  rm -rf $MODPATH/libs
+		elif [ "$ABI" == "arm64" ]; then
+		  ABI64=arm64-v8a
+		  ui_print "- Using $ABI64"
+		  mkdir -p $MODPATH/system/lib64
+		  mv $MODPATH/libs/$ABI64/*.so $MODPATH/system/lib64
+		  rm -rf $MODPATH/libs
+		elif [ "$ABI" == "x86" ]; then
+		  ABI86=x86
+		  ui_print "- Doesn't supported $ABI86"
+		  abort
+		elif [ "$ABI" == "x86_64" ]; then
+		  ABI86_64=x86_64
+		  ui_print "- Doesn't supported $ABI86_64"
+		  abort
+		fi
+	sed -i "/version=/c version=13-zygisk" /data/adb/modules_update/personalbuild/module.prop; else
+	if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == "value=0" ]]; then
+		ui_print "- Install as Normal module"
+		if [ "$ABI" == "armeabi-v7a" ]; then
+		  ABI32=armeabi-v7a
+		  ui_print "- Using $ABI32"
+		  mkdir -p $MODPATH/system/lib
+		  mv $MODPATH/libs/$ABI32/*.so $MODPATH/system/lib
+		  rm -rf $MODPATH/libs
+		elif [ "$ABI" == "arm64" ]; then
+		  ABI64=arm64-v8a
+		  ui_print "- Using $ABI64"
+		  mkdir -p $MODPATH/system/lib64
+		  mv $MODPATH/libs/$ABI64/*.so $MODPATH/system/lib64
+		  rm -rf $MODPATH/libs
+		elif [ "$ABI" == "x86" ]; then
+		  ABI86=x86
+		  ui_print "- Doesn't supported $ABI86"
+		  abort
+		elif [ "$ABI" == "x86_64" ]; then
+		  ABI86_64=x86_64
+		  ui_print "- Doesn't supported $ABI86_64"
+		  abort
+		fi
+	sed -i "/version=/c version=13-normal" /data/adb/modules_update/personalbuild/module.prop
+	fi
+fi
 
 stealing="$MODPATH"
 aint="personalbuild"

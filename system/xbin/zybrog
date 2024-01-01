@@ -55,7 +55,8 @@ if [ ! -z "$1" ];then
         SetThermalTo "$modulePath/system/vendor/etc" "*-OriFile.bck" "1" 
         echo "1" > "$brogpath/system/vendor/etc/thermalStatus.info"
         echo "  Enabled untouched (using thermal default conf)"
-    fi; else
+    fi
+else
 	echo ""
     echo " GetCurrent status: $StatusThermal"
     echo ""
@@ -64,9 +65,9 @@ if [ ! -z "$1" ];then
     echo "--- -- --- -- --- -- --- -- "
     echo "+- Guide Line -+"
     echo " To Turn On Thermal : "
-    echo "  zybrog -> 1"
+    echo "  zybrog → 1"
     echo " To Turn Off Thermal : "
-    echo "  zybrog -> 0"
+    echo "  zybrog → 0"
     echo "-- --- -- --- -- --- -- --- "
     echo "--- -- --- -- --- -- --- -- "
 fi

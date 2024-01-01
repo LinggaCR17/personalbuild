@@ -14,7 +14,9 @@ fi
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]; do
 	if [[ ! -d "$MAGISKTMP" ]]; then
-		swapoff /dev/block/zram0 >/dev/null 2>&1; echo 1 > /sys/block/zram0/reset
+		swapoff /dev/block/zram0 >/dev/null 2>&1
+		
+		echo 1 > /sys/block/zram0/reset
 		sleep 1 # isolation, isolated process
 	fi
 done
@@ -25,7 +27,10 @@ do
     
 	if [ $sf -eq 1 ]; then
 		service call SurfaceFlinger 1008 i32 1
-		service call SurfaceFlinger 1035 i32 0; service call SurfaceFlinger 1023 i32 0; break; else
+		service call SurfaceFlinger 1035 i32 0
+		service call SurfaceFlinger 1023 i32 0
+		break
+	else
 		sleep 1
 	fi
 done
@@ -38,25 +43,27 @@ aint()
 	local NEWVAL=$3
 	
 	if [[ "$(resetprop $NAME)" = *"$CONTAINS"* ]]; then
-		resetprop -v -n $NAME $NEWVAL
+		resetprop -v -n "$NAME" "$NEWVAL"
 	fi
 }
 
 write()
 {
 	if [[ ! -f "$1" ]]; then
-		return 1; chmod +w "$1" 2> /dev/null
+		return 1
+		chmod +w "$1" 2> /dev/null
 	fi
 	
 	if ! echo "$2" > "$1" 2> /dev/null; then
-		echo " ! Isn't executed, read-only $1 → $2"; return 1
+		echo " ! Isn't executed, read-only $1 → $2"
+		return 1
 	fi
 }
 
 for personal in /sys/block/*/queue/read_ahead_kb; do
-	echo 128 > "$personal"
+	echo 32 > "$personal"
 	for build in /sys/block/*/queue/nr_requests; do
-		echo 64 > "$build"
+		echo 32 > "$build"
 	done
 done
 
@@ -219,12 +226,13 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
 	
 	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
 		if [[ "$avail_govs" == *"$governor"* ]]; then
-			write "$cpu/scaling_governor" "$governor"; break
+			write "$cpu/scaling_governor" "$governor"
+			break
 		fi
 	done
 done
 
-find /sys/devices/system/cpu/ -name performance -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" 0
 	write "$governor/down_rate_limit_us" 0
 	write "$governor/rate_limit_us" 0
@@ -232,7 +240,7 @@ find /sys/devices/system/cpu/ -name performance -type d | while IFS= read -r gov
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" 0
 	write "$governor/down_rate_limit_us" 0
 	write "$governor/rate_limit_us" 0
@@ -240,7 +248,7 @@ find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r gover
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" 0
 	write "$governor/down_rate_limit_us" 0
 	write "$governor/rate_limit_us" 0
@@ -248,14 +256,14 @@ find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r gove
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name interactive -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/timer_rate" 0
 	write "$governor/min_sample_time" 0
 	write "$governor/go_hispeed_load" 85
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name ondemand -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/timer_rate" 0
 	write "$governor/min_sample_time" 0
 	write "$governor/go_hispeed_load" 85
@@ -267,14 +275,15 @@ for queue in /sys/block/*/queue; do
 	
 	for sched in kyber mq-deadline deadline cfq bfq noop none; do
 		if [[ "$avail_scheds" == *"$sched"* ]]; then
-			write "$queue/scheduler" "$sched"; break
+			write "$queue/scheduler" "$sched"
+			break
 		fi
 	done
 	
 	write "$queue/add_random" 0
 	write "$queue/iostats" 0
-	write "$queue/read_ahead_kb" 128
-	write "$queue/nr_requests" 64
+	write "$queue/read_ahead_kb" 32
+	write "$queue/nr_requests" 32
 done
 
 UINT_MAX="4294967295" # phase two
@@ -321,12 +330,13 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
 
 	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
 		if [[ "$avail_govs" == *"$governor"* ]]; then
-			write "$cpu/scaling_governor" "$governor"; break
+			write "$cpu/scaling_governor" "$governor"
+			break
 		fi
 	done
 done
 
-find /sys/devices/system/cpu/ -name performance -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
 	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
@@ -334,7 +344,7 @@ find /sys/devices/system/cpu/ -name performance -type d | while IFS= read -r gov
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
 	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
@@ -342,7 +352,7 @@ find /sys/devices/system/cpu/ -name schedutil -type d | while IFS= read -r gover
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
 	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
@@ -350,14 +360,14 @@ find /sys/devices/system/cpu/ -name scheduplus -type d | while IFS= read -r gove
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name interactive -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/timer_rate" "$((SCHED_PERIOD / 1000))"
 	write "$governor/min_sample_time" "$((SCHED_PERIOD / 1000))"
 	write "$governor/go_hispeed_load" 90
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -name ondemand -type d | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
 	write "$governor/timer_rate" "$((SCHED_PERIOD / 1000))"
 	write "$governor/min_sample_time" "$((SCHED_PERIOD / 1000))"
 	write "$governor/go_hispeed_load" 90
@@ -369,14 +379,15 @@ for queue in /sys/block/*/queue; do
 	
 	for sched in kyber mq-deadline deadline cfq bfq noop none; do
 		if [[ "$avail_scheds" == *"$sched"* ]]; then
-			write "$queue/scheduler" "$sched"; break
+			write "$queue/scheduler" "$sched"
+			break
 		fi
 	done
 	
 	write "$queue/add_random" 0
 	write "$queue/iostats" 0
-	write "$queue/read_ahead_kb" 128
-	write "$queue/nr_requests" 64
+	write "$queue/read_ahead_kb" 32
+	write "$queue/nr_requests" 32
 done
 
 for bjir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
@@ -451,9 +462,6 @@ for kcal in /sys/devices/platform/kcal_ctrl.0; do
 	echo 258 > "$kcal"/kcal_cont
 	echo 236 238 240 > "$kcal"/kcal
 done
-
-settings put global show_angle_in_use_dialog_box 1
-settings put global angle_gl_driver_selection_values angle
 
 function biglittlecore()
 {
@@ -753,19 +761,7 @@ biglittlecore;
 	aint ro.zram.default 0
 	aint vm.swappiness 100
 
-	aint ro.adreno.android Android R/S/T/U
-	aint ro.adreno.sdk 28
-	aint ro.adreno.arch arm64
-	aint ro.adreno.soc msm8998
-	aint ro.adreno.series 500
-	aint ro.adreno.edition Vulkan
-	aint ro.adreno.version 4.5
-	aint ro.adreno.vulkan 1.1.128
-	
 	aint ro.gfx.angle.supported true
-	aint debug.angle.rules /data/local/tmp/a4a_rules.json
-	aint skia_enable_gpu true
-	aint skia_use_vulkan true
 
 	aint ro.HOME_APP_ADJ 1
 }&
@@ -784,7 +780,8 @@ function zramswapper()
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config put activity_manager max_empty_time_millis 43200000
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd settings put global settings_enable_monitor_phantom_procs false
 	
-	echo $((4096*8192*16384)) > /sys/block/zram0/disksize; mkswap /dev/block/zram0 >/dev/null 2>&1
+	echo $((4096*8192*16384)) > /sys/block/zram0/disksize
+	mkswap /dev/block/zram0 >/dev/null 2>&1
 	
 	sleep 1
 	if true; then
@@ -810,7 +807,7 @@ personal()
 	sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=Nothing no end /g' "$TMPFILE"
 	flock "$MODDIR/module.prop"
 	mount --bind "$TMPFILE" "$PROPFILE"
-	chmod 755 "$MODDIR/personalbuild"
+	chmod 777 "$MODDIR/personalbuild"
 }&
 
 swapon /dev/block/zram0 >/dev/null 2>&1

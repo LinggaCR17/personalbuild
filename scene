@@ -70,7 +70,7 @@ echo 4600000 > /sys/class/qcom-battery/restricted_current
 echo 0 > /sys/class/power_supply/battery/current_now
 echo 1 > /sys/class/power_supply/mtk-master-charger/voltage_max
 echo 1 > /sys/class/power_supply/mtk-slave-charger/voltage_max
-echo 3400000 > /sys/class/power_supply/mtk-master-charger/constant_charge_current_max # Also this cause Hardware brick, make sure you're in the right SoC
+echo 5400000 > /sys/class/power_supply/mtk-master-charger/constant_charge_current_max # Also this cause Hardware brick, make sure you're in the right SoC
 echo 44 > /sys/class/power_supply/battery/temperature # Dangerous Overhead for Mediatek devices
 echo 600000 > /sys/class/power_supply/usb/current_max
 echo 6000000 > /sys/class/power_supply/usb/voltage_max
@@ -95,7 +95,7 @@ build()
 	sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=/g' "$TMPFILE"
 	flock "$MODDIR/module.prop"
 	mount --bind "$TMPFILE" "$PROPFILE"
-	chmod 755 "$MODDIR/scene"
+	chmod 777 "$MODDIR/scene"
 }&
 
 exit 0

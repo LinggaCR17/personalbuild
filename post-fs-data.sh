@@ -22,9 +22,9 @@ sed -i "/description=/c description=personalbuild by changing your perf options 
 ${0%/*}/scene
 
 for personal in /sys/block/*/queue/read_ahead_kb; do
-	echo 128 > "$personal"
+	echo 32 > "$personal"
 	for build in /sys/block/*/queue/nr_requests; do
-		echo 64 > "$build"
+		echo 32 > "$build"
 	done
 done
 

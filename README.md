@@ -17,7 +17,7 @@ https://github.com/LinggaCR17/personalbuild/blob/main/personalbuild
 ### new release, page ###
 https://github.com/LinggaCR17/personalbuild/releases
 
-![1000001934](https://github.com/LinggaCR17/personalbuild/assets/43074091/b85bea6f-ab97-4542-ab8e-d9d39c5c51d9)
+![1000001544](https://github.com/LinggaCR17/personalbuild/assets/43074091/258d181c-2a0d-47bd-955f-5f59514d38b9)
 
 # ReadThis:
 Use cerdits (@linggacr17) to honor me in addition to donating.

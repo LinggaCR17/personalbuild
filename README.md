@@ -1,4 +1,4 @@
-# Personalbuild - Simple Performances
+# Personalbuild - Simple Tweaks Implementation
 
 ![1000055833](https://github.com/LinggaCR17/personalbuild/assets/43074091/ed8bb6b7-fd6b-4b6d-996f-38dae3d420fd)
 

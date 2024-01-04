@@ -1,12 +1,12 @@
-# Personalbuild - Simple Performance, Magisk
+# Personalbuild - Simple Performances
 
 ![1000055833](https://github.com/LinggaCR17/personalbuild/assets/43074091/ed8bb6b7-fd6b-4b6d-996f-38dae3d420fd)
 
-- Simple perf Personalbuild open to all sources
-- Make Performance better, zRAM, Schedule tweaks, etc
+- Personalbuild our big, little core
+- Make Performance better, zRAM, Schedule tweaks, Disable thermal, etc
 - By changing your Big, Litte Core. Next level (options)
 
-# Personalbuild is OpenSource!
+# Personalbuild is OpenSource! available
 
 + exec /your8mine/yourFolder/personalbuild
 + sh /your8mine/yourFolder/personalbuild
@@ -20,13 +20,13 @@ https://github.com/LinggaCR17/personalbuild/releases
 ![1000001934](https://github.com/LinggaCR17/personalbuild/assets/43074091/b85bea6f-ab97-4542-ab8e-d9d39c5c51d9)
 
 # ReadThis:
-Use cerdits(@linggacr17) to honor me in addition to donating.
+Use cerdits (@linggacr17) to honor me in addition to donating.
 
 I will no longer maintain if I am not listed.
 
 ###### I do my best to provide the best and most universal tweaks.
 
-- A Implementation of Magisk Module, KernelSU
+- (A) Implementation of Magisk Module, KernelSU
 - Category: D (mid implementation experimental tools).
 - Category: C (mid rare implementation experimental tools).
 

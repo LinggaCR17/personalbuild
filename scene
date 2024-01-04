@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Built-in scene perf QCOM™ mtSoC Mediatek
+# Built-in scene perf QCOM™, mtSoC Mediatek
 chmod 755 /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 chmod 755 /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
 chmod 755 /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_max_freq
@@ -41,9 +41,10 @@ chmod 755 /sys/module/qpnp_smbcharger/*/*
 
 echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/enable
 
-# Built-in scene fc QCOM™ mtSoC Mediatek
+# Built-in scene fc QCOM™, mtSoC Mediatek
 echo 0 > /sys/class/power_supply/battery/input_current_limited
 echo 0 > /sys/class/qcom-battery/restricted_charging
+
 echo 1 > /sys/class/power_supply/battery/allow_hvdcp3
 echo 1 > /sys/class/power_supply/battery/input_current_settled
 echo 1 > /sys/class/power_supply/battery/subsystem/usb/pd_allowed
@@ -51,35 +52,11 @@ echo 1 > /sys/class/power_supply/battery/system_temp_level
 echo 1 > /sys/class/power_supply/usb/pd_allowed
 echo 1 > /sys/kernel/fast_charge/failsafe
 echo 1 > /sys/kernel/fast_charge/force_fast_charge
-echo 150 > /sys/class/power_supply/bms/temp_cool
-echo 460 > /sys/class/power_supply/bms/temp_hot
-echo 460 > /sys/class/power_supply/bms/temp_warm
-echo 3450000 > /sys/class/power_supply/battery/constant_charge_current_max
-echo 3450000 > /sys/class/power_supply/battery/current_max
-echo 3450000 > /sys/class/power_supply/constant_charge_current_max
-echo 3450000 > /sys/class/power_supply/main/constant_charge_current_max
-echo 3450000 > /sys/class/power_supply/main/current_max
-echo 3450000 > /sys/class/power_supply/pc_port/current_max
-echo 3450000 > /sys/class/power_supply/usb/ctm_current_max
-echo 3450000 > /sys/class/power_supply/usb/current_max
-echo 3450000 > /sys/class/power_supply/usb/hw_current_max
-echo 3450000 > /sys/class/power_supply/usb/pd_current_max
-echo 3450000 > /sys/class/power_supply/usb/sdp_current_max
-echo 4600000 > /sys/class/qcom-battery/restricted_current
 
-echo 0 > /sys/class/power_supply/battery/current_now
 echo 1 > /sys/class/power_supply/mtk-master-charger/voltage_max
 echo 1 > /sys/class/power_supply/mtk-slave-charger/voltage_max
-echo 5400000 > /sys/class/power_supply/mtk-master-charger/constant_charge_current_max # Also this cause Hardware brick, make sure you're in the right SoC
-echo 44 > /sys/class/power_supply/battery/temperature # Dangerous Overhead for Mediatek devices
-echo 600000 > /sys/class/power_supply/usb/current_max
-echo 6000000 > /sys/class/power_supply/usb/voltage_max
-echo 6400000 > /sys/class/power_supply/battery/voltage_now
-echo 7400 > /sys/class/power_supply/mtk-gauge/bat_vol_get
-echo 7400 > /sys/class/power_supply/mtk-master-charger/voltage_now
-echo 7400 > /sys/class/power_supply/mtk-slave-charger/voltage_now
-echo 7400 > /sys/class/power_supply/mtk_charger_type/voltage_now
 
+# Make sure that before booting it runs, cause issue because it detects after post-fs-data.sh
 build()
 {
 	MODDIR="${0%/*}"

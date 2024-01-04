@@ -5,19 +5,24 @@
 # Stealing ain't cool. Magisk mirror path...
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
-sync; sleep 0 # Avoid crashed at first boot complete
+# Avoid crashed at first boot complete
+sync
+sleep 0
 
 if [[ "$(id -u)" -ne 0 ]]; then
 	echo " ! No root permissions. Exiting."
+	
 	exit 1
 fi
 
-while [[ "$(getprop sys.boot_completed)" -ne 1 ]]; do
+while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
+do
 	if [[ ! -d "$MAGISKTMP" ]]; then
 		swapoff /dev/block/zram0 >/dev/null 2>&1
-		
 		echo 1 > /sys/block/zram0/reset
-		sleep 1 # isolation, isolated process
+		
+		# Using isolation, isolated process
+		sleep 0
 	fi
 done
 
@@ -60,32 +65,37 @@ write()
 	fi
 }
 
-for personal in /sys/block/*/queue/read_ahead_kb; do
+for personal in /sys/block/*/queue/read_ahead_kb
+do
 	echo 32 > "$personal"
-	for build in /sys/block/*/queue/nr_requests; do
+	for build in /sys/block/*/queue/nr_requests
+	do
 		echo 32 > "$build"
 	done
 done
 
-for personal in /sys/devices/platform/soc/1d84000.ufshc; do
+# Enabling after post-fs-data.sh 'exec' and you can see it directly from the modpath file...
+for personal in /sys/devices/platform/soc/1d84000.ufshc
+do
 	echo 1 > "$personal"/clkgate_enable
 	echo 1 > "$personal"/clkscale_enable
 	echo 1 > "$personal"/hibern8_on_idle_enable
-	for build in /sys/devices/platform/charger; do
-		echo 7400 > "$build"/ADC_Charger_Voltage
-	done
 done
 
-for personal in /sys/block/*/queue/iostats; do
+for personal in /sys/block/*/queue/iostats
+do
 	echo 0 > "$personal"
-	for build in /sys/block/*-*/queue/iostats; do
+	for build in /sys/block/dm-*/queue/iostats
+	do
 		echo 0 > "$build"
 	done 
 done 
 
-for personal in /sys/module/*/parameters/debug_mask; do 
+for personal in /sys/module/*/parameters/debug_mask
+do 
 	echo 0 > "$personal"
-	for build in /sys/module/*/parameters/debug_level; do 
+	for build in /sys/module/*/parameters/debug_level
+	do 
 		echo 0 > "$build"
 	done
 done
@@ -104,10 +114,12 @@ if [ "$(getprop init.svc.perfd)" = running ]; then
 	fi
 fi
 
-for virtonal in /sys/class/graphics/fb0; do
-	echo U:720x1600p-0 > "$virtonal"/modes
-	echo 128 > "$virtonal"/bits_per_pixel
-	for paraild in /sys/module/ged/parameters; do
+for virtonal in /sys/class/graphics/fb0
+do
+	echo U:1468x3264-0 > "$virtonal"/modes
+	echo 32 > "$virtonal"/bits_per_pixel
+	for paraild in /sys/module/ged/parameters
+	do
 		echo 1 > "$paraild"/ap_self_frc_detection_rate
 		echo 1 > "$paraild"/boost_amp
 		echo 1 > "$paraild"/boost_extra
@@ -126,9 +138,114 @@ for virtonal in /sys/class/graphics/fb0; do
 		echo 1 > "$paraild"/gx_frc_mode
 		echo 1 > "$paraild"/gx_game_mode
 		echo 1 > "$paraild"/is_GED_KPI_enabled
-		echo 560000 > "$paraild"/gpu_cust_upbound_freq
 	done
 done
+
+# FDE.AI, FKM default configuration
+write /dev/cpuset//cpu_limit/cpus 0-1
+write /dev/cpuset//restricted/cpus 0-3
+write /dev/cpuset//system-background/cpus 0-3
+write /dev/cpuset/background/cpus 0-1
+write /dev/cpuset/camera-daemon/cpus 0-3
+write /dev/cpuset/cpus 0-3
+write /dev/cpuset/foreground/cpus 0-3
+write /dev/cpuset/top-app/cpus 0-3
+write /dev/stune/background/schedtune.boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/background/schedtune.uclamp.max max
+write /dev/stune/background/schedtune.uclamp.min 0.00
+write /dev/stune/camera-daemon/schedtune.boost 0
+write /dev/stune/camera-daemon/schedtune.prefer_idle 0
+write /dev/stune/camera-daemon/schedtune.uclamp.max max
+write /dev/stune/camera-daemon/schedtune.uclamp.min 0.00
+write /dev/stune/foreground/schedtune.boost 0
+write /dev/stune/foreground/schedtune.prefer_idle 0
+write /dev/stune/foreground/schedtune.uclamp.max max
+write /dev/stune/foreground/schedtune.uclamp.min 0.00
+write /dev/stune/rt/schedtune.boost 0
+write /dev/stune/rt/schedtune.prefer_idle 0
+write /dev/stune/rt/schedtune.uclamp.max max
+write /dev/stune/rt/schedtune.uclamp.min 0.00
+write /dev/stune/schedtune.boost 0
+write /dev/stune/schedtune.prefer_idle 0
+write /dev/stune/top-app/schedtune.boost 69
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.uclamp.max max
+write /dev/stune/top-app/schedtune.uclamp.min max
+write /proc/sys/kernel/random/write_wakeup_threshold 512
+write /proc/sys/kernel/sched_autogroup_enabled 1
+write /proc/sys/kernel/sched_child_runs_first 0
+write /proc/sys/kernel/sched_cstate_aware 1
+write /proc/sys/kernel/sched_energy_aware 1
+write /proc/sys/kernel/sched_latency_ns 10000000
+write /proc/sys/kernel/sched_migration_cost_ns 500000
+write /proc/sys/kernel/sched_min_granularity_ns 2250000
+write /proc/sys/kernel/sched_nr_migrate 32
+write /proc/sys/kernel/sched_rr_timeslice_ms 90
+write /proc/sys/kernel/sched_rt_period_us 1000000
+write /proc/sys/kernel/sched_rt_runtime_us 950000
+write /proc/sys/kernel/sched_schedstats 0
+write /proc/sys/kernel/sched_sync_hint_enable 1
+write /proc/sys/kernel/sched_tunable_scaling 0
+write /proc/sys/kernel/sched_util_clamp_max 1024
+write /proc/sys/kernel/sched_util_clamp_min 1024
+write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
+write /proc/sys/net/ipv4/tcp_congestion_control bic
+write /proc/sys/vm/dirty_background_ratio 12
+write /proc/sys/vm/dirty_expire_centisecs 1816
+write /proc/sys/vm/dirty_ratio 36
+write /proc/sys/vm/dirty_writeback_centisecs 5450
+write /proc/sys/vm/extra_free_kbytes 13500
+write /proc/sys/vm/laptop_mode 0
+write /proc/sys/vm/min_free_kbytes 10240
+write /proc/sys/vm/oom_kill_allocating_task 0
+write /proc/sys/vm/overcommit_ratio 50
+write /proc/sys/vm/swappiness 100
+write /proc/sys/vm/vfs_cache_pressure 94
+write /sys/block/dm-0/queue/add_random 0
+write /sys/block/dm-0/queue/iostats 0
+write /sys/block/dm-0/queue/nomerges 2
+write /sys/block/dm-0/queue/nr_requests 128
+write /sys/block/dm-0/queue/read_ahead_kb 512
+write /sys/block/dm-0/queue/rotational 0
+write /sys/block/dm-0/queue/rq_affinity 1
+write /sys/block/dm-0/queue/scheduler none
+write /sys/block/mmcblk0/queue/add_random 0
+write /sys/block/mmcblk0/queue/iosched/fifo_batch 16
+write /sys/block/mmcblk0/queue/iosched/front_merges 1
+write /sys/block/mmcblk0/queue/iosched/read_expire 501
+write /sys/block/mmcblk0/queue/iosched/write_expire 5001
+write /sys/block/mmcblk0/queue/iosched/writes_starved 2
+write /sys/block/mmcblk0/queue/iostats 0
+write /sys/block/mmcblk0/queue/nomerges 2
+write /sys/block/mmcblk0/queue/nr_requests 128
+write /sys/block/mmcblk0/queue/read_ahead_kb 512
+write /sys/block/mmcblk0/queue/rotational 0
+write /sys/block/mmcblk0/queue/rq_affinity 1
+write /sys/block/mmcblk0/queue/scheduler kyber
+write /sys/block/mmcblk1/queue/add_random 0
+write /sys/block/mmcblk1/queue/iosched/fifo_batch 16
+write /sys/block/mmcblk1/queue/iosched/front_merges 1
+write /sys/block/mmcblk1/queue/iosched/read_expire 501
+write /sys/block/mmcblk1/queue/iosched/write_expire 5001
+write /sys/block/mmcblk1/queue/iosched/writes_starved 2
+write /sys/block/mmcblk1/queue/iostats 0
+write /sys/block/mmcblk1/queue/nomerges 2
+write /sys/block/mmcblk1/queue/nr_requests 128
+write /sys/block/mmcblk1/queue/read_ahead_kb 512
+write /sys/block/mmcblk1/queue/rotational 0
+write /sys/block/mmcblk1/queue/rq_affinity 1
+write /sys/block/mmcblk1/queue/scheduler kyber
+write /sys/block/zram0/comp_algorithm lzo lz4 [zstd]
+write /sys/block/zram0/disksize 4294967296
+write /sys/block/zram0/initstate 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1800000
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 850000
+write /sys/devices/system/cpu/cpufreq/performance/down_rate_limit_us 1000
+write /sys/devices/system/cpu/cpufreq/performance/up_rate_limit_us 1000
+write /sys/module/pstore/parameters/compress deflate
+write /sys/module/usbhid/parameters/kbpoll 0
 
 UINT_MAX="4294967295" # phase one
 SCHED_PERIOD="$((1 * 1000 * 1000))"
@@ -141,12 +258,31 @@ write /dev/stune/top-app/schedtune.prefer_idle 1
 write /proc/sys/debug/exception-trace 0
 write /proc/sys/fs/dir-notify-enable 0
 write /proc/sys/kernel/compat-log 0
+write /proc/sys/kernel/perf_cpu_time_max_percent 5
 write /proc/sys/kernel/printk 0 0 0 0
 write /proc/sys/kernel/printk_devkmsg off
+write /proc/sys/kernel/sched_autogroup_enabled 1
+write /proc/sys/kernel/sched_child_runs_first 1
+write /proc/sys/kernel/sched_latency_ns "$SCHED_PERIOD"
+write /proc/sys/kernel/sched_migration_cost_ns 5000000
+write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
+write /proc/sys/kernel/sched_nr_migrate 32
 write /proc/sys/kernel/sched_schedstats 0
+write /proc/sys/kernel/sched_tunable_scaling 0
+write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
+write /proc/sys/net/ipv4/tcp_ecn 1
+write /proc/sys/net/ipv4/tcp_fastopen 3
+write /proc/sys/net/ipv4/tcp_syncookies 0
 write /proc/sys/vm/block_dump 0
+write /proc/sys/vm/dirty_background_ratio 10
+write /proc/sys/vm/dirty_expire_centisecs 3000
+write /proc/sys/vm/dirty_ratio 30
+write /proc/sys/vm/dirty_writeback_centisecs 3000
 write /proc/sys/vm/oom_dump_tasks 0
+write /proc/sys/vm/page-cluster 0
 write /proc/sys/vm/stat_interval 10
+write /proc/sys/vm/swappiness 100
+write /proc/sys/vm/vfs_cache_pressure 100
 write /sys/kernel/debug/debug_enabled N
 write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
 write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
@@ -157,7 +293,6 @@ write /sys/kernel/debug/sched_features HRTICK
 write /sys/kernel/debug/tracing/tracing_on 0
 write /sys/kernel/fast_charge/force_fast_charge 1
 write /sys/kernel/printk_mode/printk_mode 0
-write /sys/module/printk/parameters/ignore_loglevel Y
 write /sys/kernel/tracing/tracing_on 0
 write /sys/module/debug/parameters/enable_event_log 0
 write /sys/module/ext4/parameters/mballoc_debug 0
@@ -169,6 +304,7 @@ write /sys/module/mmc_core/parameters/use_spi_crc 0
 write /sys/module/msm_show_resume_irq/parameters/debug_mask 0
 write /sys/module/printk/parameters/console_suspend Y
 write /sys/module/printk/parameters/cpu N
+write /sys/module/printk/parameters/ignore_loglevel Y
 write /sys/module/printk/parameters/pid N
 write /sys/module/printk/parameters/time N
 write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
@@ -184,30 +320,30 @@ fi
 write /proc/sys/kernel/perf_cpu_time_max_percent 3
 write /proc/sys/kernel/sched_autogroup_enabled 1
 write /proc/sys/kernel/sched_child_runs_first 1
-write /proc/sys/kernel/sched_tunable_scaling 0
 write /proc/sys/kernel/sched_latency_ns "$SCHED_PERIOD"
-write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
-write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
 write /proc/sys/kernel/sched_migration_cost_ns 5000000
+write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
+write /proc/sys/kernel/sched_tunable_scaling 0
+write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
 
 if [[ "$ANDROID" == true ]]; then
 	write /proc/sys/kernel/sched_min_task_util_for_colocation 0
 fi
 
+write /proc/sys/kernel/printk_devkmsg off
 write /proc/sys/kernel/sched_nr_migrate 4
 write /proc/sys/kernel/sched_schedstats 0
-write /proc/sys/kernel/printk_devkmsg off
+write /proc/sys/net/ipv4/tcp_ecn 1
+write /proc/sys/net/ipv4/tcp_fastopen 3
+write /proc/sys/net/ipv4/tcp_syncookies 0
 write /proc/sys/vm/dirty_background_ratio 3
-write /proc/sys/vm/dirty_ratio 30
 write /proc/sys/vm/dirty_expire_centisecs 3000
+write /proc/sys/vm/dirty_ratio 30
 write /proc/sys/vm/dirty_writeback_centisecs 3000
 write /proc/sys/vm/page-cluster 0
 write /proc/sys/vm/stat_interval 10
 write /proc/sys/vm/swappiness 100
 write /proc/sys/vm/vfs_cache_pressure 200
-write /proc/sys/net/ipv4/tcp_ecn 1
-write /proc/sys/net/ipv4/tcp_fastopen 3
-write /proc/sys/net/ipv4/tcp_syncookies 0
 
 if [[ -f "/sys/kernel/debug/sched_features" ]]; then
 	write /sys/kernel/debug/sched_features NEXT_BUDDY
@@ -221,10 +357,12 @@ if [[ "$ANDROID" == true ]]; then
 	fi
 fi
 
-for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
+for cpu in /sys/devices/system/cpu/cpu*/cpufreq
+do
 	avail_govs="$(cat "$cpu/scaling_available_governors")"
 	
-	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance
+	do
 		if [[ "$avail_govs" == *"$governor"* ]]; then
 			write "$cpu/scaling_governor" "$governor"
 			break
@@ -232,7 +370,8 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
 	done
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/up_rate_limit_us" 0
 	write "$governor/down_rate_limit_us" 0
 	write "$governor/rate_limit_us" 0
@@ -240,7 +379,8 @@ find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/up_rate_limit_us" 0
 	write "$governor/down_rate_limit_us" 0
 	write "$governor/rate_limit_us" 0
@@ -248,7 +388,8 @@ find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/up_rate_limit_us" 0
 	write "$governor/down_rate_limit_us" 0
 	write "$governor/rate_limit_us" 0
@@ -256,24 +397,28 @@ find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/timer_rate" 0
 	write "$governor/min_sample_time" 0
 	write "$governor/go_hispeed_load" 85
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/timer_rate" 0
 	write "$governor/min_sample_time" 0
 	write "$governor/go_hispeed_load" 85
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-for queue in /sys/block/*/queue; do
+for queue in /sys/block/*/queue
+do
 	avail_scheds="$(cat "$queue/scheduler")"
 	
-	for sched in kyber mq-deadline deadline cfq bfq noop none; do
+	for sched in kyber mq-deadline deadline cfq bfq noop none
+	do
 		if [[ "$avail_scheds" == *"$sched"* ]]; then
 			write "$queue/scheduler" "$sched"
 			break
@@ -290,7 +435,14 @@ UINT_MAX="4294967295" # phase two
 SCHED_PERIOD="$((4 * 1000 * 1000))"
 SCHED_TASKS="8"
 
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.boost 10
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /proc/sys/debug/exception-trace 0
+write /proc/sys/fs/dir-notify-enable 0
+write /proc/sys/kernel/compat-log 0
 write /proc/sys/kernel/perf_cpu_time_max_percent 5
+write /proc/sys/kernel/printk 0 0 0 0
 write /proc/sys/kernel/printk_devkmsg off
 write /proc/sys/kernel/sched_autogroup_enabled 1
 write /proc/sys/kernel/sched_child_runs_first 1
@@ -304,14 +456,44 @@ write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
 write /proc/sys/net/ipv4/tcp_ecn 1
 write /proc/sys/net/ipv4/tcp_fastopen 3
 write /proc/sys/net/ipv4/tcp_syncookies 0
+write /proc/sys/vm/block_dump 0
 write /proc/sys/vm/dirty_background_ratio 10
 write /proc/sys/vm/dirty_expire_centisecs 3000
 write /proc/sys/vm/dirty_ratio 30
 write /proc/sys/vm/dirty_writeback_centisecs 3000
+write /proc/sys/vm/oom_dump_tasks 0
 write /proc/sys/vm/page-cluster 0
 write /proc/sys/vm/stat_interval 10
 write /proc/sys/vm/swappiness 100
 write /proc/sys/vm/vfs_cache_pressure 100
+write /sys/kernel/debug/debug_enabled N
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_drv 0
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_mem 0
+write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_pwr 0
+write /sys/kernel/debug/sched_features HRTICK
+write /sys/kernel/debug/tracing/tracing_on 0
+write /sys/kernel/printk_mode/printk_mode 0
+write /sys/kernel/tracing/tracing_on 0
+write /sys/module/debug/parameters/enable_event_log 0
+write /sys/module/ext4/parameters/mballoc_debug 0
+write /sys/module/ip6_tunnel/parameters/log_ecn_error N
+write /sys/module/logger/parameters/enabled 0
+write /sys/module/logger/parameters/log_enabled 0
+write /sys/module/mali/parameters/mali_debug_level 0
+write /sys/module/mmc_core/parameters/use_spi_crc 0
+write /sys/module/msm_show_resume_irq/parameters/debug_mask 0
+write /sys/module/printk/parameters/console_suspend Y
+write /sys/module/printk/parameters/cpu N
+write /sys/module/printk/parameters/ignore_loglevel Y
+write /sys/module/printk/parameters/pid N
+write /sys/module/printk/parameters/time N
+write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
+write /sys/module/rpm_smd/parameters/debug_mask 0
+write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
+write dev/cpuset/background/cpus 0-3
+write dev/cpuset/foreground/cpus 0-7
 
 if [[ -f "/sys/kernel/debug/sched_features" ]]; then
 	write /sys/kernel/debug/sched_features NEXT_BUDDY
@@ -325,10 +507,12 @@ if [[ "$ANDROID" == true ]]; then
 	fi
 fi
 
-for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
+for cpu in /sys/devices/system/cpu/cpu*/cpufreq
+do
 	avail_govs="$(cat "$cpu/scaling_available_governors")"
 
-	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+	for governor in powersave conservative userspace ondemand interactive schedplus schedutil performance
+	do
 		if [[ "$avail_govs" == *"$governor"* ]]; then
 			write "$cpu/scaling_governor" "$governor"
 			break
@@ -336,7 +520,8 @@ for cpu in /sys/devices/system/cpu/cpu*/cpufreq; do
 	done
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
 	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
@@ -344,7 +529,8 @@ find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
 	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
@@ -352,7 +538,8 @@ find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/up_rate_limit_us" "$((SCHED_PERIOD / 1000))"
 	write "$governor/down_rate_limit_us" "$((4 * SCHED_PERIOD / 1000))"
 	write "$governor/rate_limit_us" "$((SCHED_PERIOD / 1000))"
@@ -360,24 +547,28 @@ find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/timer_rate" "$((SCHED_PERIOD / 1000))"
 	write "$governor/min_sample_time" "$((SCHED_PERIOD / 1000))"
 	write "$governor/go_hispeed_load" 90
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor; do
+find /sys/devices/system/cpu/ -type d -name powersave -o -name conservative -o -name userspace -o -name ondemand -o -name interactive -o -name schedplus -o -name schedutil -o -name performance | while IFS= read -r governor
+do
 	write "$governor/timer_rate" "$((SCHED_PERIOD / 1000))"
 	write "$governor/min_sample_time" "$((SCHED_PERIOD / 1000))"
 	write "$governor/go_hispeed_load" 90
 	write "$governor/hispeed_freq" "$UINT_MAX"
 done
 
-for queue in /sys/block/*/queue; do
+for queue in /sys/block/*/queue
+do
 	avail_scheds="$(cat "$queue/scheduler")"
 	
-	for sched in kyber mq-deadline deadline cfq bfq noop none; do
+	for sched in kyber mq-deadline deadline cfq bfq noop none
+	do
 		if [[ "$avail_scheds" == *"$sched"* ]]; then
 			write "$queue/scheduler" "$sched"
 			break
@@ -390,44 +581,66 @@ for queue in /sys/block/*/queue; do
 	write "$queue/nr_requests" 32
 done
 
-for bjir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
-	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "$bjir"
-	write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor "$bjir"
-	write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "$bjir"
-	write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor "$bjir"
-	for njir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
-		write /sys/devices/system/cpu/cpufreq/policy1/scaling_governor "$njir"
-		write /sys/devices/system/cpu/cpufreq/policy2/scaling_governor "$njir"
-		write /sys/devices/system/cpu/cpufreq/policy3/scaling_governor "$njir"
-		write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor "$njir"
+if true; then
+	for bjir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+		write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "$bjir"
+		write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor "$bjir"
+		write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "$bjir"
+		write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor "$bjir"
+		for njir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+			write /sys/devices/system/cpu/cpufreq/policy1/scaling_governor "$njir"
+			write /sys/devices/system/cpu/cpufreq/policy2/scaling_governor "$njir"
+			write /sys/devices/system/cpu/cpufreq/policy3/scaling_governor "$njir"
+			write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor "$njir"
+		done
 	done
-done
+fi
 
+write /dev/cpuset/foreground/boost/cpus 4-7
+write /dev/cpuset/foreground/cpus 0-3,4-7
+write /dev/cpuset/top-app/cpus 0-7
+write /proc/sys/kernel/perf_cpu_time_max_percent 3
+write /proc/sys/kernel/printk_devkmsg off
+write /proc/sys/kernel/sched_autogroup_enabled 1
+write /proc/sys/kernel/sched_child_runs_first 1
+write /proc/sys/kernel/sched_latency_ns "$SCHED_PERIOD"
+write /proc/sys/kernel/sched_migration_cost_ns 5000000
+write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
+write /proc/sys/kernel/sched_nr_migrate 4
+write /proc/sys/kernel/sched_schedstats 0
+write /proc/sys/kernel/sched_tunable_scaling 0
+write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
+write /proc/sys/net/ipv4/tcp_ecn 1
+write /proc/sys/net/ipv4/tcp_fastopen 3
+write /proc/sys/net/ipv4/tcp_syncookies 0
+write /proc/sys/vm/dirty_background_ratio 3
+write /proc/sys/vm/dirty_expire_centisecs 3000
+write /proc/sys/vm/dirty_ratio 30
+write /proc/sys/vm/dirty_writeback_centisecs 3000
+write /proc/sys/vm/page-cluster 0
+write /proc/sys/vm/stat_interval 10
+write /proc/sys/vm/swappiness 100
+write /proc/sys/vm/vfs_cache_pressure 200
 write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
+write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
 write /sys/devices/system/cpu/cpufreq/performance/boost 1
 write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
 write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
-write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
 write /sys/kernel/gpu/gpu_governor performance
 write /sys/module/adreno_idler/parameters/adreno_idler_active 0
 write /sys/module/lazyplug/parameters/nr_possible_cores 8
 write /sys/module/msm_performance/parameters/touchboost 1
-write /dev/cpuset/foreground/boost/cpus 4-7
-write /dev/cpuset/foreground/cpus 0-3,4-7
-write /dev/cpuset/top-app/cpus 0-7
 
 for amognal in /sys/bus/cpu/devices/*/cpufreq; do
-	echo "$UINT_MAX" > "$amognal"/scaling_max_freq
-	echo "$UINT_MAX" > "$amognal"/scaling_min_freq
+	echo "$UINT_MAX" > "$amognal"/cpuinfo_cur_freq
 	echo "$UINT_MAX" > "$amognal"/cpuinfo_max_freq
 	echo "$UINT_MAX" > "$amognal"/cpuinfo_min_freq
-	echo "$UINT_MAX" > "$amognal"/cpuinfo_cur_freq
-	echo "$UINT_MAX" > "$amognal"/cpuinfo_min_freq
 	echo "$UINT_MAX" > "$amognal"/scaling_cur_freq
-	echo "<supported>" > "$amognal"/scaling_setspeed
+	echo "$UINT_MAX" > "$amognal"/scaling_max_freq
+	echo "$UINT_MAX" > "$amognal"/scaling_min_freq
 done
 
-function fkmconfig()
+function config()
 {
 	echo 0 > /proc/sys/vm/laptop_mode
 	echo 0 > /proc/sys/vm/oom_kill_allocating_task
@@ -451,7 +664,7 @@ function fkmconfig()
 	echo 4 > /sys/block/zram0/max_comp_streams
 }
 
-fkmconfig;
+config;
 
 # Using Xvision™(KCAL) @pedro based source
 
@@ -583,7 +796,7 @@ function biglittlecore()
 
 biglittlecore;
 
-# Personalidentify you should read this 'https://github.com/LinggaCR17/personalbuild/blob/main/system.prop' before editing any script stuff
+# Personalidentify you should read this 'https://github.com/LinggaCR17/personalbuild/blob/main/system.prop' before editing any script stuff.
 {
 	aint dalvik.vm.dexopt-flags v=a,o=v,m=y,u=y
 	aint dalvik.vm.heapsize 512m
@@ -591,9 +804,10 @@ biglittlecore;
 	aint debug.atrace.tags.enableflags 0
 	aint debug.composition.type dyn
 	aint debug.cpurend.vsync false
-	aint debug.drm.mode.force 1600x720@120
+	aint debug.drm.mode.force 1468x3264@120
 	aint debug.egl.buffcount 4
 	aint debug.egl.force_msaa 1
+	aint debug.egl.force_msaa true
 	aint debug.egl.hw 1
 	aint debug.egl.profiler 1
 	aint debug.egl.swapinterval 0
@@ -678,10 +892,11 @@ biglittlecore;
 	aint persist.vendor.verbose_logging_enabled false
 	aint profiler.force_disable_err_rpt 1
 	aint profiler.force_disable_ulog 1
-	aint ro.config.disable.hw_accel true
+	aint ro.config.disable.hw_accel false
 	aint ro.config.enable.hw_accel true
 	aint ro.config.low_ram true
 	aint ro.fb.mode 1
+	aint ro.hardware.vulkan true
 	aint ro.hwui.drop_shadow_cache_size 6
 	aint ro.hwui.gradient_cache_size 1
 	aint ro.hwui.layer_cache_size 48
@@ -700,8 +915,8 @@ biglittlecore;
 	aint ro.logd.size.stats 0
 	aint ro.logd.size 0
 	aint ro.max.fling_velocity 20000
+	aint ro.max_pointer_dur 8
 	aint ro.min.fling_velocity 18000
-	aint ro.min_pointer_dur 1
 	aint ro.min_pointer_dur 8
 	aint ro.opengles.version 196610
 	aint ro.product.gpu.driver 1
@@ -713,8 +928,8 @@ biglittlecore;
 	aint ro.vendor.fps.switch.default true
 	aint ro.vendor.fps.switch.thermal true
 	aint ro.vendor.qti.config.zram true
-	aint ro.vendor.qti.core.ctl_max_cpu 4
-	aint ro.vendor.qti.core.ctl_min_cpu 2
+	aint ro.vendor.qti.core.ctl_max_cpu 8
+	aint ro.vendor.qti.core.ctl_min_cpu 4
 	aint ro.vendor.qti.sys.fw.bservice_enable true
 	aint ro.vendor.tran_perf_plus 1
 	aint ro.vold.umsdirtyratio 5
@@ -728,17 +943,16 @@ biglittlecore;
 	aint visual_bars false
 	aint vm.stat_interval 1
 	aint windowsmgr.max_events_per_sec 200
-
-	aint ro.hardware.vulkan true
+	
 	aint ro.mtk_perf_fast_start_win 1
 	aint ro.mtk_perf_response_time 1
 	aint ro.mtk_perf_simple_start_win 1
-
+	
 	aint ro.surface_flinger.refresh_rate_switching 120
 	aint ro.surface_flinger.set_display_power_timer_ms 1000
 	aint ro.surface_flinger.set_touch_timer_ms 200
 	aint ro.surface_flinger.use_content_detection_for_refresh_rate false
-
+	
 	aint debug.disable.thermal.control 1
 	aint debug.disable.usb.overheat.mitigation 1
 	aint persist.sys.fan.thermal_auto 1
@@ -746,7 +960,7 @@ biglittlecore;
 	aint persist.vendor.disable.thermal.control 1
 	aint ro.vendor.disable.thermal.control 1
 	aint ro.vendor.disable.usb.overheat.mitigation 1
-	aint ro.vendor.fps.switch.default true
+	aint ro.vendor.fps.switch.default false
 	aint ro.vendor.fps.switch.thermal true
 	aint ro.vendor.thermal.dimming.enable false
 	aint ro.vendor.thermal.manager.is_ht120 1
@@ -755,14 +969,14 @@ biglittlecore;
 	aint vendor.disable.thermal.control 1
 	aint vendor.disable.usb.overheat.mitigation 1
 	aint vendor.thermal.manager.is_ht120 1
-
-	aint persist.service.zram 0
+	
+	aint persist.service.zram 1
 	aint persist.sys.zram_enabled 1
-	aint ro.zram.default 0
+	aint ro.zram.default 4294967296
 	aint vm.swappiness 100
-
+	
 	aint ro.gfx.angle.supported true
-
+	
 	aint ro.HOME_APP_ADJ 1
 }&
 
@@ -780,9 +994,6 @@ function zramswapper()
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config put activity_manager max_empty_time_millis 43200000
 	[ $(getprop ro.build.version.release) -gt 9 ] && cmd settings put global settings_enable_monitor_phantom_procs false
 	
-	echo $((4096*8192*16384)) > /sys/block/zram0/disksize
-	mkswap /dev/block/zram0 >/dev/null 2>&1
-	
 	sleep 1
 	if true; then
 		am start -a android.intent.action.MAIN -e message 'personalbuild by nothing' -n com.personal.build/.ShowToast; else
@@ -791,6 +1002,9 @@ function zramswapper()
 }
 
 zramswapper;
+
+echo $((4096*8192*16384)) > /sys/block/zram0/disksize
+mkswap /dev/block/zram0 >/dev/null 2>&1
 
 personal()
 {

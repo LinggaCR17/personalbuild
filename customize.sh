@@ -1,4 +1,4 @@
-rm -rf /data/adb/modules/personalbuild;
+rm -rf /data/adb/modules/personalbuild; rm -rf /data/adb/modules_updates/personalbuild;
 
 ABI="$(getprop ro.product.cpu.abi)"
 
@@ -7,49 +7,85 @@ if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == 
 	if [ "$ABI" == "armeabi-v7a" ]; then
 		  ABI32=armeabi-v7a
 		  ui_print "- Using $ABI32"
-		  mkdir -p $MODPATH/system/lib
-		  mv $MODPATH/libs/$ABI32/*.so $MODPATH/system/lib
-		  rm -rf $MODPATH/libs
+		  mkdir -p $stealing/system/lib
+		  mv $stealing/libs/$ABI32/*.so $stealing/system/lib
+		  rm -rf $stealing/libs
 		elif [ "$ABI" == "arm64" ]; then
 		  ABI64=arm64-v8a
 		  ui_print "- Using $ABI64"
-		  mkdir -p $MODPATH/system/lib64
-		  mv $MODPATH/libs/$ABI64/*.so $MODPATH/system/lib64
-		  rm -rf $MODPATH/libs
+		  mkdir -p $stealing/system/lib64
+		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
+		  rm -rf $stealing/libs
 		elif [ "$ABI" == "x86" ]; then
 		  ABI86=x86
 		  ui_print "- Doesn't supported $ABI86"
-		  abort
+		
+		  ui_print "- Using $ABI32"
+		  mkdir -p $stealing/system/lib
+		  mv $stealing/libs/$ABI32/*.so $stealing/system/lib
+		  rm -rf $stealing/libs
+		
+		  ui_print "- Using $ABI64"
+		  mkdir -p $stealing/system/lib64
+		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
+		  rm -rf $stealing/libs
 		elif [ "$ABI" == "x86_64" ]; then
 		  ABI86_64=x86_64
 		  ui_print "- Doesn't supported $ABI86_64"
-		  abort
+		
+		  ui_print "- Using $ABI32"
+		  mkdir -p $stealing/system/lib
+		  mv $stealing/libs/$ABI32/*.so $stealing/system/lib
+		  rm -rf $stealing/libs
+		
+		  ui_print "- Using $ABI64"
+		  mkdir -p $stealing/system/lib64
+		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
+		  rm -rf $stealing/libs
 		fi
-	sed -i "/version=/c version=13-zygisk" /data/adb/modules_update/personalbuild/module.prop; else
+	sed -i "/version=/c version=14-zygisk" /data/adb/modules_update/personalbuild/module.prop; else
 	if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == "value=0" ]]; then
 		ui_print "- Install as Normal module"
 		if [ "$ABI" == "armeabi-v7a" ]; then
 		  ABI32=armeabi-v7a
 		  ui_print "- Using $ABI32"
-		  mkdir -p $MODPATH/system/lib
-		  mv $MODPATH/libs/$ABI32/*.so $MODPATH/system/lib
-		  rm -rf $MODPATH/libs
+		  mkdir -p $stealing/system/lib
+		  mv $stealing/libs/$ABI32/*.so $stealing/system/lib
+		  rm -rf $stealing/libs
 		elif [ "$ABI" == "arm64" ]; then
 		  ABI64=arm64-v8a
 		  ui_print "- Using $ABI64"
-		  mkdir -p $MODPATH/system/lib64
-		  mv $MODPATH/libs/$ABI64/*.so $MODPATH/system/lib64
-		  rm -rf $MODPATH/libs
+		  mkdir -p $stealing/system/lib64
+		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
+		  rm -rf $stealing/libs
 		elif [ "$ABI" == "x86" ]; then
 		  ABI86=x86
 		  ui_print "- Doesn't supported $ABI86"
-		  abort
+		
+		  ui_print "- Using $ABI32"
+		  mkdir -p $stealing/system/lib
+		  mv $stealing/libs/$ABI32/*.so $stealing/system/lib
+		  rm -rf $stealing/libs
+		
+		  ui_print "- Using $ABI64"
+		  mkdir -p $stealing/system/lib64
+		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
+		  rm -rf $stealing/libs
 		elif [ "$ABI" == "x86_64" ]; then
 		  ABI86_64=x86_64
 		  ui_print "- Doesn't supported $ABI86_64"
-		  abort
+		
+		  ui_print "- Using $ABI32"
+		  mkdir -p $stealing/system/lib
+		  mv $stealing/libs/$ABI32/*.so $stealing/system/lib
+		  rm -rf $stealing/libs
+		
+		  ui_print "- Using $ABI64"
+		  mkdir -p $stealing/system/lib64
+		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
+		  rm -rf $stealing/libs
 		fi
-	sed -i "/version=/c version=13-normal" /data/adb/modules_update/personalbuild/module.prop
+	sed -i "/version=/c version=14-normal" /data/adb/modules_update/personalbuild/module.prop
 	fi
 fi
 
@@ -57,12 +93,12 @@ stealing="$MODPATH"
 aint="personalbuild"
 cool="$stealing/$aint"
 
-set_perm_recursive "$cool" root root           0777 0755
-set_perm_recursive "$stealing" root root       0777 0755
+set_perm_recursive "$cool"           root root 0777 0755
+set_perm_recursive "$stealing"       root root 0777 0755
 
 set_perm_recursive "$stealing/scene" root root 0777 0755
+ui_print "- Personalbuild, our big, little core"
 ui_print "- $(getprop ro.boot.boot_devices)"
-ui_print "- Simple tweaks, huge performance"
 
 sed -i "/description=/c description=Reboot required. personalbuild by changing your perf options Big, Little Core." /data/adb/modules_update/personalbuild/module.prop;
 
@@ -80,11 +116,11 @@ function FindThermal()
     for systemThermal in `ls $1 | grep $2`
     do
         if [[ "$systemThermal" == *"-BlankFile"* ]]; then
-        	ui_print "- ignoring pervious file → $1/$systemThermal"
+        	ui_print "- pervious file → $1/$systemThermal"
         elif [[ "$systemThermal" == *"-OriFile.bck"* ]]; then
-        	ui_print "- ignoring conflict file → $1/$systemThermal"
+        	ui_print "- conflict file → $1/$systemThermal"
         else
-        	ui_print "- found → $1/$systemThermal"
+        	ui_print "- found file → $1/$systemThermal"
         	system=system/vendor
         	mkdir -p $stealing/$system/bin; mkdir -p $stealing/$system/etc
             if [ $2 == "thermal" ]; then

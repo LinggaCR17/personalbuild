@@ -6,17 +6,43 @@
 on early-init
 	write /dev/cpuctl/nnapi-hal/cpu.uclamp.latency_sensitive 1
 	write /dev/cpuctl/nnapi-hal/cpu.uclamp.min 1
+	write /dev/cpuset/background/cpus 0-1
+	write /dev/cpuset/camera-daemon/cpus 0-3
+	write /dev/cpuset/cpus 0-3
 	write /dev/cpuset/foreground/boost/cpus 4-7
+	write /dev/cpuset/foreground/cpus 0-3
 	write /dev/cpuset/foreground/cpus 0-3,4-7
+	write /dev/cpuset/top-app/cpus 0-3
 	write /dev/cpuset/top-app/cpus 0-7
 	write /dev/graphics/fb0 1
+	write /dev/stune/background/schedtune.boost 0
+	write /dev/stune/background/schedtune.prefer_idle 0
+	write /dev/stune/background/schedtune.uclamp.max max
+	write /dev/stune/background/schedtune.uclamp.min 0.00
+	write /dev/stune/camera-daemon/schedtune.boost 0
+	write /dev/stune/camera-daemon/schedtune.prefer_idle 0
+	write /dev/stune/camera-daemon/schedtune.uclamp.max max
+	write /dev/stune/camera-daemon/schedtune.uclamp.min 0.00
+	write /dev/stune/foreground/schedtune.boost 0
+	write /dev/stune/foreground/schedtune.prefer_idle 0
 	write /dev/stune/foreground/schedtune.prefer_idle 1
+	write /dev/stune/foreground/schedtune.uclamp.max max
+	write /dev/stune/foreground/schedtune.uclamp.min 0.00
 	write /dev/stune/nnapi-hal/schedtune.boost 1
 	write /dev/stune/nnapi-hal/schedtune.prefer_idle 1
+	write /dev/stune/rt/schedtune.boost 0
+	write /dev/stune/rt/schedtune.prefer_idle 0
+	write /dev/stune/rt/schedtune.uclamp.max max
+	write /dev/stune/rt/schedtune.uclamp.min 0.00
+	write /dev/stune/schedtune.boost 0
+	write /dev/stune/schedtune.prefer_idle 0
 	write /dev/stune/top-app/schedtune.boost 1
 	write /dev/stune/top-app/schedtune.boost 10
+	write /dev/stune/top-app/schedtune.boost 69
 	write /dev/stune/top-app/schedtune.prefer_idle 0
 	write /dev/stune/top-app/schedtune.prefer_idle 1
+	write /dev/stune/top-app/schedtune.uclamp.max max
+	write /dev/stune/top-app/schedtune.uclamp.min max
 	write /proc/cpu/alignment 4
 	write /proc/sys/abi/swp 1
 	write /proc/sys/debug/exception-trace 0
@@ -28,42 +54,106 @@ on early-init
 	write /proc/sys/kernel/perf_cpu_time_max_percent 5
 	write /proc/sys/kernel/printk 0 0 0 0
 	write /proc/sys/kernel/printk_devkmsg off
+	write /proc/sys/kernel/random/write_wakeup_threshold 512
 	write /proc/sys/kernel/randomize_va_space 2
 	write /proc/sys/kernel/sched_autogroup_enabled 1
 	write /proc/sys/kernel/sched_child_runs_first 0
 	write /proc/sys/kernel/sched_child_runs_first 1
+	write /proc/sys/kernel/sched_cstate_aware 1
+	write /proc/sys/kernel/sched_energy_aware 1
 	write /proc/sys/kernel/sched_latency_ns 10000000
+	write /proc/sys/kernel/sched_migration_cost_ns 500000
 	write /proc/sys/kernel/sched_migration_cost_ns 5000000
+	write /proc/sys/kernel/sched_min_granularity_ns 2250000
 	write /proc/sys/kernel/sched_min_task_util_for_colocation 0
 	write /proc/sys/kernel/sched_nr_migrate 32
 	write /proc/sys/kernel/sched_nr_migrate 4
+	write /proc/sys/kernel/sched_rr_timeslice_ms 90
+	write /proc/sys/kernel/sched_rt_period_us 1000000
+	write /proc/sys/kernel/sched_rt_runtime_us 950000
 	write /proc/sys/kernel/sched_schedstats 0
+	write /proc/sys/kernel/sched_sync_hint_enable 1
 	write /proc/sys/kernel/sched_tunable_scaling 0
+	write /proc/sys/kernel/sched_util_clamp_max 1024
+	write /proc/sys/kernel/sched_util_clamp_min 1024
 	write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
 	write /proc/sys/kernel/sysrq 0
+	write /proc/sys/net/ipv4/tcp_congestion_control bic
 	write /proc/sys/net/ipv4/tcp_ecn 1
 	write /proc/sys/net/ipv4/tcp_fastopen 3
 	write /proc/sys/net/ipv4/tcp_syncookies 0
 	write /proc/sys/net/unix/max_dgram_qlen 24000
 	write /proc/sys/vm/block_dump 0
 	write /proc/sys/vm/dirty_background_ratio 10
+	write /proc/sys/vm/dirty_background_ratio 12
 	write /proc/sys/vm/dirty_background_ratio 3
+	write /proc/sys/vm/dirty_expire_centisecs 1816
 	write /proc/sys/vm/dirty_expire_centisecs 3000
 	write /proc/sys/vm/dirty_ratio 30
+	write /proc/sys/vm/dirty_ratio 36
 	write /proc/sys/vm/dirty_writeback_centisecs 3000
+	write /proc/sys/vm/dirty_writeback_centisecs 5450
+	write /proc/sys/vm/extra_free_kbytes 13500
+	write /proc/sys/vm/laptop_mode 0
+	write /proc/sys/vm/min_free_kbytes 10240
 	write /proc/sys/vm/mmap_min_addr 32768
 	write /proc/sys/vm/oom_dump_tasks 0
+	write /proc/sys/vm/oom_kill_allocating_task 0
+	write /proc/sys/vm/overcommit_ratio 50
 	write /proc/sys/vm/page-cluster 0
 	write /proc/sys/vm/stat_interval 10
 	write /proc/sys/vm/swappiness 100
 	write /proc/sys/vm/vfs_cache_pressure 100
 	write /proc/sys/vm/vfs_cache_pressure 200
+	write /proc/sys/vm/vfs_cache_pressure 94
 	write /proc/sys/vm/watermark_boost_factor 0
+	write /sys/block/dm-0/queue/add_random 0
+	write /sys/block/dm-0/queue/iostats 0
+	write /sys/block/dm-0/queue/nomerges 2
+	write /sys/block/dm-0/queue/nr_requests 128
+	write /sys/block/dm-0/queue/read_ahead_kb 512
+	write /sys/block/dm-0/queue/rotational 0
+	write /sys/block/dm-0/queue/rq_affinity 1
+	write /sys/block/dm-0/queue/scheduler none
+	write /sys/block/mmcblk0/queue/add_random 0
+	write /sys/block/mmcblk0/queue/iosched/fifo_batch 16
+	write /sys/block/mmcblk0/queue/iosched/front_merges 1
+	write /sys/block/mmcblk0/queue/iosched/read_expire 501
+	write /sys/block/mmcblk0/queue/iosched/write_expire 5001
+	write /sys/block/mmcblk0/queue/iosched/writes_starved 2
+	write /sys/block/mmcblk0/queue/iostats 0
+	write /sys/block/mmcblk0/queue/nomerges 2
+	write /sys/block/mmcblk0/queue/nr_requests 128
+	write /sys/block/mmcblk0/queue/read_ahead_kb 512
+	write /sys/block/mmcblk0/queue/rotational 0
+	write /sys/block/mmcblk0/queue/rq_affinity 1
+	write /sys/block/mmcblk0/queue/scheduler kyber
+	write /sys/block/mmcblk1/queue/add_random 0
+	write /sys/block/mmcblk1/queue/iosched/fifo_batch 16
+	write /sys/block/mmcblk1/queue/iosched/front_merges 1
+	write /sys/block/mmcblk1/queue/iosched/read_expire 501
+	write /sys/block/mmcblk1/queue/iosched/write_expire 5001
+	write /sys/block/mmcblk1/queue/iosched/writes_starved 2
+	write /sys/block/mmcblk1/queue/iostats 0
+	write /sys/block/mmcblk1/queue/nomerges 2
+	write /sys/block/mmcblk1/queue/nr_requests 128
+	write /sys/block/mmcblk1/queue/read_ahead_kb 512
+	write /sys/block/mmcblk1/queue/rotational 0
+	write /sys/block/mmcblk1/queue/rq_affinity 1
+	write /sys/block/mmcblk1/queue/scheduler kyber
+	write /sys/block/zram0/comp_algorithm lzo lz4 [zstd]
+	write /sys/block/zram0/disksize 4294967296
+	write /sys/block/zram0/initstate 1
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1800000
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 850000
 	write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
 	write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
 	write /sys/devices/system/cpu/cpufreq/performance/boost 1
+	write /sys/devices/system/cpu/cpufreq/performance/down_rate_limit_us 1000
 	write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
 	write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
+	write /sys/devices/system/cpu/cpufreq/performance/up_rate_limit_us 1000
 	write /sys/kernel/debug/debug_enabled N
 	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
 	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
@@ -98,21 +188,20 @@ on early-init
 	write /sys/module/printk/parameters/ignore_loglevel Y
 	write /sys/module/printk/parameters/pid N
 	write /sys/module/printk/parameters/time N
+	write /sys/module/pstore/parameters/compress deflate
 	write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
 	write /sys/module/rpm_smd/parameters/debug_mask 0
 	write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
+	write /sys/module/usbhid/parameters/kbpoll 0
 	write dev/cpuset/background/cpus 0-3
 	write dev/cpuset/foreground/cpus 0-7
 
 on boot && property:ro.config.low_ram=true
 	write /proc/sys/vm/dirty_background_ratio 10
 	write /proc/sys/vm/dirty_expire_centisecs 200
-	resetprop -v -n ro.config.low_ram true
 
 on boot && property:suspend.disable_sync_on_suspend=false
 	write /sys/power/sync_on_suspend 1
-	resetprop -v -n suspend.disable_sync_on_suspend false
 
 on property:perf.drop_caches=3
 	write /proc/sys/vm/drop_caches 3
-    resetprop -v -n perf.drop_caches 3

@@ -7,9 +7,10 @@ dalvik.vm.zygotemaxfailedboots=5
 debug.atrace.tags.enableflags=0
 debug.composition.type=dyn
 debug.cpurend.vsync=false
-debug.drm.mode.force=1600x720@120
+debug.drm.mode.force=1468x3264@120
 debug.egl.buffcount=4
 debug.egl.force_msaa=1
+debug.egl.force_msaa=true
 debug.egl.hw=1
 debug.egl.profiler=1
 debug.egl.swapinterval=0
@@ -94,10 +95,11 @@ persist.vendor.qti.inputopts.movetouchslop=0.1
 persist.vendor.verbose_logging_enabled=false
 profiler.force_disable_err_rpt=1
 profiler.force_disable_ulog=1
-ro.config.disable.hw_accel=true
+ro.config.disable.hw_accel=false
 ro.config.enable.hw_accel=true
 ro.config.low_ram=true
 ro.fb.mode=1
+ro.hardware.vulkan=true
 ro.hwui.drop_shadow_cache_size=6
 ro.hwui.gradient_cache_size=1
 ro.hwui.layer_cache_size=48
@@ -116,8 +118,8 @@ ro.logd.kernel=false
 ro.logd.size.stats=0
 ro.logd.size=0
 ro.max.fling_velocity=20000
+ro.max_pointer_dur=8
 ro.min.fling_velocity=18000
-ro.min_pointer_dur=1
 ro.min_pointer_dur=8
 ro.opengles.version=196610
 ro.product.gpu.driver=1
@@ -129,8 +131,8 @@ ro.vendor.display.touch.idle.enable=true
 ro.vendor.fps.switch.default=true
 ro.vendor.fps.switch.thermal=true
 ro.vendor.qti.config.zram=true
-ro.vendor.qti.core.ctl_max_cpu=4
-ro.vendor.qti.core.ctl_min_cpu=2
+ro.vendor.qti.core.ctl_max_cpu=8
+ro.vendor.qti.core.ctl_min_cpu=4
 ro.vendor.qti.sys.fw.bservice_enable=true
 ro.vendor.tran_perf_plus=1
 ro.vold.umsdirtyratio=5
@@ -146,7 +148,6 @@ vm.stat_interval=1
 windowsmgr.max_events_per_sec=200
 
 # Mediatek mtSoC Mali default properties
-ro.hardware.vulkan=true
 ro.mtk_perf_fast_start_win=1
 ro.mtk_perf_response_time=1
 ro.mtk_perf_simple_start_win=1
@@ -165,7 +166,7 @@ persist.sys.thermal.disable=true
 persist.vendor.disable.thermal.control=1
 ro.vendor.disable.thermal.control=1
 ro.vendor.disable.usb.overheat.mitigation=1
-ro.vendor.fps.switch.default=true
+ro.vendor.fps.switch.default=false
 ro.vendor.fps.switch.thermal=true
 ro.vendor.thermal.dimming.enable=false
 ro.vendor.thermal.manager.is_ht120=1
@@ -176,12 +177,12 @@ vendor.disable.usb.overheat.mitigation=1
 vendor.thermal.manager.is_ht120=1
 
 # ZramSwap Extended, RAM Extension except '/vendor/etc/'
-persist.service.zram=0
+persist.service.zram=1
 persist.sys.zram_enabled=1
-ro.zram.default=0
+ro.zram.default=4294967296
 vm.swappiness=100
 
-# ANGLE feature
+# ANGLE feature properties
 ro.gfx.angle.supported=true
 
 # Misc Deprecated properties

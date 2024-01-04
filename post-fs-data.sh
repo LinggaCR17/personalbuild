@@ -13,6 +13,7 @@ do
 	done
 done
 
+# Enabling after this 'exec' and you can see it directly from here...
 for personal in /sys/devices/platform/soc/1d84000.ufshc
 do
 	echo 0 > "$personal"/clkgate_enable

@@ -100,6 +100,12 @@ set_perm_recursive "$stealing/scene" root root 0777 0755
 ui_print "- Personalbuild, our big, little core"
 ui_print "- $(getprop ro.boot.boot_devices)"
 
+ui_print "
+	𝘈𝘵𝘵𝘦𝘯𝘵𝘪𝘰𝘯, 𝘳𝘦𝘮𝘦𝘮𝘣𝘦𝘳
+		𝘯𝘰𝘵 𝘳𝘦𝘤𝘰𝘮𝘮𝘦𝘯𝘥𝘦𝘥 𝘧𝘰𝘳 𝘥𝘢𝘪𝘭𝘺 𝘶𝘴𝘦, 𝘢𝘤𝘵𝘪𝘷𝘢𝘵𝘦 𝘪𝘵 𝘸𝘩𝘦𝘯 𝘺𝘰𝘶 𝘯𝘦𝘦𝘥 𝘪𝘵.
+		𝘜𝘴𝘦 𝘪𝘵 𝘸𝘩𝘦𝘯 𝘺𝘰𝘶 𝘯𝘦𝘦𝘥 𝘭𝘪𝘨𝘩𝘵 𝘳𝘦𝘯𝘥𝘦𝘳𝘪𝘯𝘨 𝘸𝘩𝘦𝘯 𝘱𝘭𝘢𝘺𝘪𝘯𝘨 𝘨𝘢𝘮𝘦𝘴.
+		𝘸𝘪𝘭𝘭 𝘴𝘶𝘤𝘬 𝘶𝘱 𝘢𝘭𝘭 𝘵𝘩𝘦 𝘣𝘢𝘵𝘵𝘦𝘳𝘺 𝘱𝘦𝘳𝘧𝘰𝘳𝘮𝘢𝘯𝘤𝘦 𝘤𝘰𝘮𝘱𝘭𝘦𝘵𝘦𝘭𝘺.
+"
 sed -i "/description=/c description=Reboot required. personalbuild by changing your perf options Big, Little Core." /data/adb/modules_update/personalbuild/module.prop;
 
 bin=xbin

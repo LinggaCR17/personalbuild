@@ -686,16 +686,18 @@ function biglittlecore()
 	echo 19000 1401600:39000 > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
 	echo 85 1401600:80 > /sys/devices/system/cpu/cpufreq/performance/target_loads
 	
-	for perfonal in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
-		echo "$perfonal" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-		echo "$perfonal" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
-		echo "$perfonal" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
-		echo "$perfonal" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
-		echo "$perfonal" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
-		echo "$perfonal" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
-		echo "$perfonal" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
-		echo "$perfonal" > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
-	done
+	if true; then
+		for perfonal in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+			echo "$perfonal" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+			echo "$perfonal" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+			echo "$perfonal" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+			echo "$perfonal" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+			echo "$perfonal" > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor
+			echo "$perfonal" > /sys/devices/system/cpu/cpu5/cpufreq/scaling_governor
+			echo "$perfonal" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
+			echo "$perfonal" > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
+		done
+	fi
 	
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/io_is_busy
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/rate_limit_us
@@ -1017,11 +1019,19 @@ personal()
 {
 	personal;
 	
-	cp -af "$MODDIR/module.prop" "$TMPFILE"
-	sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=Nothing no end /g' "$TMPFILE"
-	flock "$MODDIR/module.prop"
-	mount --bind "$TMPFILE" "$PROPFILE"
-	chmod 777 "$MODDIR/personalbuild"
+	if ${0%/*}/disable; then
+		cp -af "$MODDIR/module.prop" "$TMPFILE"
+		sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=Nothing end /g' "$TMPFILE"
+		flock "$MODDIR/module.prop"
+		mount --bind "$TMPFILE" "$PROPFILE"
+		chmod 777 "$MODDIR/personalbuild"
+	else
+		cp -af "$MODDIR/module.prop" "$TMPFILE"
+		sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=Nothing no end /g' "$TMPFILE"
+		flock "$MODDIR/module.prop"
+		mount --bind "$TMPFILE" "$PROPFILE"
+		chmod 777 "$MODDIR/personalbuild"
+	fi
 }&
 
 swapon /dev/block/zram0 >/dev/null 2>&1

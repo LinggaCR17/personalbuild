@@ -4,14 +4,16 @@
 #
 
 on early-init
-	write /dev/cpuctl/nnapi-hal/cpu.uclamp.latency_sensitive 1
-	write /dev/cpuctl/nnapi-hal/cpu.uclamp.min 1
+	write /d/tracing/tracing_on 0
 	write /dev/cpuset/background/cpus 0-1
 	write /dev/cpuset/camera-daemon/cpus 0-3
+	write /dev/cpuset/cpu_limit/cpus 0-1
 	write /dev/cpuset/cpus 0-3
 	write /dev/cpuset/foreground/boost/cpus 4-7
 	write /dev/cpuset/foreground/cpus 0-3
 	write /dev/cpuset/foreground/cpus 0-3,4-7
+	write /dev/cpuset/restricted/cpus 0-3
+	write /dev/cpuset/system-background/cpus 0-3
 	write /dev/cpuset/top-app/cpus 0-3
 	write /dev/cpuset/top-app/cpus 0-7
 	write /dev/graphics/fb0 1
@@ -28,8 +30,6 @@ on early-init
 	write /dev/stune/foreground/schedtune.prefer_idle 1
 	write /dev/stune/foreground/schedtune.uclamp.max max
 	write /dev/stune/foreground/schedtune.uclamp.min 0.00
-	write /dev/stune/nnapi-hal/schedtune.boost 1
-	write /dev/stune/nnapi-hal/schedtune.prefer_idle 1
 	write /dev/stune/rt/schedtune.boost 0
 	write /dev/stune/rt/schedtune.prefer_idle 0
 	write /dev/stune/rt/schedtune.uclamp.max max
@@ -43,19 +43,17 @@ on early-init
 	write /dev/stune/top-app/schedtune.prefer_idle 1
 	write /dev/stune/top-app/schedtune.uclamp.max max
 	write /dev/stune/top-app/schedtune.uclamp.min max
-	write /proc/cpu/alignment 4
-	write /proc/sys/abi/swp 1
 	write /proc/sys/debug/exception-trace 0
 	write /proc/sys/fs/dir-notify-enable 0
 	write /proc/sys/kernel/compat-log 0
 	write /proc/sys/kernel/hung_task_timeout_secs 0
+	write /proc/sys/kernel/panic 0
 	write /proc/sys/kernel/panic_on_oops 0
 	write /proc/sys/kernel/perf_cpu_time_max_percent 3
 	write /proc/sys/kernel/perf_cpu_time_max_percent 5
 	write /proc/sys/kernel/printk 0 0 0 0
 	write /proc/sys/kernel/printk_devkmsg off
 	write /proc/sys/kernel/random/write_wakeup_threshold 512
-	write /proc/sys/kernel/randomize_va_space 2
 	write /proc/sys/kernel/sched_autogroup_enabled 1
 	write /proc/sys/kernel/sched_child_runs_first 0
 	write /proc/sys/kernel/sched_child_runs_first 1
@@ -77,12 +75,11 @@ on early-init
 	write /proc/sys/kernel/sched_util_clamp_max 1024
 	write /proc/sys/kernel/sched_util_clamp_min 1024
 	write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
-	write /proc/sys/kernel/sysrq 0
+	write /proc/sys/kernel/softlockup_panic 0
 	write /proc/sys/net/ipv4/tcp_congestion_control bic
 	write /proc/sys/net/ipv4/tcp_ecn 1
 	write /proc/sys/net/ipv4/tcp_fastopen 3
 	write /proc/sys/net/ipv4/tcp_syncookies 0
-	write /proc/sys/net/unix/max_dgram_qlen 24000
 	write /proc/sys/vm/block_dump 0
 	write /proc/sys/vm/dirty_background_ratio 10
 	write /proc/sys/vm/dirty_background_ratio 12
@@ -96,17 +93,16 @@ on early-init
 	write /proc/sys/vm/extra_free_kbytes 13500
 	write /proc/sys/vm/laptop_mode 0
 	write /proc/sys/vm/min_free_kbytes 10240
-	write /proc/sys/vm/mmap_min_addr 32768
 	write /proc/sys/vm/oom_dump_tasks 0
 	write /proc/sys/vm/oom_kill_allocating_task 0
 	write /proc/sys/vm/overcommit_ratio 50
 	write /proc/sys/vm/page-cluster 0
+	write /proc/sys/vm/panic_on_oom 0
 	write /proc/sys/vm/stat_interval 10
 	write /proc/sys/vm/swappiness 100
 	write /proc/sys/vm/vfs_cache_pressure 100
 	write /proc/sys/vm/vfs_cache_pressure 200
 	write /proc/sys/vm/vfs_cache_pressure 94
-	write /proc/sys/vm/watermark_boost_factor 0
 	write /sys/block/dm-0/queue/add_random 0
 	write /sys/block/dm-0/queue/iostats 0
 	write /sys/block/dm-0/queue/nomerges 2
@@ -128,6 +124,7 @@ on early-init
 	write /sys/block/mmcblk0/queue/rotational 0
 	write /sys/block/mmcblk0/queue/rq_affinity 1
 	write /sys/block/mmcblk0/queue/scheduler kyber
+	write /sys/block/mmcblk0/queue/scheduler mq-deadline
 	write /sys/block/mmcblk1/queue/add_random 0
 	write /sys/block/mmcblk1/queue/iosched/fifo_batch 16
 	write /sys/block/mmcblk1/queue/iosched/front_merges 1
@@ -141,12 +138,15 @@ on early-init
 	write /sys/block/mmcblk1/queue/rotational 0
 	write /sys/block/mmcblk1/queue/rq_affinity 1
 	write /sys/block/mmcblk1/queue/scheduler kyber
-	write /sys/block/zram0/comp_algorithm lzo lz4 [zstd]
+	write /sys/block/zram0/comp_algorithm zstd
 	write /sys/block/zram0/disksize 4294967296
 	write /sys/block/zram0/initstate 1
 	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
 	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1800000
 	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 850000
+	write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor performance
+	write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor performance
+	write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor performance
 	write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
 	write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
 	write /sys/devices/system/cpu/cpufreq/performance/boost 1
@@ -154,12 +154,15 @@ on early-init
 	write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
 	write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
 	write /sys/devices/system/cpu/cpufreq/performance/up_rate_limit_us 1000
+	write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor performance
+	write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor performance
 	write /sys/kernel/debug/debug_enabled N
 	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
 	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
 	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_drv 0
 	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_mem 0
 	write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_pwr 0
+	write /sys/kernel/debug/rpm_log 0
 	write /sys/kernel/debug/sched_features HRTICK
 	write /sys/kernel/debug/sched_features NEXT_BUDDY
 	write /sys/kernel/debug/sched_features NO_TTWU_QUEUE
@@ -168,9 +171,6 @@ on early-init
 	write /sys/kernel/fast_charge/force_fast_charge 1
 	write /sys/kernel/gpu/gpu_governor performance
 	write /sys/kernel/printk_mode/printk_mode 0
-	write /sys/kernel/tracing/instances/bootreceiver/buffer_size_kb 1
-	write /sys/kernel/tracing/instances/bootreceiver/events/error_report/error_report_end/enable 0
-	write /sys/kernel/tracing/instances/bootreceiver/trace_options disable_on_free
 	write /sys/kernel/tracing/tracing_on 0
 	write /sys/module/adreno_idler/parameters/adreno_idler_active 0
 	write /sys/module/debug/parameters/enable_event_log 0
@@ -193,8 +193,8 @@ on early-init
 	write /sys/module/rpm_smd/parameters/debug_mask 0
 	write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
 	write /sys/module/usbhid/parameters/kbpoll 0
-	write dev/cpuset/background/cpus 0-3
-	write dev/cpuset/foreground/cpus 0-7
+	write /dev/cpuset/background/cpus 0-3
+	write /dev/cpuset/foreground/cpus 0-7
 
 on boot && property:ro.config.low_ram=true
 	write /proc/sys/vm/dirty_background_ratio 10

@@ -317,8 +317,8 @@ write /sys/module/printk/parameters/time N
 write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
 write /sys/module/rpm_smd/parameters/debug_mask 0
 write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
-write dev/cpuset/background/cpus 0-3
-write dev/cpuset/foreground/cpus 0-7
+write /dev/cpuset/background/cpus 0-3
+write /dev/cpuset/foreground/cpus 0-7
 
 if grep -q android /proc/cmdline; then
 	ANDROID=true
@@ -531,8 +531,8 @@ write /sys/module/printk/parameters/time N
 write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
 write /sys/module/rpm_smd/parameters/debug_mask 0
 write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
-write dev/cpuset/background/cpus 0-3
-write dev/cpuset/foreground/cpus 0-7
+write /dev/cpuset/background/cpus 0-3
+write /dev/cpuset/foreground/cpus 0-7
 
 if [[ -f "/sys/kernel/debug/sched_features" ]]; then
 	write /sys/kernel/debug/sched_features NEXT_BUDDY

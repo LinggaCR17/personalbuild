@@ -44,7 +44,7 @@ aint()
 	local NEWVAL=$3
 	
 	if [[ "$(resetprop $NAME)" = *"$CONTAINS"* ]]; then
-		resetprop -v -n "$NAME" "$NEWVAL"
+		resetprop -v -n $NAME $NEWVAL
 	fi
 }
 

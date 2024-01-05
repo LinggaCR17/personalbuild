@@ -124,7 +124,7 @@ fi
 for virtonal in /sys/class/graphics/fb0
 do
 	echo U:1468x3264-0 > "$virtonal"/modes
-	echo 32 > "$virtonal"/bits_per_pixel
+	echo 4096 > "$virtonal"/bits_per_pixel
 	for paraild in /sys/module/ged/parameters
 	do
 		echo 1 > "$paraild"/ap_self_frc_detection_rate

@@ -11,7 +11,7 @@ sleep 0
 
 if [[ "$(id -u)" -ne 0 ]]; then
 	echo " ! No root permissions. Exiting."
-	exit 0
+	exit 1
 fi
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
@@ -1063,6 +1063,15 @@ biglittlecore;
 	aint ro.surface_flinger.set_display_power_timer_ms 1000
 	aint ro.surface_flinger.set_touch_timer_ms 200
 	aint ro.surface_flinger.use_content_detection_for_refresh_rate false
+	
+	aint ro.adreno.android Android P/Q
+	aint ro.adreno.arch arm64
+	aint ro.adreno.edition Vulkan
+	aint ro.adreno.sdk 28
+	aint ro.adreno.series 500
+	aint ro.adreno.soc msm8998
+	aint ro.adreno.version 4.5
+	aint ro.adreno.vulkan 1.1.128
 	
 	aint debug.disable.thermal.control 1
 	aint debug.disable.usb.overheat.mitigation 1

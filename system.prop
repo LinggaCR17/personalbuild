@@ -168,6 +168,16 @@ ro.surface_flinger.set_display_power_timer_ms=1000
 ro.surface_flinger.set_touch_timer_ms=200
 ro.surface_flinger.use_content_detection_for_refresh_rate=false
 
+# Adreno Team Graphics Drivers properties
+ro.adreno.android=Android P/Q
+ro.adreno.arch=arm64
+ro.adreno.edition=Vulkan
+ro.adreno.sdk=28
+ro.adreno.series=500
+ro.adreno.soc=msm8998
+ro.adreno.version=4.5
+ro.adreno.vulkan=1.1.128
+
 # A D-Thermal based on mtSoC. Mediatek, Adreno
 debug.disable.thermal.control=1
 debug.disable.usb.overheat.mitigation=1

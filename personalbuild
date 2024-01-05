@@ -6,21 +6,17 @@
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
 
 # Avoid crashed at first boot complete
-sync
+sync;
 sleep 0
 
 if [[ "$(id -u)" -ne 0 ]]; then
 	echo " ! No root permissions. Exiting."
-	
 	exit 1
 fi
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
 do
 	if [[ ! -d "$MAGISKTMP" ]]; then
-		swapoff /dev/block/zram0 >/dev/null 2>&1
-		echo 1 > /sys/block/zram0/reset
-		
 		# Using isolation, isolated process
 		sleep 0
 	fi
@@ -28,8 +24,8 @@ done
 
 (while :
 do
-    sf=$(service list | grep -c "SurfaceFlinger")
-    
+	sf=$(service list | grep -c "SurfaceFlinger")
+	
 	if [ $sf -eq 1 ]; then
 		service call SurfaceFlinger 1008 i32 1
 		service call SurfaceFlinger 1035 i32 0
@@ -236,7 +232,7 @@ write /sys/block/mmcblk1/queue/read_ahead_kb 512
 write /sys/block/mmcblk1/queue/rotational 0
 write /sys/block/mmcblk1/queue/rq_affinity 1
 write /sys/block/mmcblk1/queue/scheduler kyber
-write /sys/block/zram0/comp_algorithm lzo lz4 [zstd]
+write /sys/block/zram0/comp_algorithm zstd
 write /sys/block/zram0/disksize 4294967296
 write /sys/block/zram0/initstate 1
 write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
@@ -435,12 +431,16 @@ UINT_MAX="4294967295" # phase two
 SCHED_PERIOD="$((4 * 1000 * 1000))"
 SCHED_TASKS="8"
 
+write /dev/cpuset/foreground/boost/cpus 4-7
+write /dev/cpuset/foreground/cpus 0-3,4-7
+write /dev/cpuset/top-app/cpus 0-7
 write /dev/stune/foreground/schedtune.prefer_idle 1
 write /dev/stune/top-app/schedtune.boost 10
 write /dev/stune/top-app/schedtune.prefer_idle 1
 write /proc/sys/debug/exception-trace 0
 write /proc/sys/fs/dir-notify-enable 0
 write /proc/sys/kernel/compat-log 0
+write /proc/sys/kernel/perf_cpu_time_max_percent 3
 write /proc/sys/kernel/perf_cpu_time_max_percent 5
 write /proc/sys/kernel/printk 0 0 0 0
 write /proc/sys/kernel/printk_devkmsg off
@@ -450,6 +450,7 @@ write /proc/sys/kernel/sched_latency_ns "$SCHED_PERIOD"
 write /proc/sys/kernel/sched_migration_cost_ns 5000000
 write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
 write /proc/sys/kernel/sched_nr_migrate 32
+write /proc/sys/kernel/sched_nr_migrate 4
 write /proc/sys/kernel/sched_schedstats 0
 write /proc/sys/kernel/sched_tunable_scaling 0
 write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
@@ -458,6 +459,7 @@ write /proc/sys/net/ipv4/tcp_fastopen 3
 write /proc/sys/net/ipv4/tcp_syncookies 0
 write /proc/sys/vm/block_dump 0
 write /proc/sys/vm/dirty_background_ratio 10
+write /proc/sys/vm/dirty_background_ratio 3
 write /proc/sys/vm/dirty_expire_centisecs 3000
 write /proc/sys/vm/dirty_ratio 30
 write /proc/sys/vm/dirty_writeback_centisecs 3000
@@ -466,6 +468,12 @@ write /proc/sys/vm/page-cluster 0
 write /proc/sys/vm/stat_interval 10
 write /proc/sys/vm/swappiness 100
 write /proc/sys/vm/vfs_cache_pressure 100
+write /proc/sys/vm/vfs_cache_pressure 200
+write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
+write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
+write /sys/devices/system/cpu/cpufreq/performance/boost 1
+write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
+write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
 write /sys/kernel/debug/debug_enabled N
 write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
 write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
@@ -474,15 +482,19 @@ write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_mem 0
 write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_pwr 0
 write /sys/kernel/debug/sched_features HRTICK
 write /sys/kernel/debug/tracing/tracing_on 0
+write /sys/kernel/gpu/gpu_governor performance
 write /sys/kernel/printk_mode/printk_mode 0
 write /sys/kernel/tracing/tracing_on 0
+write /sys/module/adreno_idler/parameters/adreno_idler_active 0
 write /sys/module/debug/parameters/enable_event_log 0
 write /sys/module/ext4/parameters/mballoc_debug 0
 write /sys/module/ip6_tunnel/parameters/log_ecn_error N
+write /sys/module/lazyplug/parameters/nr_possible_cores 8
 write /sys/module/logger/parameters/enabled 0
 write /sys/module/logger/parameters/log_enabled 0
 write /sys/module/mali/parameters/mali_debug_level 0
 write /sys/module/mmc_core/parameters/use_spi_crc 0
+write /sys/module/msm_performance/parameters/touchboost 1
 write /sys/module/msm_show_resume_irq/parameters/debug_mask 0
 write /sys/module/printk/parameters/console_suspend Y
 write /sys/module/printk/parameters/cpu N
@@ -582,12 +594,14 @@ do
 done
 
 if true; then
-	for bjir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+	for bjir in powersave conservative userspace ondemand interactive schedplus schedutil performance
+	do
 		write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "$bjir"
 		write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor "$bjir"
 		write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "$bjir"
 		write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor "$bjir"
-		for njir in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+		for njir in powersave conservative userspace ondemand interactive schedplus schedutil performance
+		do
 			write /sys/devices/system/cpu/cpufreq/policy1/scaling_governor "$njir"
 			write /sys/devices/system/cpu/cpufreq/policy2/scaling_governor "$njir"
 			write /sys/devices/system/cpu/cpufreq/policy3/scaling_governor "$njir"
@@ -596,42 +610,8 @@ if true; then
 	done
 fi
 
-write /dev/cpuset/foreground/boost/cpus 4-7
-write /dev/cpuset/foreground/cpus 0-3,4-7
-write /dev/cpuset/top-app/cpus 0-7
-write /proc/sys/kernel/perf_cpu_time_max_percent 3
-write /proc/sys/kernel/printk_devkmsg off
-write /proc/sys/kernel/sched_autogroup_enabled 1
-write /proc/sys/kernel/sched_child_runs_first 1
-write /proc/sys/kernel/sched_latency_ns "$SCHED_PERIOD"
-write /proc/sys/kernel/sched_migration_cost_ns 5000000
-write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
-write /proc/sys/kernel/sched_nr_migrate 4
-write /proc/sys/kernel/sched_schedstats 0
-write /proc/sys/kernel/sched_tunable_scaling 0
-write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
-write /proc/sys/net/ipv4/tcp_ecn 1
-write /proc/sys/net/ipv4/tcp_fastopen 3
-write /proc/sys/net/ipv4/tcp_syncookies 0
-write /proc/sys/vm/dirty_background_ratio 3
-write /proc/sys/vm/dirty_expire_centisecs 3000
-write /proc/sys/vm/dirty_ratio 30
-write /proc/sys/vm/dirty_writeback_centisecs 3000
-write /proc/sys/vm/page-cluster 0
-write /proc/sys/vm/stat_interval 10
-write /proc/sys/vm/swappiness 100
-write /proc/sys/vm/vfs_cache_pressure 200
-write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
-write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
-write /sys/devices/system/cpu/cpufreq/performance/boost 1
-write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
-write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
-write /sys/kernel/gpu/gpu_governor performance
-write /sys/module/adreno_idler/parameters/adreno_idler_active 0
-write /sys/module/lazyplug/parameters/nr_possible_cores 8
-write /sys/module/msm_performance/parameters/touchboost 1
-
-for amognal in /sys/bus/cpu/devices/*/cpufreq; do
+for amognal in /sys/bus/cpu/devices/*/cpufreq
+do
 	echo "$UINT_MAX" > "$amognal"/cpuinfo_cur_freq
 	echo "$UINT_MAX" > "$amognal"/cpuinfo_max_freq
 	echo "$UINT_MAX" > "$amognal"/cpuinfo_min_freq
@@ -642,6 +622,9 @@ done
 
 function config()
 {
+	swapoff /dev/block/zram0 >/dev/null 2>&1
+	echo 1 > /sys/block/zram0/reset
+	
 	echo 0 > /proc/sys/vm/laptop_mode
 	echo 0 > /proc/sys/vm/oom_kill_allocating_task
 	echo 0 > /proc/sys/vm/page-cluster
@@ -655,20 +638,27 @@ function config()
 	echo 3022 > /proc/sys/vm/min_free_kbytes
 	echo 50 > /proc/sys/vm/overcommit_ratio
 	
-	for compild in lzo lz4 zstd; do
+	echo $((4096*8192*16384)) > /sys/block/zram0/disksize
+	mkswap /dev/block/zram0 >/dev/null 2>&1
+	
+	for compild in lzo lz4 zstd
+	do
 		echo "$compild" > /sys/block/zram0/comp_algorithm
 	done
 	
 	echo 4294967296 > /sys/block/zram0/disksize
 	echo 1 > /sys/block/zram0/initstate
 	echo 4 > /sys/block/zram0/max_comp_streams
+	
+	swapon /dev/block/zram0 >/dev/null 2>&1
 }
 
 config;
 
 # Using Xvision™(KCAL) @pedro based source
 
-for kcal in /sys/devices/platform/kcal_ctrl.0; do
+for kcal in /sys/devices/platform/kcal_ctrl.0
+do
 	echo 1 > "$kcal"/kcal_enable
 	echo 275 > "$kcal"/kcal_sat
 	echo 253 > "$kcal"/kcal_val
@@ -687,7 +677,8 @@ function biglittlecore()
 	echo 85 1401600:80 > /sys/devices/system/cpu/cpufreq/performance/target_loads
 	
 	if true; then
-		for perfonal in powersave conservative userspace ondemand interactive schedplus schedutil performance; do
+		for perfonal in powersave conservative userspace ondemand interactive schedplus schedutil performance
+		do
 			echo "$perfonal" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 			echo "$perfonal" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
 			echo "$perfonal" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
@@ -809,7 +800,6 @@ biglittlecore;
 	aint debug.drm.mode.force 1468x3264@120
 	aint debug.egl.buffcount 4
 	aint debug.egl.force_msaa 1
-	aint debug.egl.force_msaa true
 	aint debug.egl.hw 1
 	aint debug.egl.profiler 1
 	aint debug.egl.swapinterval 0
@@ -989,12 +979,14 @@ settings put system peak_refresh_rate 120.00001
 
 function zramswapper()
 {
-	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config set_sync_disabled_for_tests persistent
-	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config put activity_manager max_cached_processes 256 || settings put global activity_manager_constants max_cached_processes=256
-	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config put activity_manager max_phantom_processes 2147483647
-	[ $(getprop ro.build.version.release) -gt 9 ] && cmd settings put global settings_enable_monitor_phantom_procs false
-	[ $(getprop ro.build.version.release) -gt 9 ] && cmd device_config put activity_manager max_empty_time_millis 43200000
-	[ $(getprop ro.build.version.release) -gt 9 ] && cmd settings put global settings_enable_monitor_phantom_procs false
+	if [ $(getprop ro.build.version.release) -gt 9 ]; then
+		cmd device_config set_sync_disabled_for_tests persistent
+		cmd device_config put activity_manager max_cached_processes 256 || settings put global activity_manager_constants max_cached_processes=256
+		cmd device_config put activity_manager max_phantom_processes 2147483647
+		cmd settings put global settings_enable_monitor_phantom_procs false
+		cmd device_config put activity_manager max_empty_time_millis 43200000
+		cmd settings put global settings_enable_monitor_phantom_procs false
+	fi
 	
 	sleep 1
 	if true; then
@@ -1004,9 +996,6 @@ function zramswapper()
 }
 
 zramswapper;
-
-echo $((4096*8192*16384)) > /sys/block/zram0/disksize
-mkswap /dev/block/zram0 >/dev/null 2>&1
 
 personal()
 {
@@ -1034,7 +1023,6 @@ personal()
 	fi
 }&
 
-swapon /dev/block/zram0 >/dev/null 2>&1
 sysbat;
 
 exit 0

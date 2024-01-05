@@ -6,7 +6,8 @@
 previous_battery_level=$(cat /sys/class/power_supply/battery/capacity)
 notification_sent=false
 
-while true; do
+while true
+do
   sysbat=$(cat /sys/class/power_supply/battery/capacity)
 
   if [ $sysbat -eq 100 ]; then

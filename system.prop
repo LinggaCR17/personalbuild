@@ -10,7 +10,6 @@ debug.cpurend.vsync=false
 debug.drm.mode.force=1468x3264@120
 debug.egl.buffcount=4
 debug.egl.force_msaa=1
-debug.egl.force_msaa=true
 debug.egl.hw=1
 debug.egl.profiler=1
 debug.egl.swapinterval=0

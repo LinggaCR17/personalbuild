@@ -11,7 +11,7 @@ sleep 0
 
 if [[ "$(id -u)" -ne 0 ]]; then
 	echo " ! No root permissions. Exiting."
-	exit 1
+	exit 0
 fi
 
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
@@ -76,6 +76,17 @@ do
 	echo 1 > "$personal"/clkgate_enable
 	echo 1 > "$personal"/clkscale_enable
 	echo 1 > "$personal"/hibern8_on_idle_enable
+	for build in stop
+	do
+		"$build" logd
+		"$build" logd-auditctl
+		"$build" logd-reinit
+		"$build" statsd
+		"$build" traced
+		"$build" traced_perf
+		"$build" traced
+		"$build" probes
+	done
 done
 
 for personal in /sys/block/*/queue/iostats
@@ -138,9 +149,9 @@ do
 done
 
 # FDE.AI, FKM default configuration
-write /dev/cpuset//cpu_limit/cpus 0-1
-write /dev/cpuset//restricted/cpus 0-3
-write /dev/cpuset//system-background/cpus 0-3
+write /dev/cpuset/cpu_limit/cpus 0-1
+write /dev/cpuset/restricted/cpus 0-3
+write /dev/cpuset/system-background/cpus 0-3
 write /dev/cpuset/background/cpus 0-1
 write /dev/cpuset/camera-daemon/cpus 0-3
 write /dev/cpuset/cpus 0-3
@@ -313,6 +324,10 @@ if grep -q android /proc/cmdline; then
 	ANDROID=true
 fi
 
+write /d/tracing/tracing_on 0
+write /proc/sys/kernel/hung_task_timeout_secs 0
+write /proc/sys/kernel/panic 0
+write /proc/sys/kernel/panic_on_oops 0
 write /proc/sys/kernel/perf_cpu_time_max_percent 3
 write /proc/sys/kernel/sched_autogroup_enabled 1
 write /proc/sys/kernel/sched_child_runs_first 1
@@ -321,6 +336,11 @@ write /proc/sys/kernel/sched_migration_cost_ns 5000000
 write /proc/sys/kernel/sched_min_granularity_ns "$((SCHED_PERIOD / SCHED_TASKS))"
 write /proc/sys/kernel/sched_tunable_scaling 0
 write /proc/sys/kernel/sched_wakeup_granularity_ns "$((SCHED_PERIOD / 2))"
+write /proc/sys/kernel/softlockup_panic 0
+write /proc/sys/vm/panic_on_oom 0
+write /sys/kernel/debug/rpm_log 0
+write /sys/kernel/printk_mode/printk_mode 0
+write /sys/module/rmnet_data/parameters/rmnet_data_log_level 0
 
 if [[ "$ANDROID" == true ]]; then
 	write /proc/sys/kernel/sched_min_task_util_for_colocation 0
@@ -469,11 +489,18 @@ write /proc/sys/vm/stat_interval 10
 write /proc/sys/vm/swappiness 100
 write /proc/sys/vm/vfs_cache_pressure 100
 write /proc/sys/vm/vfs_cache_pressure 200
+write /sys/block/mmcblk0/queue/scheduler mq-deadline
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
+write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor performance
+write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor performance
+write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor performance
 write /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay 0
 write /sys/devices/system/cpu/cpufreq/performance/align_windows 1
 write /sys/devices/system/cpu/cpufreq/performance/boost 1
 write /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load 75
 write /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis 1
+write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor performance
+write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor performance
 write /sys/kernel/debug/debug_enabled N
 write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_cmd 0
 write /sys/kernel/debug/kgsl/kgsl-3d0/log_level_ctxt 0
@@ -668,6 +695,71 @@ done
 
 function biglittlecore()
 {
+	echo 0 >  /sys/devices/system/cpu/cpu0/sched_mostly_idle_freq
+	echo 0 >  /sys/devices/system/cpu/cpu1/sched_mostly_idle_freq
+	echo 0 >  /sys/devices/system/cpu/cpu2/sched_mostly_idle_freq
+	echo 0 >  /sys/devices/system/cpu/cpu4/sched_mostly_idle_freq
+	echo 0 >  /sys/devices/system/cpu/cpu6/sched_mostly_idle_freq
+	echo 0 > /dev/stune/background/schedtune.boost
+	echo 0 > /dev/stune/background/schedtune.colocate
+	echo 0 > /dev/stune/background/schedtune.prefer_idle
+	echo 0 > /dev/stune/background/schedtune.sched_boost_no_override
+	echo 0 > /dev/stune/foreground/schedtune.boost
+	echo 0 > /dev/stune/foreground/schedtune.colocate
+	echo 0 > /dev/stune/foreground/schedtune.prefer_idle
+	echo 0 > /dev/stune/foreground/schedtune.sched_boost_no_override
+	echo 0 > /dev/stune/schedtune.boost
+	echo 0 > /dev/stune/schedtune.colocate
+	echo 0 > /dev/stune/schedtune.prefer_idle
+	echo 0 > /dev/stune/schedtune.sched_boost_no_override
+	echo 0 > /dev/stune/top-app/schedtune.boost
+	echo 0 > /dev/stune/top-app/schedtune.prefer_idle
+	echo 0 > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
+	echo 0-7 > /dev/cpuset/audio-app/cpus
+	echo 0-7 > /dev/cpuset/background/cpus
+	echo 0-7 > /dev/cpuset/camera-daemon/cpus
+	echo 0-7 > /dev/cpuset/foreground/boost/cpus
+	echo 0-7 > /dev/cpuset/foreground/cpus
+	echo 0-7 > /dev/cpuset/rt/cpus
+	echo 0-7 > /dev/cpuset/top-app/cpus
+	echo 1 > /dev/stune/background/schedtune.sched_boost_enabled
+	echo 1 > /dev/stune/foreground/schedtune.sched_boost_enabled
+	echo 1 > /dev/stune/schedtune.sched_boost_enabled
+	echo 1 > /dev/stune/top-app/schedtune.colocate
+	echo 1 > /dev/stune/top-app/schedtune.sched_boost_enabled
+	echo 1 > /dev/stune/top-app/schedtune.sched_boost_no_override
+	echo 1 > /sys/devices/system/cpu/cpufreq/performance/align_windows
+	echo 1 > /sys/devices/system/cpu/cpufreq/performance/boost
+	echo 1 > /sys/devices/system/cpu/cpufreq/performance/max_freq_hysteresis
+	echo 1 > /sys/module/msm_performance/parameters/touchboost
+	echo 8 > /sys/module/lazyplug/parameters/nr_possible_cores
+	echo 90 > /sys/devices/system/cpu/cpufreq/performance/go_hispeed_load
+	echo performance > /sys/class/kgsl/kgsl-3d0/devfreq/governor
+	echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+	echo performance > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
+	echo performance > /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
+	echo 0 > /sys/devices/system/cpu/isolated
+	echo 0 > /sys/devices/system/cpu/offline
+	echo 0 > /sys/devices/system/cpu/uevent
+	echo 1 > /sys/devices/system/cpu/cpufreq/policy0/schedutil/iowait_boost_enable
+	echo 1 > /sys/devices/system/cpu/cpufreq/policy4/schedutil/iowait_boost_enable
+	echo Y > /sys/module/workqueue/parameters/power_efficient
+	echo 0 > /sys/module/ged/parameters/ged_force_mdp_enable
+	echo 1 > /sys/module/ged/parameters/boost_amp
+	echo 1 > /sys/module/ged/parameters/boost_extra
+	echo 1 > /sys/module/ged/parameters/boost_gpu_enable
+	echo 1 > /sys/module/ged/parameters/enable_cpu_boost
+	echo 1 > /sys/module/ged/parameters/enable_game_self_frc_detect
+	echo 1 > /sys/module/ged/parameters/enable_gpu_boost
+	echo 1 > /sys/module/ged/parameters/ged_boost_enable
+	echo 1 > /sys/module/ged/parameters/gx_3D_benchmark_on
+	echo 1 > /sys/module/ged/parameters/gx_frc_mode
+	echo 1 >/sys/module/ged/parameters/gx_force_cpu_boost
+	echo 1 >/sys/module/ged/parameters/gx_game_mode
+	echo 10 > /sys/module/ged/parameters/gpu_idle
+	echo 100 > /sys/module/ged/parameters/cpu_boost_policy
+	echo 100 > /sys/module/ged/parameters/ged_smart_boost
+	
 	echo 1 768000:90 > /sys/devices/system/cpu/cpu4/cpufreq/performance/target_loads
 	echo 1 960000:85 1094400:90 1344000:80 > /sys/devices/system/cpu/cpu0/cpufreq/performance/target_loads
 	echo 1 960000:85 1094400:90 > /sys/devices/system/cpu/cpufreq/performance/target_loads
@@ -675,6 +767,10 @@ function biglittlecore()
 	echo 19000 1094400:39000 > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
 	echo 19000 1401600:39000 > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
 	echo 85 1401600:80 > /sys/devices/system/cpu/cpufreq/performance/target_loads
+	
+	echo 0 > /sys/android_touch/doubletap2wake
+	echo 0 > /sys/android_touch/sweep2sleep
+	echo 0 > /sys/android_touch/sweep2wake
 	
 	if true; then
 		for perfonal in powersave conservative userspace ondemand interactive schedplus schedutil performance
@@ -689,6 +785,18 @@ function biglittlecore()
 			echo "$perfonal" > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor
 		done
 	fi
+	
+	echo 0 0 > /proc/ppm/policy_status
+	echo 0 > /proc/ppm/enabled
+	echo 1 0 > /proc/ppm/policy_status
+	echo 2 0 > /proc/ppm/policy_status
+	echo 3 0 > /proc/ppm/policy_status
+	echo 4 0 > /proc/ppm/policy_status
+	echo 5 0 > /proc/ppm/policy_status
+	echo 6 0 > /proc/ppm/policy_status
+	echo 7 0 > /proc/ppm/policy_status
+	echo 8 0 > /proc/ppm/policy_status
+	echo 9 0 > /proc/ppm/policy_status
 	
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/io_is_busy
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/rate_limit_us
@@ -806,6 +914,7 @@ biglittlecore;
 	aint debug.enable.sglscale 1
 	aint debug.enabletr false
 	aint debug.gr.swapinterval 0
+	aint debug.gralloc.enable_fb_ubwc 1
 	aint debug.gralloc.gfx_ubwc_disable 0
 	aint debug.hwui.capture_skp_enabled false
 	aint debug.hwui.disable_draw_defer true
@@ -862,13 +971,17 @@ biglittlecore;
 	aint logd.statistics 0
 	aint persist.android.strictmode 0
 	aint persist.demo.hdmirotationlock false
+	aint persist.dev.pm.dyn_samplingrate 1
 	aint persist.hwc.mdpcomp.enable true
 	aint persist.hwc.ptor.enable true
+	aint persist.service.lgospd.enable 0
+	aint persist.service.pcsync.enable 0
 	aint persist.sys.composition.type dyn
 	aint persist.sys.dalvik.hyperthreading true
 	aint persist.sys.dalvik.multithread true
 	aint persist.sys.force_highendgfx true
 	aint persist.sys.purgeable_assets 1
+	aint persist.sys.scrollingcache 3
 	aint persist.sys.strictmode.disable 1
 	aint persist.sys.strictmode.visual 0
 	aint persist.sys.ui.hw 1
@@ -912,6 +1025,9 @@ biglittlecore;
 	aint ro.min_pointer_dur 8
 	aint ro.opengles.version 196610
 	aint ro.product.gpu.driver 1
+	aint ro.product.max_num_touch 10
+	aint ro.product.min_num_touch 10
+	aint ro.product.multi_touch_enabled true
 	aint ro.sf.compbypass.enable 0
 	aint ro.surface_flinger.protected_contents true
 	aint ro.vendor.display.default_fps 120
@@ -929,9 +1045,12 @@ biglittlecore;
 	aint skia.force_gl_texture 1
 	aint sys.display_panel_lpm true
 	aint sys.init.perf_lsm_hooks 1
+	aint sys.use_fifo_ui 1
 	aint vendor.debug.sf.latch_unsignaled 1
 	aint vendor.gralloc.disable_ubwc 0
 	aint video.accelerate.hw 1
+	aint view.scroll_friction 0
+	aint view.touch_slop 1
 	aint visual_bars false
 	aint vm.stat_interval 1
 	aint windowsmgr.max_events_per_sec 200
@@ -961,6 +1080,14 @@ biglittlecore;
 	aint vendor.disable.thermal.control 1
 	aint vendor.disable.usb.overheat.mitigation 1
 	aint vendor.thermal.manager.is_ht120 1
+	aint persist.traced.enable 0
+	aint persist.traced_perf.enable 0
+	aint persist.sys.lmk.reportkills false
+	aint sys.lmk.reportkills false
+	aint ro.lmk.debug false
+	aint ro.lmk.log_stats false
+	aint vendor.vidc.debug.level 0
+	aint vidc.debug.level 0
 	
 	aint persist.service.zram 1
 	aint persist.sys.zram_enabled 1
@@ -970,6 +1097,27 @@ biglittlecore;
 	aint ro.gfx.angle.supported true
 	
 	aint ro.HOME_APP_ADJ 1
+	
+	aint debug.als.logs 0
+	aint debug.atrace.tags.enableflags 0
+	aint debug.mdpcomp.logs 0
+	aint debug.svi.logs 0
+	aint debugtool.anrhistory 0
+	aint log.tag.stats_log 0
+	aint logcat.live disable
+	aint logd.logpersistd.enable false
+	aint logd.statistics 0
+	aint persist.debug.trace 0
+	aint persist.sample.eyetracking.log 0
+	aint persist.service.adb.enable 0
+	aint persist.service.debuggable 0
+	aint persist.sys.loglevel 0
+	aint persist.traced.enable 0
+	aint persist.vendor.verbose_logging_enabled false
+	aint profiler.hung.dumpdobugreport false
+	aint ro.logd.size.stats 0
+	aint ro.logd.size 0
+	aint sys.log.app 0
 }&
 
 settings put system min_refresh_rate 120

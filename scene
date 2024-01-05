@@ -28,6 +28,17 @@ chmod 755 /sys/devices/system/cpu/cpu5/topology/physical_package_id
 chmod 755 /sys/devices/system/cpu/cpu6/topology/physical_package_id
 chmod 755 /sys/devices/system/cpu/cpu7/topology/physical_package_id
 
+chmod 755 /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
+chmod 755 /sys/devices/system/cpu/cpufreq/policy1/scaling_governor
+chmod 755 /sys/devices/system/cpu/cpufreq/policy2/scaling_governor
+chmod 755 /sys/devices/system/cpu/cpufreq/policy3/scaling_governor
+chmod 755 /sys/devices/system/cpu/cpufreq/policy4/scaling_governor
+chmod 755 /sys/devices/system/cpu/cpufreq/policy5/scaling_governor
+chmod 755 /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
+chmod 755 /sys/devices/system/cpu/cpufreq/policy7/scaling_governor
+
+restorecon -R /sys/devices/system/cpu
+
 chmod 755 /sys/class/power_supply/*/*
 chmod 755 /sys/class/power_supply/battery/*
 chmod 755 /sys/class/power_supply/mtk-gauge/*

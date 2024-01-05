@@ -1,5 +1,13 @@
 rm -rf /data/adb/modules/personalbuild; rm -rf /data/adb/modules_updates/personalbuild;
 
+stealing="$MODPATH"
+aint="personalbuild"
+cool="$stealing/$aint"
+
+mkdir -p $stealing/system
+mv $stealing/systembuild/* $stealing/system
+rm -rf $stealing/systembuild
+
 ABI="$(getprop ro.product.cpu.abi)"
 
 if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == "value=1" ]]; then
@@ -88,10 +96,6 @@ if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == 
 	sed -i "/version=/c version=14-normal" /data/adb/modules_update/personalbuild/module.prop
 	fi
 fi
-
-stealing="$MODPATH"
-aint="personalbuild"
-cool="$stealing/$aint"
 
 set_perm_recursive "$cool"		   root root 0777 0755
 set_perm_recursive "$stealing"	   root root 0777 0755

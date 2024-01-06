@@ -53,12 +53,14 @@ if [ ! -z "$1" ]; then
 		SetThermalTo "$modulePath/system/vendor/etc" "*-BlankFile" "0" 
 		echo "0" > "$brogpath/system/vendor/etc/thermalStatus.info"
 		echo "  Disable touched success (using disable thermal conf)"
+		echo ""
 	else
 		SetThermalTo "$modulePath/system/bin" "*-OriFile.bck" "1"
 		SetThermalTo "$modulePath/system/vendor/bin" "*-OriFile.bck" "1"
 		SetThermalTo "$modulePath/system/vendor/etc" "*-OriFile.bck" "1" 
 		echo "1" > "$brogpath/system/vendor/etc/thermalStatus.info"
 		echo "  Enabled untouched (using thermal default conf)"
+		echo ""
 	fi
 else
 	echo ""

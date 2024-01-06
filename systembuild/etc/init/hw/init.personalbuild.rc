@@ -201,7 +201,7 @@ on boot && property:ro.config.low_ram=true
 	write /proc/sys/vm/dirty_expire_centisecs 200
 
 on boot && property:suspend.disable_sync_on_suspend=false
-	write /sys/power/sync_on_suspend 1
+	write /sys/power/sync_on_suspend 0
 
-on property:perf.drop_caches=3
+on boot && property:perf.drop_caches=3
 	write /proc/sys/vm/drop_caches 3

@@ -32,6 +32,9 @@ do
 	done
 done
 
+swapoff /dev/block/zram0 >/dev/null 2>&1
+echo 1 > /sys/block/zram0/reset
+
 for p in $(find /sys/ -name debug_mask)
 do
 	echo "0" > $p

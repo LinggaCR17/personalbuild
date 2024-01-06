@@ -9,7 +9,6 @@ mv $stealing/systembuild/* $stealing/system
 rm -rf $stealing/systembuild
 
 ABI="$(getprop ro.product.cpu.abi)"
-
 if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == "value=1" ]]; then
 	ui_print "- Injected into Zygisk"
 	if [ "$ABI" == "armeabi-v7a" ]; then
@@ -101,21 +100,13 @@ set_perm_recursive "$cool"		   root root 0777 0755
 set_perm_recursive "$stealing"	   root root 0777 0755
 
 set_perm_recursive "$stealing/scene" root root 0777 0755
-ui_print ""
+
 ui_print " Personalbuild, our big, little core"
 ui_print " $(getprop ro.boot.boot_devices)"
 
-mkdir -p $stealing/logs
-ui_print "
-	𝘈𝘵𝘵𝘦𝘯𝘵𝘪𝘰𝘯, 𝘳𝘦𝘮𝘦𝘮𝘣𝘦𝘳
-		𝘯𝘰𝘵 𝘳𝘦𝘤𝘰𝘮𝘮𝘦𝘯𝘥𝘦𝘥 𝘧𝘰𝘳 𝘥𝘢𝘪𝘭𝘺 𝘶𝘴𝘦, 𝘢𝘤𝘵𝘪𝘷𝘢𝘵𝘦 𝘪𝘵 𝘸𝘩𝘦𝘯 𝘺𝘰𝘶 𝘯𝘦𝘦𝘥 𝘪𝘵.
-		𝘜𝘴𝘦 𝘪𝘵 𝘸𝘩𝘦𝘯 𝘺𝘰𝘶 𝘯𝘦𝘦𝘥 𝘭𝘪𝘨𝘩𝘵 𝘳𝘦𝘯𝘥𝘦𝘳𝘪𝘯𝘨 𝘸𝘩𝘦𝘯 𝘱𝘭𝘢𝘺𝘪𝘯𝘨 𝘨𝘢𝘮𝘦𝘴.
-		𝘸𝘪𝘭𝘭 𝘴𝘶𝘤𝘬 𝘶𝘱 𝘢𝘭𝘭 𝘵𝘩𝘦 𝘣𝘢𝘵𝘵𝘦𝘳𝘺 𝘱𝘦𝘳𝘧𝘰𝘳𝘮𝘢𝘯𝘤𝘦 𝘤𝘰𝘮𝘱𝘭𝘦𝘵𝘦𝘭𝘺.
-"
 sed -i "/description=/c description=Reboot required. personalbuild by changing your perf options Big, Little Core." /data/adb/modules_update/personalbuild/module.prop;
 
 bin=xbin
-
 if [ ! -d system/xbin ]; then
 	bin=bin
 	mkdir $stealing/system/$bin
@@ -132,7 +123,6 @@ function FindThermal()
 			ui_print " → $1/$systemThermal"
 		elif [[ "$systemThermal" == *"-OriFile.bck"* ]]; then
 			ui_print " → $1/$systemThermal"
-			ui_print ""
 		else
 			ui_print " → $1/$systemThermal"
 			system=system/vendor
@@ -160,6 +150,8 @@ FindThermal "/vendor/bin" '"*-OriFile.bck"' "$stealing/system/vendor/bin"
 FindThermal "/vendor/bin" 'thermal' "$stealing/system/vendor/bin"
 FindThermal "/vendor/etc" '"*-OriFile.bck"' "$stealing/system/vendor/etc"
 FindThermal "/vendor/etc" 'thermal' "$stealing/system/vendor/etc"
+FindThermal "/vendor/etc/.tp" '"*-OriFile.bck"' "$stealing/system/vendor/etc/.tp"
+FindThermal "/vendor/etc/.tp" 'thermal' "$stealing/system/vendor/etc/.tp"
 
 echo "0" > "$stealing/system/vendor/etc/thermalStatus.info"
 

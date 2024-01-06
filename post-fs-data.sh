@@ -29,9 +29,6 @@ do
 	done
 done
 
-swapoff /dev/block/zram0 >/dev/null 2>&1
-echo 1 > /sys/block/zram0/reset
-
 for p in $(find /sys/ -name debug_mask)
 do
 	echo "0" > $p
@@ -69,13 +66,6 @@ done
 if [ -e "/sys/module/xhci_hcd/parameters/wl_divide" ]; then
 	echo "N" > /sys/module/xhci_hcd/parameters/wl_divide
 fi
-
-tune2fs -o journal_data_writeback /block/path/to/system;
-tune2fs -O ^has_journal /block/path/to/system;
-tune2fs -o journal_data_writeback /block/path/to/cache;
-tune2fs -O ^has_journal /block/path/to/cache;
-tune2fs -o journal_data_writeback /block/path/to/data;
-tune2fs -O ^has_journal /block/path/to/data;
 
 {
 personal="/proc/gpufreq/gpufreq_limited_thermal_ignore"

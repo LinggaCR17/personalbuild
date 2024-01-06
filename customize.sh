@@ -50,7 +50,7 @@ if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == 
 		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
 		  rm -rf $stealing/libs
 		fi
-	sed -i "/version=/c version=14-zygisk" /data/adb/modules_update/personalbuild/module.prop; else
+	sed -i "/version=/c version=15-zygisk" /data/adb/modules_update/personalbuild/module.prop; else
 	if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == "value=0" ]]; then
 		ui_print "- Install as Normal module"
 		if [ "$ABI" == "armeabi-v7a" ]; then
@@ -92,7 +92,7 @@ if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == 
 		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
 		  rm -rf $stealing/libs
 		fi
-	sed -i "/version=/c version=14-normal" /data/adb/modules_update/personalbuild/module.prop
+	sed -i "/version=/c version=15-normal" /data/adb/modules_update/personalbuild/module.prop
 	fi
 fi
 

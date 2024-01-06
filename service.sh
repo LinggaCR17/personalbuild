@@ -1,7 +1,4 @@
-# Stealing ain't cool. After booted should run...
-${0%/*}/personalbuild
-
-# It is useless to use the resetprop stopped method before booting, but will use other alternatives.
+# Stealing ain't cool. It is useless to use the resetprop stopped method before booting, but will use other alternatives.
 {
 	# D-Thermal except mtSoC Mediatek devices
 	resetprop --delete init.svc.thermal
@@ -17,6 +14,9 @@ ${0%/*}/personalbuild
 	# Xiaomi™ / Redme, Realme mi_thermald
 	resetprop --delete init.svc.mi_thermald
 }&
+
+# After booted should run...
+${0%/*}/personalbuild
 
 # Always return success, even if the last write fails.
 exit 0

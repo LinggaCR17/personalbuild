@@ -155,14 +155,18 @@ do
 done
 
 # FDE.AI, FKM default configuration
-write /dev/cpuset/cpu_limit/cpus 0-1
-write /dev/cpuset/restricted/cpus 0-3
-write /dev/cpuset/system-background/cpus 0-3
-write /dev/cpuset/background/cpus 0-1
-write /dev/cpuset/camera-daemon/cpus 0-3
-write /dev/cpuset/cpus 0-3
-write /dev/cpuset/foreground/cpus 0-3
-write /dev/cpuset/top-app/cpus 0-3
+for personal in /dev/cpuset
+do
+	write $personal/cpu_limit/cpus 0-1
+	write $personal/restricted/cpus 0-3
+	write $personal/system-background/cpus 0-3
+	write $personal/background/cpus 0-1
+	write $personal/camera-daemon/cpus 0-3
+	write $personal/cpus 0-3
+	write $personal/foreground/cpus 0-3
+	write $personal/top-app/cpus 0-3
+done
+
 write /dev/stune/background/schedtune.boost 0
 write /dev/stune/background/schedtune.prefer_idle 0
 write /dev/stune/background/schedtune.uclamp.max max
@@ -215,40 +219,49 @@ write /proc/sys/vm/oom_kill_allocating_task 0
 write /proc/sys/vm/overcommit_ratio 50
 write /proc/sys/vm/swappiness 100
 write /proc/sys/vm/vfs_cache_pressure 94
-write /sys/block/dm-0/queue/add_random 0
-write /sys/block/dm-0/queue/iostats 0
-write /sys/block/dm-0/queue/nomerges 2
-write /sys/block/dm-0/queue/nr_requests 128
-write /sys/block/dm-0/queue/read_ahead_kb 512
-write /sys/block/dm-0/queue/rotational 0
-write /sys/block/dm-0/queue/rq_affinity 1
-write /sys/block/dm-0/queue/scheduler none
-write /sys/block/mmcblk0/queue/add_random 0
-write /sys/block/mmcblk0/queue/iosched/fifo_batch 16
-write /sys/block/mmcblk0/queue/iosched/front_merges 1
-write /sys/block/mmcblk0/queue/iosched/read_expire 501
-write /sys/block/mmcblk0/queue/iosched/write_expire 5001
-write /sys/block/mmcblk0/queue/iosched/writes_starved 2
-write /sys/block/mmcblk0/queue/iostats 0
-write /sys/block/mmcblk0/queue/nomerges 2
-write /sys/block/mmcblk0/queue/nr_requests 128
-write /sys/block/mmcblk0/queue/read_ahead_kb 512
-write /sys/block/mmcblk0/queue/rotational 0
-write /sys/block/mmcblk0/queue/rq_affinity 1
-write /sys/block/mmcblk0/queue/scheduler kyber
-write /sys/block/mmcblk1/queue/add_random 0
-write /sys/block/mmcblk1/queue/iosched/fifo_batch 16
-write /sys/block/mmcblk1/queue/iosched/front_merges 1
-write /sys/block/mmcblk1/queue/iosched/read_expire 501
-write /sys/block/mmcblk1/queue/iosched/write_expire 5001
-write /sys/block/mmcblk1/queue/iosched/writes_starved 2
-write /sys/block/mmcblk1/queue/iostats 0
-write /sys/block/mmcblk1/queue/nomerges 2
-write /sys/block/mmcblk1/queue/nr_requests 128
-write /sys/block/mmcblk1/queue/read_ahead_kb 512
-write /sys/block/mmcblk1/queue/rotational 0
-write /sys/block/mmcblk1/queue/rq_affinity 1
-write /sys/block/mmcblk1/queue/scheduler kyber
+
+for dmX in /sys/block/*/queue
+do
+	write $dmX/add_random 0
+	write $dmX/iostats 0
+	write $dmX/nomerges 2
+	write $dmX/nr_requests 128
+	write $dmX/read_ahead_kb 512
+	write $dmX/rotational 0
+	write $dmX/rq_affinity 1
+	write $dmX/scheduler none
+done
+
+for lkX in /sys/block/*/queue
+do
+	write $lkW/add_random 0
+	write $lkW/iosched/fifo_batch 16
+	write $lkW/iosched/front_merges 1
+	write $lkW/iosched/read_expire 501
+	write $lkW/iosched/write_expire 5001
+	write $lkW/iosched/writes_starved 2
+	write $lkW/iostats 0
+	write $lkW/nomerges 2
+	write $lkW/nr_requests 128
+	write $lkW/read_ahead_kb 512
+	write $lkW/rotational 0
+	write $lkW/rq_affinity 1
+	write $lkW/scheduler kyber
+	write $lkW/add_random 0
+	write $lkW/iosched/fifo_batch 16
+	write $lkW/iosched/front_merges 1
+	write $lkW/iosched/read_expire 501
+	write $lkW/iosched/write_expire 5001
+	write $lkW/iosched/writes_starved 2
+	write $lkW/iostats 0
+	write $lkW/nomerges 2
+	write $lkW/nr_requests 128
+	write $lkW/read_ahead_kb 512
+	write $lkW/rotational 0
+	write $lkW/rq_affinity 1
+	write $lkW/scheduler kyber
+done
+
 write /sys/block/zram0/comp_algorithm zstd
 write /sys/block/zram0/disksize 4294967296
 write /sys/block/zram0/initstate 1
@@ -457,9 +470,13 @@ UINT_MAX="4294967295" # phase two
 SCHED_PERIOD="$((4 * 1000 * 1000))"
 SCHED_TASKS="8"
 
-write /dev/cpuset/foreground/boost/cpus 4-7
-write /dev/cpuset/foreground/cpus 0-3,4-7
-write /dev/cpuset/top-app/cpus 0-7
+for build in /dev/cpuset
+do
+	write $build/foreground/boost/cpus 4-7
+	write $build/cpuset/foreground/cpus 0-3,4-7
+	write $build/cpuset/top-app/cpus 0-7
+done
+
 write /dev/stune/foreground/schedtune.prefer_idle 1
 write /dev/stune/top-app/schedtune.boost 10
 write /dev/stune/top-app/schedtune.prefer_idle 1
@@ -655,6 +672,9 @@ done
 
 function config()
 {
+	swapoff /dev/block/zram0 >/dev/null 2>&1
+	echo 1 > /sys/block/zram0/reset
+	
 	echo 0 > /proc/sys/vm/laptop_mode
 	echo 0 > /proc/sys/vm/oom_kill_allocating_task
 	echo 0 > /proc/sys/vm/page-cluster
@@ -676,10 +696,10 @@ function config()
 		echo "$compild" > /sys/block/zram0/comp_algorithm
 	done
 	
-	echo 4294967296 > /sys/block/zram0/disksize
 	echo 1 > /sys/block/zram0/initstate
 	echo 4 > /sys/block/zram0/max_comp_streams
 	
+	echo 4294967296 > /sys/block/zram0/disksize
 	swapon /dev/block/zram0 >/dev/null 2>&1
 }
 
@@ -698,11 +718,11 @@ done
 
 function biglittlecore()
 {
-	echo 0 >  /sys/devices/system/cpu/cpu0/sched_mostly_idle_freq
-	echo 0 >  /sys/devices/system/cpu/cpu1/sched_mostly_idle_freq
-	echo 0 >  /sys/devices/system/cpu/cpu2/sched_mostly_idle_freq
-	echo 0 >  /sys/devices/system/cpu/cpu4/sched_mostly_idle_freq
-	echo 0 >  /sys/devices/system/cpu/cpu6/sched_mostly_idle_freq
+	echo 0 > /sys/devices/system/cpu/cpu0/sched_mostly_idle_freq
+	echo 0 > /sys/devices/system/cpu/cpu1/sched_mostly_idle_freq
+	echo 0 > /sys/devices/system/cpu/cpu2/sched_mostly_idle_freq
+	echo 0 > /sys/devices/system/cpu/cpu4/sched_mostly_idle_freq
+	echo 0 > /sys/devices/system/cpu/cpu6/sched_mostly_idle_freq
 	echo 0 > /dev/stune/background/schedtune.boost
 	echo 0 > /dev/stune/background/schedtune.colocate
 	echo 0 > /dev/stune/background/schedtune.prefer_idle
@@ -789,17 +809,20 @@ function biglittlecore()
 		done
 	fi
 	
-	echo 0 0 > /proc/ppm/policy_status
-	echo 0 > /proc/ppm/enabled
-	echo 1 0 > /proc/ppm/policy_status
-	echo 2 0 > /proc/ppm/policy_status
-	echo 3 0 > /proc/ppm/policy_status
-	echo 4 0 > /proc/ppm/policy_status
-	echo 5 0 > /proc/ppm/policy_status
-	echo 6 0 > /proc/ppm/policy_status
-	echo 7 0 > /proc/ppm/policy_status
-	echo 8 0 > /proc/ppm/policy_status
-	echo 9 0 > /proc/ppm/policy_status
+	for pppm in /proc/ppm
+	do
+		echo 0 0 > $pppm/policy_status
+		echo 0 > $pppm/enabled
+		echo 1 0 > $pppm/policy_status
+		echo 2 0 > $pppm/policy_status
+		echo 3 0 > $pppm/policy_status
+		echo 4 0 > $pppm/policy_status
+		echo 5 0 > $pppm/policy_status
+		echo 6 0 > $pppm/policy_status
+		echo 7 0 > $pppm/policy_status
+		echo 8 0 > $pppm/policy_status
+		echo 9 0 > $pppm/policy_status
+	done
 	
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/io_is_busy
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/rate_limit_us
@@ -897,6 +920,9 @@ function biglittlecore()
 }'"
 	fi
 }
+
+settings put global show_angle_in_use_dialog_box 1
+settings put global angle_gl_driver_selection_values angle
 
 biglittlecore;
 

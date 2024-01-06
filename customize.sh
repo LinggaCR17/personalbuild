@@ -101,9 +101,11 @@ set_perm_recursive "$cool"		   root root 0777 0755
 set_perm_recursive "$stealing"	   root root 0777 0755
 
 set_perm_recursive "$stealing/scene" root root 0777 0755
-ui_print "- Personalbuild, our big, little core"
-ui_print "- $(getprop ro.boot.boot_devices)"
+ui_print ""
+ui_print " Personalbuild, our big, little core"
+ui_print " $(getprop ro.boot.boot_devices)"
 
+mkdir -p $stealing/logs
 ui_print "
 	𝘈𝘵𝘵𝘦𝘯𝘵𝘪𝘰𝘯, 𝘳𝘦𝘮𝘦𝘮𝘣𝘦𝘳
 		𝘯𝘰𝘵 𝘳𝘦𝘤𝘰𝘮𝘮𝘦𝘯𝘥𝘦𝘥 𝘧𝘰𝘳 𝘥𝘢𝘪𝘭𝘺 𝘶𝘴𝘦, 𝘢𝘤𝘵𝘪𝘷𝘢𝘵𝘦 𝘪𝘵 𝘸𝘩𝘦𝘯 𝘺𝘰𝘶 𝘯𝘦𝘦𝘥 𝘪𝘵.
@@ -113,6 +115,7 @@ ui_print "
 sed -i "/description=/c description=Reboot required. personalbuild by changing your perf options Big, Little Core." /data/adb/modules_update/personalbuild/module.prop;
 
 bin=xbin
+
 if [ ! -d system/xbin ]; then
 	bin=bin
 	mkdir $stealing/system/$bin
@@ -126,11 +129,12 @@ function FindThermal()
 	for systemThermal in `ls $1 | grep $2`
 	do
 		if [[ "$systemThermal" == *"-BlankFile"* ]]; then
-			ui_print "- pervious file → $1/$systemThermal"
+			ui_print " → $1/$systemThermal"
 		elif [[ "$systemThermal" == *"-OriFile.bck"* ]]; then
-			ui_print "- conflict file → $1/$systemThermal"
+			ui_print " → $1/$systemThermal"
+			ui_print ""
 		else
-			ui_print "- found file → $1/$systemThermal"
+			ui_print " → $1/$systemThermal"
 			system=system/vendor
 			mkdir -p $stealing/$system/bin; mkdir -p $stealing/$system/etc
 			if [ $2 == "thermal" ]; then

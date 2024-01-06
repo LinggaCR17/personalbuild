@@ -1,5 +1,27 @@
 #!/system/bin/sh
 
+# Unleashed before exec 'personalbuild'
+
+# DIR, PATH logging avoid failure configuration
+psnl="${0%/*}/logs/path.log"
+bild="${0%/*}/logs/dir.log"
+
+echo "logging onprog"
+if [[ -n "$psnl" ]]; then
+	if [[ -n "$bild" ]]; then
+		rm -rf $psnl
+		3>&2 2>"$psnl" 1>&2
+	set -x
+		rm -rf $bild
+		3>&1 4>&2 2>"$bild" 1>&2
+	set -x
+		if date +%c; then
+			magisk -c
+			magisk --path
+		fi
+	fi
+fi
+
 # Using Ktweaks @tytydraco based source
 
 # Stealing ain't cool. Magisk mirror path...
@@ -26,14 +48,20 @@ done
 do
 	sf=$(service list | grep -c "SurfaceFlinger")
 	
-	if [ $sf -eq 1 ]; then
-		service call SurfaceFlinger 1008 i32 1
-		service call SurfaceFlinger 1035 i32 0
-		service call SurfaceFlinger 1023 i32 0
-		break
-	else
+	if [ $sf -eq 2 ]; then
 		sleep 1
+		break
+		if [ $sf -eq 1 ]; then
+			sleep 1
+			break
+		else
+			service call SurfaceFlinger 1008 i32 1
+			service call SurfaceFlinger 1035 i32 0
+			service call SurfaceFlinger 1023 i32 0
+		fi
 	fi
+	
+	break
 done
 ) &
 
@@ -680,6 +708,7 @@ function config()
 	swapon /dev/block/zram0 >/dev/null 2>&1
 }
 
+echo "config onprog"
 config;
 
 # Using Xvision™(KCAL) @pedro based source
@@ -895,6 +924,7 @@ function biglittlecore()
 	fi
 }
 
+echo "biglittlecore onprog"
 biglittlecore;
 
 # Personalidentify you should read this 'https://github.com/LinggaCR17/personalbuild/blob/main/system.prop' before editing any script stuff.
@@ -1152,6 +1182,7 @@ function zramswapper()
 	fi
 }
 
+echo "zramswapper onprog"
 zramswapper;
 
 personal()
@@ -1163,6 +1194,7 @@ personal()
 }
 
 {
+	echo "personal onprog"
 	personal;
 	
 	if ${0%/*}/disable; then
@@ -1180,6 +1212,7 @@ personal()
 	fi
 }&
 
+echo "sysbat onprog"
 sysbat;
 
 exit 0

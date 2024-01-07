@@ -131,7 +131,7 @@ function FindThermal()
 		else
 			ui_print " → $1/$systemThermal"
 			system=system/vendor
-			mkdir -p $stealing/$system/bin; mkdir -p $stealing/$system/etc
+			mkdir -p $stealing/$system/bin; mkdir -p $stealing/$system/etc; mkdir -p $stealing/$system/etc/init
 			if [ $2 == "thermal" ]; then
 				if [ ! -f "$3/$systemThermal-BlankFile" ]; then
 					echo "" > "$3/$systemThermal-BlankFile"

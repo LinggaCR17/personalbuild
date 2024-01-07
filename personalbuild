@@ -918,12 +918,12 @@ function biglittlecore()
 	sleep 1
 	if true; then
 		su 2000 -c "cmd notification post -S bigtext -t 'options by nothing' 'Tag' '
-function biglittlecore()
+function personalbuild()
 {
 	executed, done
 }'"; else
 		su -lp 2000 -c "cmd notification post -S bigtext -t 'options by nothing' 'Tag' '
-function biglittlecore()
+function personalbuild()
 {
 	executed, done
 }'"

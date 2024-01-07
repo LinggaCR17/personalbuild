@@ -157,6 +157,8 @@ FindThermal "/vendor/etc" '"*-OriFile.bck"' "$stealing/system/vendor/etc"
 FindThermal "/vendor/etc" 'thermal' "$stealing/system/vendor/etc"
 FindThermal "/vendor/etc/.tp" '"*-OriFile.bck"' "$stealing/system/vendor/etc/.tp"
 FindThermal "/vendor/etc/.tp" 'thermal' "$stealing/system/vendor/etc/.tp"
+FindThermal "/vendor/etc/init" '"*-OriFile.bck"' "$stealing/system/vendor/etc/init"
+FindThermal "/vendor/etc/init" 'thermal' "$stealing/system/vendor/etc/init"
 
 echo "0" > "$stealing/system/vendor/etc/thermalStatus.info"
 

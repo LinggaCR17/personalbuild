@@ -1,4 +1,4 @@
-# Stealing ain't cool. Make sure booted should be completed...
+# Stealing ain't cool. Make sure booted should be completed before boot.
 sed -i "/description=/c description=personalbuild by changing your perf options Big, Little Core." /data/adb/modules/personalbuild/module.prop;
 
 for personal in /sys/block/*/queue/read_ahead_kb
@@ -10,80 +10,80 @@ do
 	done
 done
 
-# Enabling after this 'exec' and you can see it directly from here...
+# Enabling after this 'exec' and you can see it directly from here.
 for personal in /sys/devices/platform/soc/1d84000.ufshc
 do
-	echo 0 > "$personal"/clkgate_enable
-	echo 0 > "$personal"/clkscale_enable
-	echo 0 > "$personal"/hibern8_on_idle_enable
+	echo 0 > "$personal/clkgate_enable"
+	echo 0 > "$personal/clkscale_enable"
+	echo 0 > "$personal/hibern8_on_idle_enable"
 	for build in stop
 	do
-		"$build" logd
-		"$build" logd-auditctl
-		"$build" logd-reinit
-		"$build" statsd
-		"$build" traced
-		"$build" traced_perf
-		"$build" traced
-		"$build" probes
+		"$build logd"
+		"$build logd-auditctl"
+		"$build logd-reinit"
+		"$build statsd"
+		"$build traced"
+		"$build traced_perf"
+		"$build traced"
+		"$build probes"
 	done
 done
 
 for p in $(find /sys/ -name debug_mask)
 do
-	echo "0" > $p
+	echo 0 > "$p"
 done
 for e in $(find /sys/ -name debug_level)
 do
-	echo "0" > $e
+	echo 0 > "$e"
 done
 for r in $(find /sys/ -name edac_mc_log_ce)
 do
-	echo "0" > $r
+	echo 0 > "$r"
 done
 for s in $(find /sys/ -name edac_mc_log_ue)
 do
-	echo "0" > $o
+	echo 0 > "$s"
 done
 for o in $(find /sys/ -name enable_event_log)
 do
-	echo "0" > $o
+	echo 0 > "$o"
 done
 for n in $(find /sys/ -name log_ecn_error)
 do
-	echo "0" > $n
+	echo 0 > "$n"
 done
 
 for a in $(find /sys/ -name snapshot_crashdumper)
 do
-	echo "0" > $a
+	echo 0 > "$a"
 done
 for l in /sys/devices/virtual/block/*/queue/iosched
 do
-	echo "0" > $l/low_latency
+	echo 0 > "$l/low_latency"
 done
 
 if [ -e "/sys/module/xhci_hcd/parameters/wl_divide" ]; then
-	echo "N" > /sys/module/xhci_hcd/parameters/wl_divide
+	echo N > /sys/module/xhci_hcd/parameters/wl_divide
 fi
 
 {
 personal="/proc/gpufreq/gpufreq_limited_thermal_ignore"
 if [[ -e "$personal" ]]; then
-	write "1" $personal
+	write "$personal" 1
 fi
 }
 
 {
 build="/sys/devices/system/cpu/sched_mc_power_savings"
 if [[ -e "$build" ]]; then
-	write "0" $build
+	write "$build" 0
 fi
 }
 
 {
 if [[ -e "/sys/devices/virtual/touch/touch_dev/bump_sample_rate" ]]; then
-	write "1" /sys/devices/virtual/touch/touch_dev/bump_sample_rate
+	write /sys/devices/virtual/touch/touch_dev/bump_sample_rate 1
 fi
 }
 
@@ -105,7 +105,7 @@ do
 	done
 done
 
-# Overall scene
+# Overall scene 'exec'
 ${0%/*}/scene
 
 # Always return success, even if the last write fails.

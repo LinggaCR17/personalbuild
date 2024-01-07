@@ -3,7 +3,16 @@
 ![1000055833](https://github.com/LinggaCR17/personalbuild/assets/43074091/ed8bb6b7-fd6b-4b6d-996f-38dae3d420fd)
 
 - Personalbuild our big, little core
-- Make Performance better, zRAM, Schedule tweaks, Disable thermal, No logging, Low lantency, etc
+- Make Performance better
+
+## Feature, available
+* zRAM
+* Schedule tweaks
+* Disable thermal
+* No logging
+* Low lantency
+* Charge optimize, etc
+
 - By changing your Big, Litte Core. Next level (options)
 
 # Personalbuild is OpenSource! available

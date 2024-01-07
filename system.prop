@@ -12,10 +12,10 @@ debug.egl.buffcount=4
 debug.egl.force_msaa=1
 debug.egl.hw=1
 debug.egl.profiler=1
-debug.egl.swapinterval=0
+debug.egl.swapinterval=-60
 debug.enable.sglscale=1
 debug.enabletr=false
-debug.gr.swapinterval=0
+debug.gr.swapinterval=-60
 debug.gralloc.enable_fb_ubwc=1
 debug.gralloc.gfx_ubwc_disable=0
 debug.hwui.capture_skp_enabled=false
@@ -207,7 +207,7 @@ vidc.debug.level=0
 # ZramSwap Extended, RAM Extension except '/vendor/etc/'
 persist.service.zram=1
 persist.sys.zram_enabled=1
-ro.zram.default=4294967296
+ro.zram.default=8589934592
 vm.swappiness=100
 
 # ANGLE feature properties

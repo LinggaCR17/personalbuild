@@ -1,5 +1,0 @@
-# Virtual RAM expand, expanded, expansion but eating more storage 40%
-
-# SPD: modify for zram back-device path for KFLHLEYJ-1331 personal.build 20231222 start
-/dev/block/zram0 none swap defaults zramsize=100%,max_comp_streams=8,zram_loopback_path=/data/per_boot/zram_swap,swapprio=10,zram_backingdev_size=4294967296
-# SPD: modify for zram back-device path for KFLHLEYJ-1331 personal.build 20231222 end

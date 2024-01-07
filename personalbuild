@@ -1,13 +1,12 @@
 #!/system/bin/sh
 
-# Using Ktweaks @tytydraco based source
-
-# Stealing ain't cool. Magisk mirror path...
+# Stealing ain't cool. Magisk mirror path.
 MAGISKTMP="$(magisk --path)" || MAGISKTMP=/sbin
+
+# Using Ktweaks @tytydraco based source
 
 # Avoid crashed at first boot complete
 sync;
-sleep 0
 
 if [[ "$(id -u)" -ne 0 ]]; then
 	echo " ! No root permissions. Exiting."
@@ -17,12 +16,12 @@ fi
 while [[ "$(getprop sys.boot_completed)" -ne 1 ]]
 do
 	if [[ ! -d "$MAGISKTMP" ]]; then
-		# Using isolation, isolated process
+		# Using Kitsune isolation, isolated child process
 		sleep 0
 	fi
 done
 
-aint()
+function aint()
 {
 	local NAME=$1
 	local CONTAINS=$2
@@ -33,7 +32,7 @@ aint()
 	fi
 }
 
-write()
+function write()
 {
 	if [[ ! -f "$1" ]]; then
 		return 1
@@ -55,22 +54,22 @@ do
 	done
 done
 
-# Enabling after post-fs-data.sh 'exec' and you can see it directly from the modpath file...
+# Enabling after post-fs-data.sh 'exec' and you can see it directly from the dirpath file.
 for personal in /sys/devices/platform/soc/1d84000.ufshc
 do
-	echo 1 > "$personal"/clkgate_enable
-	echo 1 > "$personal"/clkscale_enable
-	echo 1 > "$personal"/hibern8_on_idle_enable
+	echo 1 > "$personal/clkgate_enable"
+	echo 1 > "$personal/clkscale_enable"
+	echo 1 > "$personal/hibern8_on_idle_enable"
 	for build in stop
 	do
-		"$build" logd
-		"$build" logd-auditctl
-		"$build" logd-reinit
-		"$build" statsd
-		"$build" traced
-		"$build" traced_perf
-		"$build" traced
-		"$build" probes
+		"$build logd"
+		"$build logd-auditctl"
+		"$build logd-reinit"
+		"$build statsd"
+		"$build traced"
+		"$build traced_perf"
+		"$build traced"
+		"$build probes"
 	done
 done
 
@@ -108,42 +107,42 @@ fi
 
 for virtonal in /sys/class/graphics/fb0
 do
-	echo U:1468x3264-0 > "$virtonal"/modes
-	echo 4096 > "$virtonal"/bits_per_pixel
+	echo U:1468x3264-0 > "$virtonal/modes"
+	echo 4096 > "$virtonal/bits_per_pixel"
 	for paraild in /sys/module/ged/parameters
 	do
-		echo 1 > "$paraild"/ap_self_frc_detection_rate
-		echo 1 > "$paraild"/boost_amp
-		echo 1 > "$paraild"/boost_extra
-		echo 1 > "$paraild"/boost_gpu_enable
-		echo 1 > "$paraild"/cpu_boost_policy
-		echo 1 > "$paraild"/enable_cpu_boost
-		echo 1 > "$paraild"/enable_game_self_frc_detect
-		echo 1 > "$paraild"/enable_gpu_boost
-		echo 1 > "$paraild"/ged_boost_enable
-		echo 1 > "$paraild"/ged_force_mdp_enable
-		echo 1 > "$paraild"/ged_smart_boost
-		echo 1 > "$paraild"/gpu_dvfs_enable
-		echo 1 > "$paraild"/gx_boost_on
-		echo 1 > "$paraild"/gx_dfps
-		echo 1 > "$paraild"/gx_force_cpu_boost
-		echo 1 > "$paraild"/gx_frc_mode
-		echo 1 > "$paraild"/gx_game_mode
-		echo 1 > "$paraild"/is_GED_KPI_enabled
+		echo 1 > "$paraild/ap_self_frc_detection_rate"
+		echo 1 > "$paraild/boost_amp"
+		echo 1 > "$paraild/boost_extra"
+		echo 1 > "$paraild/boost_gpu_enable"
+		echo 1 > "$paraild/cpu_boost_policy"
+		echo 1 > "$paraild/enable_cpu_boost"
+		echo 1 > "$paraild/enable_game_self_frc_detect"
+		echo 1 > "$paraild/enable_gpu_boost"
+		echo 1 > "$paraild/ged_boost_enable"
+		echo 1 > "$paraild/ged_force_mdp_enable"
+		echo 1 > "$paraild/ged_smart_boost"
+		echo 1 > "$paraild/gpu_dvfs_enable"
+		echo 1 > "$paraild/gx_boost_on"
+		echo 1 > "$paraild/gx_dfps"
+		echo 1 > "$paraild/gx_force_cpu_boost"
+		echo 1 > "$paraild/gx_frc_mode"
+		echo 1 > "$paraild/gx_game_mode"
+		echo 1 > "$paraild/is_GED_KPI_enabled"
 	done
 done
 
 # FDE.AI, FKM default configuration
 for personal in /dev/cpuset
 do
-	write $personal/cpu_limit/cpus 0-1
-	write $personal/restricted/cpus 0-3
-	write $personal/system-background/cpus 0-3
-	write $personal/background/cpus 0-1
-	write $personal/camera-daemon/cpus 0-3
-	write $personal/cpus 0-3
-	write $personal/foreground/cpus 0-3
-	write $personal/top-app/cpus 0-3
+	write "$personal/cpu_limit/cpus" 0-1
+	write "$personal/restricted/cpus" 0-3
+	write "$personal/system-background/cpus" 0-3
+	write "$personal/background/cpus" 0-1
+	write "$personal/camera-daemon/cpus" 0-3
+	write "$personal/cpus" 0-3
+	write "$personal/foreground/cpus" 0-3
+	write "$personal/top-app/cpus" 0-3
 done
 
 write /dev/stune/background/schedtune.boost 0
@@ -201,48 +200,48 @@ write /proc/sys/vm/vfs_cache_pressure 94
 
 for dmX in /sys/block/*/queue
 do
-	write $dmX/add_random 0
-	write $dmX/iostats 0
-	write $dmX/nomerges 2
-	write $dmX/nr_requests 128
-	write $dmX/read_ahead_kb 512
-	write $dmX/rotational 0
-	write $dmX/rq_affinity 1
-	write $dmX/scheduler none
+	write "$dmX/add_random" 0
+	write "$dmX/iostats" 0
+	write "$dmX/nomerges" 2
+	write "$dmX/nr_requests" 128
+	write "$dmX/read_ahead_kb" 512
+	write "$dmX/rotational" 0
+	write "$dmX/rq_affinity" 1
+	write "$dmX/scheduler" none
 done
 
 for lkX in /sys/block/*/queue
 do
-	write $lkW/add_random 0
-	write $lkW/iosched/fifo_batch 16
-	write $lkW/iosched/front_merges 1
-	write $lkW/iosched/read_expire 501
-	write $lkW/iosched/write_expire 5001
-	write $lkW/iosched/writes_starved 2
-	write $lkW/iostats 0
-	write $lkW/nomerges 2
-	write $lkW/nr_requests 128
-	write $lkW/read_ahead_kb 512
-	write $lkW/rotational 0
-	write $lkW/rq_affinity 1
-	write $lkW/scheduler kyber
-	write $lkW/add_random 0
-	write $lkW/iosched/fifo_batch 16
-	write $lkW/iosched/front_merges 1
-	write $lkW/iosched/read_expire 501
-	write $lkW/iosched/write_expire 5001
-	write $lkW/iosched/writes_starved 2
-	write $lkW/iostats 0
-	write $lkW/nomerges 2
-	write $lkW/nr_requests 128
-	write $lkW/read_ahead_kb 512
-	write $lkW/rotational 0
-	write $lkW/rq_affinity 1
-	write $lkW/scheduler kyber
+	write "$lkW/add_random" 0
+	write "$lkW/iosched/fifo_batch" 16
+	write "$lkW/iosched/front_merges" 1
+	write "$lkW/iosched/read_expire" 501
+	write "$lkW/iosched/write_expire" 5001
+	write "$lkW/iosched/writes_starved" 2
+	write "$lkW/iostats" 0
+	write "$lkW/nomerges" 2
+	write "$lkW/nr_requests" 128
+	write "$lkW/read_ahead_kb" 512
+	write "$lkW/rotational" 0
+	write "$lkW/rq_affinity" 1
+	write "$lkW/scheduler" kyber
+	write "$lkW/add_random" 0
+	write "$lkW/iosched/fifo_batch" 16
+	write "$lkW/iosched/front_merges" 1
+	write "$lkW/iosched/read_expire" 501
+	write "$lkW/iosched/write_expire" 5001
+	write "$lkW/iosched/writes_starved" 2
+	write "$lkW/iostats" 0
+	write "$lkW/nomerges" 2
+	write "$lkW/nr_requests" 128
+	write "$lkW/read_ahead_kb" 512
+	write "$lkW/rotational" 0
+	write "$lkW/rq_affinity" 1
+	write "$lkW/scheduler" kyber
 done
 
 write /sys/block/zram0/comp_algorithm zstd
-write /sys/block/zram0/disksize 4294967296
+write /sys/block/zram0/disksize 8589934592
 write /sys/block/zram0/initstate 1
 write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
 write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1800000
@@ -252,7 +251,8 @@ write /sys/devices/system/cpu/cpufreq/performance/up_rate_limit_us 1000
 write /sys/module/pstore/parameters/compress deflate
 write /sys/module/usbhid/parameters/kbpoll 0
 
-UINT_MAX="4294967295" # phase one
+# phase one, phase walk
+UINT_MAX="4294967295"
 SCHED_PERIOD="$((1 * 1000 * 1000))"
 SCHED_TASKS="10"
 
@@ -445,15 +445,16 @@ do
 	write "$queue/nr_requests" 32
 done
 
-UINT_MAX="4294967295" # phase two
+# phase two, phase break
+UINT_MAX="4294967295"
 SCHED_PERIOD="$((4 * 1000 * 1000))"
 SCHED_TASKS="8"
 
 for build in /dev/cpuset
 do
-	write $build/foreground/boost/cpus 4-7
-	write $build/cpuset/foreground/cpus 0-3,4-7
-	write $build/cpuset/top-app/cpus 0-7
+	write "$build/foreground/boost/cpus" 4-7
+	write "$build/cpuset/foreground/cpus" 0-3,4-7
+	write "$build/cpuset/top-app/cpus" 0-7
 done
 
 write /dev/stune/foreground/schedtune.prefer_idle 1
@@ -641,34 +642,50 @@ fi
 
 for amognal in /sys/bus/cpu/devices/*/cpufreq
 do
-	echo "$UINT_MAX" > "$amognal"/cpuinfo_cur_freq
-	echo "$UINT_MAX" > "$amognal"/cpuinfo_max_freq
-	echo "$UINT_MAX" > "$amognal"/cpuinfo_min_freq
-	echo "$UINT_MAX" > "$amognal"/scaling_cur_freq
-	echo "$UINT_MAX" > "$amognal"/scaling_max_freq
-	echo "$UINT_MAX" > "$amognal"/scaling_min_freq
+	echo "$UINT_MAX" > "$amognal/cpuinfo_cur_freq"
+	echo "$UINT_MAX" > "$amognal/cpuinfo_max_freq"
+	echo "$UINT_MAX" > "$amognal/cpuinfo_min_freq"
+	echo "$UINT_MAX" > "$amognal/scaling_cur_freq"
+	echo "$UINT_MAX" > "$amognal/scaling_max_freq"
+	echo "$UINT_MAX" > "$amognal/scaling_min_freq"
 done
 
 function config()
 {
-	swapoff /dev/block/zram0 >/dev/null 2>&1
-	echo 1 > /sys/block/zram0/reset
+	if true; then
+		swapoff /dev/block/zram0 >/dev/null 2>&1
+		for config in /sys/block/zram0/reset
+		do
+			echo 1 > "$config"
+		done
+	fi
 	
-	echo 0 > /proc/sys/vm/laptop_mode
-	echo 0 > /proc/sys/vm/oom_kill_allocating_task
-	echo 0 > /proc/sys/vm/page-cluster
-	echo 10 > /proc/sys/vm/dirty_background_ratio
-	echo 100 > /proc/sys/vm/swappiness
-	echo 100 > /proc/sys/vm/vfs_cache_pressure
-	echo 13500 > /proc/sys/vm/extra_free_kbytes
-	echo 30 > /proc/sys/vm/dirty_ratio
-	echo 3000 > /proc/sys/vm/dirty_expire_centisecs
-	echo 3000 > /proc/sys/vm/dirty_writeback_centisecs
-	echo 3022 > /proc/sys/vm/min_free_kbytes
-	echo 50 > /proc/sys/vm/overcommit_ratio
+	if true; then
+		mkswap /dev/block/zram0 >/dev/null 2>&1
+		for config in /proc/sys/vm
+		do
+			echo 0 > "$config/laptop_mode"
+			echo 0 > "$config/oom_kill_allocating_task"
+			echo 0 > "$config/page-cluster"
+			echo 10 > "$config/dirty_background_ratio"
+			echo 100 > "$config/swappiness"
+			echo 100 > "$config/vfs_cache_pressure"
+			echo 13500 > "$config/extra_free_kbytes"
+			echo 30 > "$config/dirty_ratio"
+			echo 3000 > "$config/dirty_expire_centisecs"
+			echo 3000 > "$config/dirty_writeback_centisecs"
+			echo 3022 > "$config/min_free_kbytes"
+			echo 50 > "$config/overcommit_ratio"
+		done
+	fi
 	
-	echo $((4096*8192*16384)) > /sys/block/zram0/disksize
-	mkswap /dev/block/zram0 >/dev/null 2>&1
+	if true; then 
+		mkswap /dev/block/zram0 >/dev/null 2>&1
+		for config in /sys/block/zram0/disksize
+		do
+			echo "$((4096*8192*16384))" > "$config"
+		done
+	fi
 	
 	for compild in lzo lz4 zstd
 	do
@@ -678,8 +695,18 @@ function config()
 	echo 1 > /sys/block/zram0/initstate
 	echo 4 > /sys/block/zram0/max_comp_streams
 	
-	echo 4294967296 > /sys/block/zram0/disksize
-	swapon /dev/block/zram0 >/dev/null 2>&1
+	if true; then 
+		mkswap /dev/block/zram0 >/dev/null 2>&1
+		for config in /sys/block/zram0/disksize
+		do
+			echo 8589934592 > "$config"
+		done
+	fi
+	
+	if true; then
+		mkswap /dev/block/zram0 >/dev/null 2>&1
+		swapon /dev/block/zram0 >/dev/null 2>&1
+	fi
 }
 
 config;
@@ -688,11 +715,11 @@ config;
 
 for kcal in /sys/devices/platform/kcal_ctrl.0
 do
-	echo 1 > "$kcal"/kcal_enable
-	echo 275 > "$kcal"/kcal_sat
-	echo 253 > "$kcal"/kcal_val
-	echo 258 > "$kcal"/kcal_cont
-	echo 236 238 240 > "$kcal"/kcal
+	echo 1 > "$kcal/kcal_enable"
+	echo 275 > "$kcal/kcal_sat"
+	echo 253 > "$kcal/kcal_val"
+	echo 258 > "$kcal/kcal_cont"
+	echo 236 238 240 > "$kcal/kcal"
 done
 
 function biglittlecore()
@@ -770,9 +797,12 @@ function biglittlecore()
 	echo 19000 1401600:39000 > /sys/devices/system/cpu/cpufreq/performance/above_hispeed_delay
 	echo 85 1401600:80 > /sys/devices/system/cpu/cpufreq/performance/target_loads
 	
-	echo 0 > /sys/android_touch/doubletap2wake
-	echo 0 > /sys/android_touch/sweep2sleep
-	echo 0 > /sys/android_touch/sweep2wake
+	for gesture in /sys/android_touch
+	do
+		echo 0 > "$gesture/doubletap2wake"
+		echo 0 > "$gesture/sweep2sleep"
+		echo 0 > "$gesture/sweep2wake"
+	done
 	
 	if true; then
 		for perfonal in powersave conservative userspace ondemand interactive schedplus schedutil performance
@@ -790,17 +820,17 @@ function biglittlecore()
 	
 	for pppm in /proc/ppm
 	do
-		echo 0 0 > $pppm/policy_status
-		echo 0 > $pppm/enabled
-		echo 1 0 > $pppm/policy_status
-		echo 2 0 > $pppm/policy_status
-		echo 3 0 > $pppm/policy_status
-		echo 4 0 > $pppm/policy_status
-		echo 5 0 > $pppm/policy_status
-		echo 6 0 > $pppm/policy_status
-		echo 7 0 > $pppm/policy_status
-		echo 8 0 > $pppm/policy_status
-		echo 9 0 > $pppm/policy_status
+		echo 0 0 > "$pppm/policy_status"
+		echo 0 > "$pppm/enabled"
+		echo 1 0 > "$pppm/policy_status"
+		echo 2 0 > "$pppm/policy_status"
+		echo 3 0 > "$pppm/policy_status"
+		echo 4 0 > "$pppm/policy_status"
+		echo 5 0 > "$pppm/policy_status"
+		echo 6 0 > "$pppm/policy_status"
+		echo 7 0 > "$pppm/policy_status"
+		echo 8 0 > "$pppm/policy_status"
+		echo 9 0 > "$pppm/policy_status"
 	done
 	
 	echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/performance/io_is_busy
@@ -838,6 +868,7 @@ function biglittlecore()
 	echo 1 > /sys/devices/system/cpu/cpufreq/performance/use_sched_load
 	
 	echo "$UINT_MAX" > /sys/devices/system/cpu/cpu0/cpufreq/performance/hispeed_freq
+	echo "$UINT_MAX" > /sys/devices/system/cpu/cpu4/cpufreq/performance/hispeed_freq
 	echo "$UINT_MAX" > /sys/devices/system/cpu/cpufreq/performance/hispeed_freq
 	echo "$UINT_MAX" > /sys/devices/system/cpu/cpufreq/performance/hispeed_freq
 	
@@ -877,7 +908,6 @@ function biglittlecore()
 	echo 40000 > /sys/devices/system/cpu/cpufreq/performance/sampling_down_factor
 	echo 50000 > /proc/sys/kernel/sched_freq_dec_notify
 	echo 50000 > /proc/sys/kernel/sched_freq_inc_notify
-	echo 768000 > /sys/devices/system/cpu/cpu4/cpufreq/performance/hispeed_freq
 	echo 85 > /sys/devices/system/cpu/cpu0/cpufreq/performance/go_hispeed_load
 	echo 85 > /sys/devices/system/cpu/cpu0/cpufreq/performance/hispeed_load
 	echo 85 > /sys/devices/system/cpu/cpu4/cpufreq/performance/hispeed_load
@@ -918,10 +948,10 @@ biglittlecore;
 	aint debug.egl.force_msaa 1
 	aint debug.egl.hw 1
 	aint debug.egl.profiler 1
-	aint debug.egl.swapinterval 0
+	aint debug.egl.swapinterval -60
 	aint debug.enable.sglscale 1
 	aint debug.enabletr false
-	aint debug.gr.swapinterval 0
+	aint debug.gr.swapinterval -60
 	aint debug.gralloc.enable_fb_ubwc 1
 	aint debug.gralloc.gfx_ubwc_disable 0
 	aint debug.hwui.capture_skp_enabled false
@@ -1108,7 +1138,7 @@ biglittlecore;
 	
 	aint persist.service.zram 1
 	aint persist.sys.zram_enabled 1
-	aint ro.zram.default 4294967296
+	aint ro.zram.default 8589934592
 	aint vm.swappiness 100
 	
 	aint ro.gfx.angle.supported true
@@ -1137,8 +1167,8 @@ biglittlecore;
 	aint sys.log.app 0
 }&
 
-settings put system min_refresh_rate 120
-settings put system peak_refresh_rate 120.00001
+settings put global min_refresh_rate 120
+settings put global peak_refresh_rate 120.00001
 
 # Using crokrammgmtfix @crok based source
 
@@ -1162,7 +1192,7 @@ function zramswapper()
 
 zramswapper;
 
-personal()
+function personal()
 {
 	MODDIR="${0%/*}"
 	MODNAME="${MODDIR##*/}"

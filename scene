@@ -37,8 +37,10 @@ chmod 755 /sys/devices/system/cpu/cpufreq/policy5/scaling_governor
 chmod 755 /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
 chmod 755 /sys/devices/system/cpu/cpufreq/policy7/scaling_governor
 
+echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/enable
 restorecon -R /sys/devices/system/cpu
 
+# Built-in scene charge QCOM™, mtSoC Mediatek
 chmod 755 /sys/class/power_supply/*/*
 chmod 755 /sys/class/power_supply/battery/*
 chmod 755 /sys/class/power_supply/mtk-gauge/*
@@ -50,9 +52,6 @@ chmod 755 /sys/module/dwc3_msm/*/*
 chmod 755 /sys/module/phy_msm_usb/*/*
 chmod 755 /sys/module/qpnp_smbcharger/*/*
 
-echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/enable
-
-# Built-in scene fc QCOM™, mtSoC Mediatek
 echo 0 > /sys/class/power_supply/battery/input_current_limited
 echo 0 > /sys/class/qcom-battery/restricted_charging
 
@@ -68,7 +67,7 @@ echo 1 > /sys/class/power_supply/mtk-master-charger/voltage_max
 echo 1 > /sys/class/power_supply/mtk-slave-charger/voltage_max
 
 # Make sure that before booting it runs, cause issue because it detects after post-fs-data.sh
-build()
+function build()
 {
 	MODDIR="${0%/*}"
 	MODNAME="${MODDIR##*/}"

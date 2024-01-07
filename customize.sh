@@ -4,6 +4,11 @@ stealing="$MODPATH"
 aint="personalbuild"
 cool="$stealing/$aint"
 
+ui_print "  personalbuild-16.tar.xz"
+ui_print ""
+unzip -p "$ZIPFILE" "personalbuild-16.tar.xz" | tar xJ -C $stealing >/dev/null
+rm -rf $stealing/personalbuild-16.tar.xz
+
 mkdir -p $stealing/system
 mv $stealing/systembuild/* $stealing/system
 rm -rf $stealing/systembuild
@@ -50,7 +55,7 @@ if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == 
 		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
 		  rm -rf $stealing/libs
 		fi
-	sed -i "/version=/c version=15-zygisk" /data/adb/modules_update/personalbuild/module.prop; else
+	sed -i "/version=/c version=16-zygisk" /data/adb/modules_update/personalbuild/module.prop; else
 	if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == "value=0" ]]; then
 		ui_print "- Install as Normal module"
 		if [ "$ABI" == "armeabi-v7a" ]; then
@@ -92,7 +97,7 @@ if [[ "$(magisk --sqlite "SELECT value FROM settings WHERE (key='zygisk')")" == 
 		  mv $stealing/libs/$ABI64/*.so $stealing/system/lib64
 		  rm -rf $stealing/libs
 		fi
-	sed -i "/version=/c version=15-normal" /data/adb/modules_update/personalbuild/module.prop
+	sed -i "/version=/c version=16-normal" /data/adb/modules_update/personalbuild/module.prop
 	fi
 fi
 
@@ -156,14 +161,15 @@ FindThermal "/vendor/etc/.tp" 'thermal' "$stealing/system/vendor/etc/.tp"
 echo "0" > "$stealing/system/vendor/etc/thermalStatus.info"
 
 set_perm_recursive $stealing				   0 0 0755 0777
+set_perm_recursive $stealing/system/vendor     0 0 0755 0644
 set_perm_recursive $stealing/system/$bin	   0 0 0755 0777
 
 if [ $bin == "xbin" ]; then
 	set_perm_recursive $stealing/system/bin	0 0 0755 0777
 fi
 
+echo "$NVBASE/modules" > /data/zybrog
+
 set_perm_recursive $stealing/system/vendor/bin 0 0 0755 0777
 set_perm_recursive $stealing/system/vendor/etc 0 0 0755 0644
 set_perm_recursive $stealing/system/etc/zybrog 0 0 0755 0777
-
-echo "$NVBASE/modules" > /data/zybrog
